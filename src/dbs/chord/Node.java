@@ -30,7 +30,12 @@ public class Node {
         instance = this;
     }
 
+    /**
+     * Primary lookup interface. Returns a promise that will eventually resolve to
+     * the node responsible for the given chordid, i.e. its successor.
+     */
     public CompletableFuture<NodeInfo> lookup(BigInteger chordid) {
+        // If this node is responsible, return ourselves.
         if (isResponsible(chordid)) {
             return CompletableFuture.completedFuture(self);
         }
@@ -39,9 +44,9 @@ public class Node {
     }
 
     /**
-     * @return the highest finger that is a predecessor of chordid relative to self.
+     *
      */
-    private NodeInfo closestPrecedingInTable(BigInteger chordid) {
+    private NodeInfo lookupClosestPreceding(BigInteger chordid) {
         BigInteger relChord = Chord.relative(self.getId(), chordid);
 
         // self --> ... next ... --> chordid --> ... --> ... --> self

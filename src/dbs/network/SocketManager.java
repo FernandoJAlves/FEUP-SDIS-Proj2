@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 
+import dbs.chord.ChordListener;
+
 public class SocketManager implements Runnable {
 
     private final ConcurrentHashMap<InetSocketAddress, Listener> listeners;

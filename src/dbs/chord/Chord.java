@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 public class Chord {
 
     public static final int m = 16;
-    public static final BigInteger modulus = BigInteger.ONE.shiftLeft(16);
+    public static final BigInteger modulus = BigInteger.ONE.shiftLeft(m);
 
     /**
      * Consistent hash, ugly implementation using a cryptographic hash function on

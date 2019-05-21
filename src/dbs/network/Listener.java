@@ -2,6 +2,7 @@ package dbs.network;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -28,7 +29,7 @@ import javax.net.SocketFactory;
  * requests for Listeners for the given socket address will then point to the
  * new Listener.
  */
-public abstract class Listener implements Runnable {
+public abstract class Listener implements Runnable, Closeable {
 
     private Socket socket;
     private ObjectInputStream input;
@@ -38,13 +39,13 @@ public abstract class Listener implements Runnable {
 
     private Thread thread;
 
-    Listener(Socket socket) {
+    protected Listener(Socket socket) {
         this.socketAddress = (InetSocketAddress) socket.getRemoteSocketAddress();
         this.socket = socket;
         openStreams();
     }
 
-    Listener(InetSocketAddress socketAddress, SocketFactory factory) throws IOException {
+    protected Listener(InetSocketAddress socketAddress, SocketFactory factory) throws IOException {
         this.socketAddress = socketAddress;
         try {
             InetAddress address = socketAddress.getAddress();
@@ -73,7 +74,7 @@ public abstract class Listener implements Runnable {
         }
     }
 
-    InetSocketAddress getSocketAddress() {
+    protected InetSocketAddress getSocketAddress() {
         return socketAddress;
     }
 
@@ -87,7 +88,8 @@ public abstract class Listener implements Runnable {
         }
     }
 
-    synchronized void close() {
+    @Override
+    public synchronized void close() {
         if (isClosed())
             return;
 
@@ -105,7 +107,7 @@ public abstract class Listener implements Runnable {
         }
     }
 
-    abstract void handleMessage(Serializable object);
+    protected abstract void handleMessage(Serializable object);
 
     private final boolean isClosed() {
         return socket.isClosed() || closed;
