@@ -14,55 +14,70 @@ import java.net.Socket;
 
 import javax.net.SocketFactory;
 
+/**
+ * A Listener is launched on an accepted socket connection OR on a created
+ * socket connection. The concrete Listener implementation may vary as
+ * handleMessage() is abstract.
+ *
+ * When a Listener is created, it will try (after opening the socket stream if
+ * not already open) to open the input and output streams. If successful, it is
+ * now ready for both input and output operations. It may be the case that
+ * another Listener has already been registered in the SocketManager, for the
+ * same socket address; in that case, the new Listener will replace the old one,
+ * and inform the old one it should promptly close the connection (todo). All
+ * requests for Listeners for the given socket address will then point to the
+ * new Listener.
+ */
 public abstract class Listener implements Runnable {
+
     private Socket socket;
     private ObjectInputStream input;
     private ObjectOutputStream output;
     private InetSocketAddress socketAddress;
+    private boolean closed = false;
 
     private Thread thread;
 
     Listener(Socket socket) {
         this.socketAddress = (InetSocketAddress) socket.getRemoteSocketAddress();
-
-        try {
-            this.socket = socket;
-            InputStream in = socket.getInputStream();
-            OutputStream out = socket.getOutputStream();
-            this.input = new ObjectInputStream(new BufferedInputStream(in));
-            this.output = new ObjectOutputStream(new BufferedOutputStream(out));
-            SocketManager.get().setListener(this);
-            startListening();
-        } catch (IOException e) {
-            e.printStackTrace();
-            this.close();
-        }
+        this.socket = socket;
+        openStreams();
     }
 
     Listener(InetSocketAddress socketAddress, SocketFactory factory) throws IOException {
-        InetAddress address = socketAddress.getAddress();
-        int port = socketAddress.getPort();
         this.socketAddress = socketAddress;
-
         try {
+            InetAddress address = socketAddress.getAddress();
+            int port = socketAddress.getPort();
             this.socket = factory.createSocket(address, port);
-            InputStream in = socket.getInputStream();
-            OutputStream out = socket.getOutputStream();
-            this.input = new ObjectInputStream(new BufferedInputStream(in));
-            this.output = new ObjectOutputStream(new BufferedOutputStream(out));
-            SocketManager.get().setListener(this);
-            startListening();
+            openStreams();
         } catch (IOException e) {
             e.printStackTrace();
-            this.close();
         }
     }
 
-    public InetSocketAddress getSocketAddress() {
+    @Override
+    public void run() {
+        while (true) {
+            if (isClosed())
+                break;
+            try {
+                Object object = input.readObject();
+                if (object != null)
+                    handleMessage((Serializable) object);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    InetSocketAddress getSocketAddress() {
         return socketAddress;
     }
 
-    public synchronized boolean sendMessage(Serializable object) {
+    synchronized boolean sendMessage(Serializable object) {
         try {
             output.writeObject(object);
             return true;
@@ -72,39 +87,42 @@ public abstract class Listener implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        while (true) {
-            if (socket.isClosed()) break;
-            try {
-                Object object = input.readObject();
-                if (object == null) continue;
-                handleMessage((Serializable) object);
-            } catch (IOException e) {
-                e.printStackTrace();
-                if (socket.isClosed()) break;
-            } catch (Exception e) {
-                // Discard any other exception
-                e.printStackTrace();
-            }
-        }
-    }
+    synchronized void close() {
+        if (isClosed())
+            return;
 
-    protected synchronized void close() {
+        closed = true;
+
         try {
-            if (input != null) input.close();
-            if (output != null) output.close();
-            if (socket != null && !socket.isClosed()) socket.close();
+            if (input != null)
+                input.close();
+            if (output != null)
+                output.close();
+            if (socket != null)
+                socket.close();
         } catch (IOException e) {
-            System.err.println("Deu peido a fechar as streams/sockets...");
             e.printStackTrace();
         }
     }
 
-    protected abstract void handleMessage(Serializable object);
+    abstract void handleMessage(Serializable object);
 
-    private void startListening() {
-        thread = new Thread(this);
-        thread.start();
+    private final boolean isClosed() {
+        return socket.isClosed() || closed;
+    }
+
+    private void openStreams() {
+        try {
+            InputStream in = socket.getInputStream();
+            OutputStream out = socket.getOutputStream();
+            this.input = new ObjectInputStream(new BufferedInputStream(in));
+            this.output = new ObjectOutputStream(new BufferedOutputStream(out));
+            SocketManager.get().setListener(this);
+            thread = new Thread(this);
+            thread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+            this.close();
+        }
     }
 }

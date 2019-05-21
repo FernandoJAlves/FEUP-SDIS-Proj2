@@ -3,19 +3,31 @@ package dbs.chord;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
+/**
+ * The basic identifier of a Chord node: contains a chord id (BigInteger) and
+ * the node's server socket address (ip + port).
+ *
+ * If all nodes use the same consistent hash provided in Chord, then
+ *
+ * chordid = Chord.consistentHash(socketAddress)
+ */
 public final class NodeInfo implements Serializable {
 
     private static final long serialVersionUID = 100100100000L;
 
     public final BigInteger chordid;
-    public final InetAddress ip;
-    public final int port;
+    public final InetSocketAddress socketAddress;
+
+    public NodeInfo(BigInteger chordid, InetSocketAddress socketAddress) {
+        this.chordid = chordid;
+        this.socketAddress = socketAddress;
+    }
 
     public NodeInfo(BigInteger chordid, InetAddress ip, int port) {
         this.chordid = chordid;
-        this.ip = ip;
-        this.port = port;
+        this.socketAddress = new InetSocketAddress(ip, port);
     }
 
     public BigInteger getId() {
@@ -23,10 +35,14 @@ public final class NodeInfo implements Serializable {
     }
 
     public InetAddress getIp() {
-        return ip;
+        return socketAddress.getAddress();
     }
 
     public int getPort() {
-        return port;
+        return socketAddress.getPort();
+    }
+
+    public InetSocketAddress getSocketAddress() {
+        return socketAddress;
     }
 }
