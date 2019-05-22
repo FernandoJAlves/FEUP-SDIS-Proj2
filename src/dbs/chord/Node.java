@@ -14,9 +14,9 @@ import dbs.network.SocketManager;
 
 public class Node {
 
-    private final NodeLocalInfo self;
-    private final AtomicReference<NodeLocalInfo> predecessor;
-    private final AtomicReferenceArray<NodeLocalInfo> finger;
+    private final NodeServerInfo self;
+    private final AtomicReference<NodeServerInfo> predecessor;
+    private final AtomicReferenceArray<NodeServerInfo> finger;
 
     private static Node instance;
 
@@ -31,14 +31,14 @@ public class Node {
     Node(InetSocketAddress serverAddress) {
         assert instance == null;
         BigInteger nodeId = Chord.consistentHash(serverAddress);
-        this.self = new NodeLocalInfo(nodeId, null, serverAddress);
+        this.self = new NodeServerInfo(nodeId, serverAddress);
         this.predecessor = new AtomicReference<>();
         this.finger = new AtomicReferenceArray<>(Chord.m);
         instance = this;
     }
 
     public NodeServerInfo getServerInfo() {
-        return self.getServerInfo();
+        return self;
     }
 
     /**
@@ -48,23 +48,22 @@ public class Node {
      * It may resolve to this node immediately, in which case the object's
      * getLocalAddress() will return null.
      */
-    public CompletableFuture<NodeLocalInfo> lookup(BigInteger chordId) {
-        Lookup lookup = new Lookup(chordId, self.getServerInfo());
-        CompletableFuture<NodeLocalInfo> promise = new CompletableFuture<>();
+    public CompletableFuture<NodeServerInfo> lookup(BigInteger chordId) {
+        Lookup lookup = new Lookup(chordId, self);
+        CompletableFuture<NodeServerInfo> promise = new CompletableFuture<>();
         ResponsibleObserver observer = new ResponsibleObserver(chordId, promise);
 
         BigInteger selfId = self.getChordId();
 
         for (int i = Chord.m; i > 0; --i) {
-            NodeLocalInfo next = finger.get(i);
+            NodeServerInfo next = finger.get(i);
             if (next == null)
                 continue;
 
             BigInteger nextId = next.getChordId();
 
             if (Chord.compare(selfId, nextId, chordId) <= 0) {
-                InetSocketAddress localAddress = next.getLocalAddress();
-                boolean sent = SocketManager.get().sendMessage(localAddress, lookup);
+                boolean sent = SocketManager.get().sendMessage(next, lookup);
 
                 // Small race condition adding the observer. ***
                 if (sent) {
@@ -82,57 +81,39 @@ public class Node {
      * Primary lookup handling.
      */
     public void handleLookup(Lookup lookup) {
+        if (isResponsible(lookup.getChordId())) {
+            Responsible responsible = new Responsible(lookup.getChordId());
+            SocketManager.get().sendMessage(lookup.getSender(), responsible);
+            return;
+        }
+
         BigInteger chordId = lookup.getChordId();
         BigInteger selfId = self.getChordId();
 
         for (int i = Chord.m; i > 0; --i) {
-            NodeLocalInfo next = finger.get(i);
+            NodeServerInfo next = finger.get(i);
             if (next == null)
                 continue;
 
             BigInteger nextId = next.getChordId();
 
             if (Chord.compare(selfId, nextId, chordId) <= 0) {
-                InetSocketAddress localAddress = next.getLocalAddress();
-                boolean sent = SocketManager.get().sendMessage(localAddress, lookup);
+                boolean sent = SocketManager.get().sendMessage(next, lookup);
                 if (sent)
                     return;
             }
         }
 
-        Responsible responsible = new Responsible(chordId);
-        InetSocketAddress sourceServerAddress = lookup.getSourceNode().getServerAddress();
-        boolean opened = SocketManager.get().open(sourceServerAddress);
-        // ^ no fix for this. SocketManager has to map IDs...
+        System.err.println("Failed to find finger for lookup of " + lookup.getChordId());
     }
 
-    public void predecessorUpdate(NodeLocalInfo other) {
+    public void predecessorUpdate(NodeServerInfo other) {
         int c = Chord.compare(predecessor.get().getChordId(), other.getChordId(), self.getChordId());
         if (c == -1) {
             predecessor.set(other);
         }
-        PredecessorResponse response = new PredecessorResponse(predecessor.get().getServerInfo());
-        SocketManager.get().sendMessage(other.getLocalAddress(), response);
-    }
-
-    /**
-     *
-     */
-    private NodeLocalInfo lookupClosestPreceding(BigInteger chordId) {
-        BigInteger selfId = self.getChordId();
-
-        for (int i = Chord.m; i > 0; --i) {
-            NodeLocalInfo next = finger.get(i);
-            if (next == null)
-                continue;
-
-            BigInteger nextId = next.getChordId();
-
-            if (Chord.compare(selfId, nextId, chordId) <= 0)
-                return next;
-        }
-
-        return self;
+        PredecessorResponse response = new PredecessorResponse(predecessor.get());
+        SocketManager.get().sendMessage(other, response);
     }
 
     /**

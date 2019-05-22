@@ -1,6 +1,5 @@
 package dbs.chord;
 
-import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
 import dbs.chord.messages.ChordMessage;
@@ -26,9 +25,9 @@ public final class ChordDispatcher {
         observerMap.computeIfAbsent(key, ChordObserverList::new).add(observer);
     }
 
-    public void dispatch(ChordMessage message, InetSocketAddress localAddress) {
+    public void dispatch(ChordMessage message) {
         ChordMessageKey key = message.getKey();
         if (key != null)
-            observerMap.get(key).dispatch(message, localAddress);
+            observerMap.get(key).dispatch(message);
     }
 }

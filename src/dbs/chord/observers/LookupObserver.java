@@ -1,6 +1,5 @@
 package dbs.chord.observers;
 
-import dbs.chord.NodeLocalInfo;
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.ChordMessageKey;
 
@@ -11,7 +10,7 @@ public final class LookupObserver extends ChordObserver {
     }
 
     @Override
-    public boolean notify(ChordMessage message, NodeLocalInfo sender) {
+    public boolean notify(ChordMessage message) {
         return false;
     }
 }

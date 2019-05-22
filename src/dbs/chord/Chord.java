@@ -41,15 +41,18 @@ public class Chord {
     }
 
     /**
-     * Compare chord ids, modulo 2^m.
+     * Retrieve the relative position of b relative to a, modulo 2^m.
      *
-     * @param pre A chord id.
-     * @param suc A chord id.
-     * @return suc - pre modulo 2^m, so that it is always positive. This means that:
-     *         relative(a, b) < relative(a, c) implies a -> b -> c.
+     * In other words, this returns what would be the chord id of b if chord id a
+     * were 0, i.e. the origin of the Chord.
+     *
+     * @param a A chord id.
+     * @param b A chord id.
+     * @return b - a modulo 2^m, so that it is always nonnegative. This means that:
+     *         relative(a, b) < relative(a, c) implies a -> b -> c --> a.
      */
-    public static BigInteger relative(BigInteger pre, BigInteger suc) {
-        BigInteger rel = suc.subtract(pre).mod(modulus);
+    public static BigInteger relative(BigInteger a, BigInteger b) {
+        BigInteger rel = b.subtract(a).mod(modulus);
         while (rel.signum() < 0)
             rel = rel.add(modulus);
         return rel;
@@ -58,7 +61,7 @@ public class Chord {
     /**
      * Compare relative order of chord ids a, b, c.
      *
-     * @return -1 if a --> b --> c, 0 if b == c, and 1 if a --> c --> b.
+     * @return -1 if a --> b --> c --> a; 0 if b == c; 1 if a --> c --> b --> a.
      */
     public static int compare(BigInteger a, BigInteger b, BigInteger c) {
         BigInteger ab = relative(a, b), ac = relative(a, c);
