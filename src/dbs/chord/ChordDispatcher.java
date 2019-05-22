@@ -27,7 +27,17 @@ public final class ChordDispatcher {
 
     public void dispatch(ChordMessage message) {
         ChordMessageKey key = message.getKey();
-        if (key != null)
-            observerMap.get(key).dispatch(message);
+        if (key != null) {
+            ChordObserverList list = observerMap.get(key);
+            System.out.println("Received message with key " + key);
+
+            if (list != null) {
+                list.dispatch(message);
+            } else {
+                System.err.println("Unexpected: no observer list waiting on messages " + key);
+            }
+        } else {
+            System.err.println("Received message with null key");
+        }
     }
 }

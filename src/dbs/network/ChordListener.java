@@ -1,7 +1,7 @@
 package dbs.network;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -46,14 +46,18 @@ public class ChordListener implements Runnable {
         this.output = null;
 
         try {
-            InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
-            this.input = new ObjectInputStream(new BufferedInputStream(in));
             this.output = new ObjectOutputStream(new BufferedOutputStream(out));
+            this.output.flush();
+            System.out.println("A");
+            InputStream in = socket.getInputStream();
+            this.input = new ObjectInputStream(in);
+            System.out.println("B");
             SocketManager.get().setListener(this);
             thread = new Thread(this);
             thread.start();
         } catch (IOException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
             close();
         }
@@ -65,13 +69,17 @@ public class ChordListener implements Runnable {
         this.output = null;
 
         try {
-            InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
-            this.input = new ObjectInputStream(new BufferedInputStream(in));
             this.output = new ObjectOutputStream(new BufferedOutputStream(out));
+            this.output.flush();
+            System.out.println("A2");
+            InputStream in = socket.getInputStream();
+            this.input = new ObjectInputStream(in);
+            System.out.println("B2");
             thread = new Thread(this);
             thread.start();
         } catch (IOException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
             close();
         }
@@ -86,9 +94,15 @@ public class ChordListener implements Runnable {
                 Object object = input.readObject();
                 if (object != null)
                     handleMessage((Serializable) object);
+            } catch (EOFException e) {
+                System.out.println("Socket to " + remoteNode + " closed.");
+                this.close();
+                break;
             } catch (IOException e) {
+                System.err.println(e.getLocalizedMessage());
                 e.printStackTrace();
             } catch (Exception e) {
+                System.err.println(e.getLocalizedMessage());
                 e.printStackTrace();
             }
         }
@@ -111,6 +125,7 @@ public class ChordListener implements Runnable {
             else if (socket != null)
                 socket.close();
         } catch (IOException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -124,8 +139,10 @@ public class ChordListener implements Runnable {
 
         try {
             output.writeObject(object);
+            output.flush();
             return true;
         } catch (IOException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
             return false;
         }

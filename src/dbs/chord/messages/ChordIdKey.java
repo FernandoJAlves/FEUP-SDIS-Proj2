@@ -35,4 +35,9 @@ public class ChordIdKey extends ChordMessageKey {
         ChordIdKey other = (ChordIdKey) obj;
         return Objects.equals(chordId, other.chordId);
     }
+
+    @Override
+    public String toString() {
+        return "ChordIdKey (" + getKind() + ", " + chordId + ")";
+    }
 }

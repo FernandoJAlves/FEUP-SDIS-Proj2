@@ -7,7 +7,7 @@ import dbs.chord.messages.PredecessorUpdate;
 
 public class PredecessorUpdateObserver extends ChordObserver {
 
-    protected PredecessorUpdateObserver() {
+    public PredecessorUpdateObserver() {
         super(new ChordMessageKey("PREDECESSOR_UPDATE"));
     }
 

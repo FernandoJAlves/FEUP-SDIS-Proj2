@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Objects;
 
 /**
  * The basic identifier of a Chord node: contains a chord id (BigInteger) for a
@@ -39,5 +40,27 @@ public final class NodeServerInfo implements Serializable {
 
     public InetSocketAddress getServerAddress() {
         return serverAddress;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chordId, serverAddress);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof NodeServerInfo))
+            return false;
+        NodeServerInfo other = (NodeServerInfo) obj;
+        return Objects.equals(chordId, other.chordId) && Objects.equals(serverAddress, other.serverAddress);
+    }
+
+    @Override
+    public String toString() {
+        return "node(" + chordId + ", " + serverAddress + ")";
     }
 }

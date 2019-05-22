@@ -7,6 +7,11 @@ import dbs.chord.messages.ChordIdKey;
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.Responsible;
 
+/**
+ * One-time observer
+ *
+ * Used when the Node's FixFinger runnable calls fixFinger() on a given index.
+ */
 public class FixFingerObserver extends ChordObserver {
 
     private final int fingerIndex;

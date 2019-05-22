@@ -15,7 +15,7 @@ import dbs.chord.NodeServerInfo;
 public abstract class ChordMessage implements Serializable {
 
     private final ChordMessageKey key;
-    private final NodeServerInfo sender = Node.get().getServerInfo();
+    private final NodeServerInfo sender = Node.get().getSelf();
 
     public ChordMessage(ChordMessageKey key) {
         assert key != null;

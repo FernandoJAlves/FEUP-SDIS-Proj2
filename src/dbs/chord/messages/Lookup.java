@@ -18,10 +18,12 @@ import dbs.chord.NodeServerInfo;
 public final class Lookup extends ChordMessage {
 
     private final NodeServerInfo sourceNode;
+    private final BigInteger chordId;
 
     public Lookup(BigInteger chordId, NodeServerInfo source) {
-        super(new ChordIdKey("LOOKUP", chordId));
+        super(new ChordMessageKey("LOOKUP"));
         this.sourceNode = source;
+        this.chordId = chordId;
     }
 
     public NodeServerInfo getSourceNode() {
@@ -29,6 +31,6 @@ public final class Lookup extends ChordMessage {
     }
 
     public BigInteger getChordId() {
-        return ((ChordIdKey) getKey()).getChordId();
+        return chordId;
     }
 }

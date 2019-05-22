@@ -61,10 +61,26 @@ public class Chord {
     /**
      * Compare relative order of chord ids a, b, c.
      *
+     * @param a,b,c Chord ids.
      * @return -1 if a --> b --> c --> a; 0 if b == c; 1 if a --> c --> b --> a.
      */
     public static int compare(BigInteger a, BigInteger b, BigInteger c) {
         BigInteger ab = relative(a, b), ac = relative(a, c);
         return ab.compareTo(ac);
+    }
+
+    /**
+     * Compute the smallest possible key that is a valid ith finger of the node with
+     * the given chord id.
+     *
+     * @param nodeId The chord id of a node.
+     * @param i      The finger index (starts at 1, ends at m).
+     * @return The chord id of the finger.
+     */
+    public static BigInteger ithFinger(BigInteger nodeId, int i) {
+        BigInteger finger = nodeId.add(BigInteger.TWO.shiftLeft(i - 1)).mod(modulus);
+        while (finger.signum() < 0)
+            finger = finger.add(modulus);
+        return finger;
     }
 }

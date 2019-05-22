@@ -33,8 +33,8 @@ public class SocketManager implements Runnable {
         return new SocketManager(serverAddress, serverFactory, socketFactory);
     }
 
-    SocketManager(InetSocketAddress serverAddress, ServerSocketFactory serverFactory, SocketFactory socketFactory)
-            throws IOException {
+    private SocketManager(InetSocketAddress serverAddress, ServerSocketFactory serverFactory,
+            SocketFactory socketFactory) throws IOException {
         assert instance == null;
         int port = serverAddress.getPort();
         InetAddress address = serverAddress.getAddress();
@@ -44,9 +44,30 @@ public class SocketManager implements Runnable {
         this.factory = socketFactory;
         instance = this;
 
+        dumpServer();
+
         accepterThread = new Thread(this);
         accepterThread.start();
     }
+
+    // public static SocketManager create(ServerSocketFactory serverFactory,
+    // SocketFactory socketFactory)
+    // throws IOException {
+    // return new SocketManager(serverFactory, socketFactory);
+    // }
+
+    // private SocketManager(ServerSocketFactory serverFactory, SocketFactory
+    // socketFactory) throws IOException {
+    // assert instance == null;
+
+    // this.server = serverFactory.createServerSocket();
+    // this.listeners = new ConcurrentHashMap<>();
+    // this.factory = socketFactory;
+    // instance = this;
+
+    // accepterThread = new Thread(this);
+    // accepterThread.start();
+    // }
 
     @Override
     public void run() {
@@ -116,5 +137,11 @@ public class SocketManager implements Runnable {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void dumpServer() {
+        System.out.println("SocketManager's server bound to");
+        System.out.println("  address: " + server.getInetAddress());
+        System.out.println("  port:    " + server.getLocalPort());
     }
 }
