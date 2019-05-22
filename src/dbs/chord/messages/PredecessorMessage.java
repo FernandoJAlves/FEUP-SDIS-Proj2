@@ -2,12 +2,12 @@ package dbs.chord.messages;
 
 import dbs.chord.NodeInfo;
 
-public final class PredecessorResponse extends ChordMessage {
+public final class PredecessorMessage extends ChordMessage {
 
     private final NodeInfo predecessorNode;
 
-    public PredecessorResponse(NodeInfo predecessor) {
-        super(new ChordMessageKey("PREDECESSOR_RESPONSE"));
+    public PredecessorMessage(NodeInfo predecessor) {
+        super(new ChordMessageKey("PREDECESSOR"));
         this.predecessorNode = predecessor;
     }
 

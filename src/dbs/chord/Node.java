@@ -8,15 +8,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import dbs.chord.messages.Lookup;
-import dbs.chord.messages.PredecessorResponse;
-import dbs.chord.messages.PredecessorUpdate;
-import dbs.chord.messages.Responsible;
+import dbs.chord.messages.LookupMessage;
+import dbs.chord.messages.PredecessorMessage;
+import dbs.chord.messages.ResponsibleMessage;
+import dbs.chord.messages.StabilizeMessage;
 import dbs.chord.observers.JoinObserver;
 import dbs.chord.observers.LookupObserver;
-import dbs.chord.observers.PredecessorResponseObserver;
-import dbs.chord.observers.PredecessorUpdateObserver;
+import dbs.chord.observers.PredecessorObserver;
 import dbs.chord.observers.ResponsibleObserver;
+import dbs.chord.observers.StabilizeObserver;
 import dbs.network.SocketManager;
 
 public class Node {
@@ -88,122 +88,108 @@ public class Node {
      * It may resolve to this node immediately.
      */
     public CompletableFuture<NodeInfo> lookup(BigInteger chordId) {
-        Lookup lookup = new Lookup(chordId, self);
+        LookupMessage lookup = new LookupMessage(chordId, self);
         CompletableFuture<NodeInfo> promise = new CompletableFuture<>();
         ResponsibleObserver observer = new ResponsibleObserver(chordId, promise);
 
-        BigInteger selfId = self.getChordId();
-
-        for (int i = Chord.m; i > 0; --i) {
-            NodeInfo next = finger.get(i);
-            if (next == null)
-                continue;
-
-            BigInteger nextId = next.getChordId();
-
-            if (Chord.compare(selfId, nextId, chordId) <= 0) {
-                boolean sent = SocketManager.get().sendMessage(next, lookup);
-
-                // Small race condition adding the observer. ***
-                if (sent) {
-                    ChordDispatcher.get().addObserver(observer);
-                    return promise;
-                }
-            }
+        if (isResponsible(chordId)) {
+            promise.complete(self);
+        } else if (lookupClosestPrecedingFinger(chordId, lookup).equals(self)) {
+            promise.complete(null);
+        } else {
+            ChordDispatcher.get().addObserver(observer);
         }
 
-        promise.complete(self);
         return promise;
     }
 
     /**
-     * Handle generic LOOKUP message.
+     * * HANDLER: Handle generic LOOKUP message.
      */
-    public void handleLookup(Lookup lookup) {
+    public void handleLookup(LookupMessage lookup) {
+        // Are we responsible for this node?
         if (isResponsible(lookup.getChordId())) {
-            Responsible responsible = new Responsible(lookup.getChordId());
+            ResponsibleMessage responsible = new ResponsibleMessage(lookup.getChordId());
             SocketManager.get().sendMessage(lookup.getSender(), responsible);
             return;
         }
 
         BigInteger chordId = lookup.getChordId();
-        BigInteger selfId = self.getChordId();
 
-        for (int i = Chord.m; i > 0; --i) {
-            NodeInfo next = finger.get(i);
-            if (next == null)
-                continue;
-
-            BigInteger nextId = next.getChordId();
-
-            if (Chord.compare(selfId, nextId, chordId) <= 0) {
-                boolean sent = SocketManager.get().sendMessage(next, lookup);
-                if (sent)
-                    return;
-            }
-        }
-
-        System.err.println("Failed to find finger for lookup of " + lookup.getChordId());
+        NodeInfo target = lookupClosestPrecedingFinger(chordId, lookup);
+        if (target.equals(self))
+            System.err.println("Failed to find finger for lookup of " + lookup.getChordId());
     }
 
     /**
-     * Handle GETPREDECESSOR message.
+     * * HANDLER: Handle STABILIZE message.
      */
-    public void handleGetPredecessor(PredecessorUpdate update) {
+    public void handleStabilize(StabilizeMessage update) {
         NodeInfo sender = update.getSender();
 
-        // initial update.
+        // If we don't have a predecessor, accept the given one.
         if (predecessor.get() == null) {
             predecessor.set(sender);
         } else {
-            int c = Chord.compare(predecessor.get().getChordId(), sender.getChordId(), self.getChordId());
-            if (c == -1) {
+            // If we have a predecessor, accept the sender if it is strictly better than the
+            // one we have now.
+            BigInteger predecessorId = predecessor.get().getChordId();
+            BigInteger senderId = sender.getChordId();
+            BigInteger selfId = self.getChordId();
+
+            if (Chord.strictOrdered(predecessorId, senderId, selfId)) {
                 predecessor.set(sender);
             }
         }
-        PredecessorResponse response = new PredecessorResponse(predecessor.get());
+
+        // Regardless of the result, answer the sender our predecessor now.
+        PredecessorMessage response = new PredecessorMessage(predecessor.get());
         SocketManager.get().sendMessage(sender, response);
     }
 
     /**
-     * Handle PREDECESSOR message.
+     * * HANDLER: Handle PREDECESSOR message, response to a STABILIZE message.
      */
-    public void handlePredecessorResponse(PredecessorResponse response) {
+    public void handlePredecessor(PredecessorMessage response) {
+        // If the sender is not our successor, discard and continue.
+        if (!response.getSender().equals(finger.get(1)))
+            return;
+
         NodeInfo candidate = response.getPredecessorNode();
 
         BigInteger candidateId = candidate.getChordId();
         BigInteger selfId = self.getChordId();
         BigInteger successorId = finger.get(1).getChordId();
 
-        if (candidateId.compareTo(selfId) != 0 && Chord.compare(selfId, candidateId, successorId) == -1) {
+        if (Chord.strictOrdered(selfId, candidateId, successorId)) {
             if (SocketManager.get().tryOpen(candidate)) {
                 finger.set(1, candidate);
             } else {
-                System.err.println("Could not connect to chosen candidate " + candidateId);
+                System.err.println("Could not connect to chosen, valid candidate successor " + candidateId);
             }
         }
     }
 
     /**
-     * Handle RESPONSIBLE message for a fix finger lookup.
+     * * HANDLER: Handle RESPONSIBLE message for a fix finger lookup.
      */
-    public void handleFixFinger(Responsible message, int i) {
+    public void handleFixFingerResponse(ResponsibleMessage message, int i) {
         NodeInfo responsible = message.getSender();
         BigInteger responsibleId = responsible.getChordId();
 
         if (SocketManager.get().tryOpen(responsible)) {
-            finger.set(1, responsible);
+            finger.set(i, responsible);
         } else {
-            System.err.println("Could not connect to chosen responsible " + responsibleId + " of finger " + i);
+            System.err.println("Could not connect to chosen, valid responsible " + responsibleId + " of finger " + i);
         }
     }
 
     /**
-     * Handle RESPONSIBLE message for a join lookup.
+     * * HANDLER: Handle RESPONSIBLE message for a join lookup.
      */
-    public void resolveSuccessor(Responsible message) {
+    public void handleJoinResponse(ResponsibleMessage message) {
         finger.set(1, message.getSender());
-        System.out.println("Fuck yea");
+        System.out.println("Successfully joined network, with successor " + message.getSender());
 
         setupObservers();
     }
@@ -218,7 +204,8 @@ public class Node {
     }
 
     /**
-     * Join an existing Chord network through the given remote node's interface.
+     * Try to join an existing Chord network through the given remote node's
+     * interface.
      */
     public void join(NodeInfo remoteNode) {
         System.out.println(self + " joining Chord on remote node " + remoteNode);
@@ -226,21 +213,46 @@ public class Node {
         JoinObserver joiner = new JoinObserver();
         ChordDispatcher.get().addObserver(joiner);
 
-        Lookup lookup = new Lookup(self.getChordId(), self);
+        LookupMessage lookup = new LookupMessage(self.getChordId(), self);
         SocketManager.get().sendMessage(remoteNode, lookup);
     }
 
     /**
-     * Launch observers, prepare thread pool and schedule protocol's periodic tasks.
+     * Send the given lookup to the closest preceding finger to the given chord id.
+     * If no such finger exists or can be contacted, returns self.
+     */
+    private NodeInfo lookupClosestPrecedingFinger(BigInteger chordId, LookupMessage message) {
+        BigInteger selfId = self.getChordId();
+
+        for (int i = Chord.m; i > 0; --i) {
+            NodeInfo fingerNode = finger.get(i);
+            if (fingerNode == null || fingerNode.equals(self))
+                continue;
+
+            BigInteger fingerId = fingerNode.getChordId();
+
+            if (Chord.afterOrdered(selfId, fingerId, chordId)) {
+                boolean sent = SocketManager.get().sendMessage(fingerNode, message);
+
+                if (sent) {
+                    return fingerNode;
+                } else {
+                    finger.set(i, null);
+                }
+            }
+        }
+
+        return self;
+    }
+
+    /**
+     * Launch observers and schedule protocol's periodic tasks.
      */
     private void setupObservers() {
         // Setup permanent observers
-        PredecessorUpdateObserver updater = new PredecessorUpdateObserver();
-        PredecessorResponseObserver responder = new PredecessorResponseObserver();
-        LookupObserver lookuper = new LookupObserver();
-        ChordDispatcher.get().addObserver(updater);
-        ChordDispatcher.get().addObserver(responder);
-        ChordDispatcher.get().addObserver(lookuper);
+        ChordDispatcher.get().addObserver(new StabilizeObserver());
+        ChordDispatcher.get().addObserver(new PredecessorObserver());
+        ChordDispatcher.get().addObserver(new LookupObserver());
 
         // Setup periodic runnables
         pool.scheduleWithFixedDelay(new Stabilize(), 500, STABILIZE_DELAY, TimeUnit.MILLISECONDS);
@@ -251,21 +263,16 @@ public class Node {
     }
 
     /**
-     * NEEDS FIXING
-     *
      * @return true if this Node is responsible for the given chord id.
      */
     private boolean isResponsible(BigInteger chordId) {
-        // Predecessor is null if this node is the first node.
-        if (predecessor.get() == null)
+        // PredecessorMessage is null if this node is the first node.
+        // Assume no predecessor fails for now.
+        NodeInfo predecessorNode = predecessor.get();
+        if (predecessorNode == null)
             return true;
 
-        // Return true if predecessorid -> chordId ==> selfid, which is:
-        // 0 < relative(predecessorid, chordId) <= relative(predecessorid, selfid)
-        BigInteger predecessorid = predecessor.get().getChordId();
-        BigInteger relChord = Chord.relative(predecessorid, chordId);
-        BigInteger relSelf = Chord.relative(predecessorid, self.getChordId());
-        return relChord.signum() > 0 && relChord.compareTo(relSelf) <= 0;
+        return Chord.afterOrdered(predecessorNode.getChordId(), chordId, self.getChordId());
     }
 
     /**
@@ -296,7 +303,7 @@ public class Node {
             assert finger.get(1) != null;
 
             if (!self.equals(finger.get(1))) {
-                PredecessorUpdate update = new PredecessorUpdate();
+                StabilizeMessage update = new StabilizeMessage();
                 SocketManager.get().sendMessage(finger.get(1), update);
             }
         }
@@ -314,7 +321,7 @@ public class Node {
             BigInteger selfId = self.getChordId();
             BigInteger fingerId = Chord.ithFinger(self.getChordId(), fingerIndex);
 
-            Lookup lookup = new Lookup(fingerId, self);
+            LookupMessage lookup = new LookupMessage(fingerId, self);
 
             for (int i = Chord.m; i > 0; --i) {
                 NodeInfo next = finger.get(i);

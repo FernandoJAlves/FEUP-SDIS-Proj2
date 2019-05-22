@@ -9,18 +9,19 @@ import dbs.chord.NodeInfo;
  * responsible for a given key chordId. A LookupObserver is set to await a
  * response of type Responsible for the same chordId.
  *
- * Lookup may originate in Node.lookup(chordId) or be received and forwarded in
- * Node.handleLookup(Lookup), as our implementation of Chord is recursive rather
- * than iterative. This class is not called 'LookupRequest' because the response
- * to this message is not (necessarily) sent by the node that received it, again
- * because our implementation is recursive and not iterative.
+ * LookupMessage may originate in Node.lookup(chordId) or be received and
+ * forwarded in Node.handleLookup(LookupMessage), as our implementation of Chord
+ * is recursive rather than iterative. This class is not called 'LookupRequest'
+ * because the response to this message is not (necessarily) sent by the node
+ * that received it, again because our implementation is recursive and not
+ * iterative.
  */
-public final class Lookup extends ChordMessage {
+public final class LookupMessage extends ChordMessage {
 
     private final NodeInfo sourceNode;
     private final BigInteger chordId;
 
-    public Lookup(BigInteger chordId, NodeInfo source) {
+    public LookupMessage(BigInteger chordId, NodeInfo source) {
         super(new ChordMessageKey("LOOKUP"));
         this.sourceNode = source;
         this.chordId = chordId;

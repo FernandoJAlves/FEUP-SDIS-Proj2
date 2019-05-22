@@ -70,6 +70,33 @@ public class Chord {
     }
 
     /**
+     * @param a,b,c Chord ids.
+     * @return true if a --> b --> c in a non-strict way, i.e. they need not be
+     *         distinct.
+     */
+    public static boolean ordered(BigInteger a, BigInteger b, BigInteger c) {
+        return compare(a, b, c) <= 0;
+    }
+
+    /**
+     * @param a,b,c Chord ids.
+     * @return true if a --> b --> c and a != b, a != c, but possibly b == c.
+     */
+    public static boolean afterOrdered(BigInteger a, BigInteger b, BigInteger c) {
+        BigInteger ab = relative(a, b), ac = relative(a, c);
+        return ab.signum() > 0 && ac.signum() > 0 && ab.compareTo(ac) <= 0;
+    }
+
+    /**
+     * @param a,b,c Chord ids.
+     * @return true if a --> b --> c in a strict way, i.e. all three are distinct.
+     */
+    public static boolean strictOrdered(BigInteger a, BigInteger b, BigInteger c) {
+        BigInteger ab = relative(a, b), ac = relative(a, c);
+        return ab.signum() > 0 && ac.signum() > 0 && ab.compareTo(ac) < 0;
+    }
+
+    /**
      * Compute the smallest possible key that is a valid ith finger of the node with
      * the given chord id.
      *

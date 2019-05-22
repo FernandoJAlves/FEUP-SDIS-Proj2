@@ -18,7 +18,7 @@ public abstract class ChordMessage implements Serializable {
     private final NodeInfo sender = Node.get().getSelf();
 
     public ChordMessage(ChordMessageKey key) {
-        assert key != null;
+        assert key != null && sender != null;
         this.key = key;
     }
 

@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import dbs.chord.Node;
 import dbs.chord.messages.ChordIdKey;
 import dbs.chord.messages.ChordMessage;
-import dbs.chord.messages.Responsible;
+import dbs.chord.messages.ResponsibleMessage;
 
 /**
  * One-time observer
@@ -23,9 +23,11 @@ public class FixFingerObserver extends ChordObserver {
 
     @Override
     public boolean notify(ChordMessage message) {
-        if (!(message instanceof Responsible))
+        if (!(message instanceof ResponsibleMessage)) {
+            System.err.println("FixFingerObserver received message not of type ResponsibleMessage");
             return false;
-        Node.get().handleFixFinger((Responsible) message, fingerIndex);
+        }
+        Node.get().handleFixFingerResponse((ResponsibleMessage) message, fingerIndex);
         return true;
     }
 }
