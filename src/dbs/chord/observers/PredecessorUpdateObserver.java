@@ -15,7 +15,7 @@ public class PredecessorUpdateObserver extends ChordObserver {
     public boolean notify(ChordMessage message) {
         if (!(message instanceof PredecessorUpdate))
             return false;
-        Node.get().predecessorUpdate(message.getSender());
+        Node.get().handlePredecessorUpdate((PredecessorUpdate) message);
         return false;
     }
 

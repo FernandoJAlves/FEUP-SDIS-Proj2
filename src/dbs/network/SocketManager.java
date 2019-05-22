@@ -98,6 +98,13 @@ public class SocketManager implements Runnable {
         listeners.remove(listener.getRemoteNode().getChordId(), listener);
     }
 
+    public boolean tryOpen(NodeServerInfo remoteNode) {
+        if (listeners.containsKey(remoteNode.getChordId()))
+            return true;
+
+        return open(remoteNode) != null;
+    }
+
     private synchronized ChordListener open(NodeServerInfo remoteNode) {
         try {
             InetAddress address = remoteNode.getIp();

@@ -2,7 +2,6 @@ package dbs.network;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -29,7 +28,7 @@ import dbs.chord.messages.ChordMessage;
  * (todo). All requests for Listeners for the given socket address will then
  * point to the new ChordListener.
  */
-public class ChordListener implements Runnable, Closeable {
+public class ChordListener implements Runnable {
 
     private final Socket socket;
     private ObjectInputStream input;
@@ -95,7 +94,6 @@ public class ChordListener implements Runnable, Closeable {
         }
     }
 
-    @Override
     public synchronized void close() {
         if (isClosed())
             return;

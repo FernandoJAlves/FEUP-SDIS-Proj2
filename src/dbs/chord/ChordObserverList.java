@@ -30,4 +30,8 @@ public final class ChordObserverList {
                 iterator.remove();
         }
     }
+
+    public ChordMessageKey getSubscribedKey() {
+        return key;
+    }
 }
