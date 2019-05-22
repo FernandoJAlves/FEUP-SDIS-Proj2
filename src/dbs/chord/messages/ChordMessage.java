@@ -2,6 +2,9 @@ package dbs.chord.messages;
 
 import java.io.Serializable;
 
+import dbs.chord.Node;
+import dbs.chord.NodeServerInfo;
+
 /**
  * Base class of all Chord messages.
  *
@@ -12,10 +15,7 @@ import java.io.Serializable;
 public abstract class ChordMessage implements Serializable {
 
     private final ChordMessageKey key;
-
-    public ChordMessage(String kind) {
-        this.key = new ChordMessageKey(kind);
-    }
+    private final NodeServerInfo sender = Node.get().getServerInfo();
 
     public ChordMessage(ChordMessageKey key) {
         assert key != null;
@@ -28,5 +28,9 @@ public abstract class ChordMessage implements Serializable {
 
     public String getKind() {
         return key.getKind();
+    }
+
+    public NodeServerInfo getSender() {
+        return sender;
     }
 }

@@ -22,12 +22,14 @@ public final class ChordObserverList {
         this.observers.add(observer);
     }
 
-    synchronized void dispatch(ChordMessage message, InetSocketAddress socketAddress) {
+    synchronized void dispatch(ChordMessage message, InetSocketAddress localAddress) {
         Iterator<ChordObserver> iterator = observers.descendingIterator();
+
+        NodeLocalInfo info = new NodeLocalInfo(message.getSender(), localAddress);
 
         while (iterator.hasNext()) {
             ChordObserver observer = iterator.next();
-            if (observer.notify(message, socketAddress))
+            if (observer.notify(message, info))
                 iterator.remove();
         }
     }

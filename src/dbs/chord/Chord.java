@@ -47,12 +47,6 @@ public class Chord {
      * @param suc A chord id.
      * @return suc - pre modulo 2^m, so that it is always positive. This means that:
      *         relative(a, b) < relative(a, c) implies a -> b -> c.
-     *
-     *         a, b, c
-     *
-     *         a --> b --> c relative(a,b, c) relative(a,c)
-     *
-     *         a --> c --> b
      */
     public static BigInteger relative(BigInteger pre, BigInteger suc) {
         BigInteger rel = suc.subtract(pre).mod(modulus);

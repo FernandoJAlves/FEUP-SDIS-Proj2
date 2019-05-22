@@ -4,14 +4,14 @@ import dbs.chord.NodeServerInfo;
 
 public final class PredecessorResponse extends ChordMessage {
 
-    private final NodeServerInfo sourceNode;
+    private final NodeServerInfo predecessorNode;
 
-    public PredecessorResponse(NodeServerInfo source) {
-        super("PREDECESSOR_RESPONSE");
-        this.sourceNode = source;
+    public PredecessorResponse(NodeServerInfo predecessor) {
+        super(new ChordMessageKey("PREDECESSOR_RESPONSE"));
+        this.predecessorNode = predecessor;
     }
 
-    public NodeServerInfo getSourceNode() {
-        return sourceNode;
+    public NodeServerInfo getPredecessorNode() {
+        return predecessorNode;
     }
 }

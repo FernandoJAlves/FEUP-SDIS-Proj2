@@ -3,12 +3,12 @@ package dbs.chord.messages;
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class LookupKey extends ChordMessageKey {
+public class ChordIdKey extends ChordMessageKey {
 
     private final BigInteger chordId;
 
-    public LookupKey(BigInteger chordId) {
-        super("RESPONSIBLE");
+    public ChordIdKey(String kind, BigInteger chordId) {
+        super(kind);
         this.chordId = chordId;
     }
 
@@ -30,14 +30,9 @@ public class LookupKey extends ChordMessageKey {
             return true;
         if (!super.equals(obj))
             return false;
-        if (!(obj instanceof LookupKey))
+        if (!(obj instanceof ChordIdKey))
             return false;
-        LookupKey other = (LookupKey) obj;
+        ChordIdKey other = (ChordIdKey) obj;
         return Objects.equals(chordId, other.chordId);
-    }
-
-    @Override
-    public String toString() {
-        return "LookupKey (key " + chordId + ")";
     }
 }

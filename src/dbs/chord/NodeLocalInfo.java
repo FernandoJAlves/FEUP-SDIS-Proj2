@@ -10,19 +10,35 @@ import java.net.InetSocketAddress;
  */
 public final class NodeLocalInfo {
 
-    public final BigInteger chordid;
+    public final BigInteger chordId;
     public final InetSocketAddress localAddress;
+    public final InetSocketAddress serverAddress;
 
-    public NodeLocalInfo(BigInteger chordid, InetSocketAddress localAddress) {
-        this.chordid = chordid;
+    public NodeLocalInfo(BigInteger chordId, InetSocketAddress localAddress, InetSocketAddress serverAddress) {
+        this.chordId = chordId;
         this.localAddress = localAddress;
+        this.serverAddress = serverAddress;
+    }
+
+    public NodeLocalInfo(NodeServerInfo serverInfo, InetSocketAddress localAddress) {
+        this.chordId = serverInfo.getChordId();
+        this.localAddress = localAddress;
+        this.serverAddress = serverInfo.getServerAddress();
     }
 
     public BigInteger getChordId() {
-        return chordid;
+        return chordId;
     }
 
     public InetSocketAddress getLocalAddress() {
         return localAddress;
+    }
+
+    public InetSocketAddress getServerAddress() {
+        return serverAddress;
+    }
+
+    public NodeServerInfo getServerInfo() {
+        return new NodeServerInfo(chordId, serverAddress);
     }
 }

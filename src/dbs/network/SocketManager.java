@@ -54,23 +54,22 @@ public class SocketManager implements Runnable {
     }
 
     void removeListener(Listener listener) {
-        listeners.remove(listener.getLocalAddress());
-        listener.close();
+        listeners.remove(listener.getLocalAddress(), listener);
     }
 
-    Listener getListener(InetSocketAddress socketAddress) {
-        Listener listener = listeners.get(socketAddress);
-        if (listener != null)
-            return listener;
-
-        return new ChordListener(socketAddress, factory);
-    }
-
-    public boolean sendMessage(InetSocketAddress socketAddress, Serializable message) {
-        Listener listener = getListener(socketAddress);
+    /**
+     * Attempts to send a serializable message to the socket
+     */
+    public boolean sendMessage(InetSocketAddress localAddress, Serializable message) {
+        Listener listener = listeners.get(localAddress);
         if (listener == null)
             return false;
         return listener.sendMessage(message);
+    }
+
+    public boolean open(InetSocketAddress remoteServerAddress) {
+        // ...
+        return false;
     }
 
     @Override

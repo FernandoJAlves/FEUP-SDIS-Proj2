@@ -13,20 +13,20 @@ import java.net.InetSocketAddress;
  *
  * If all nodes use the same consistent hash provided in Chord, then
  *
- * chordid = Chord.consistentHash(serverAddress)
+ * chordId = Chord.consistentHash(serverAddress)
  */
 public final class NodeServerInfo implements Serializable {
 
-    public final BigInteger chordid;
+    public final BigInteger chordId;
     public final InetSocketAddress serverAddress;
 
-    public NodeServerInfo(BigInteger chordid, InetSocketAddress serverAddress) {
-        this.chordid = chordid;
+    public NodeServerInfo(BigInteger chordId, InetSocketAddress serverAddress) {
+        this.chordId = chordId;
         this.serverAddress = serverAddress;
     }
 
     public BigInteger getChordId() {
-        return chordid;
+        return chordId;
     }
 
     public InetAddress getIp() {

@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import javax.net.SocketFactory;
-
 import dbs.chord.messages.ChordMessage;
 import dbs.network.Listener;
 
@@ -16,10 +14,6 @@ import dbs.network.Listener;
 public final class ChordListener extends Listener {
     public ChordListener(Socket socket) {
         super(socket);
-    }
-
-    public ChordListener(InetSocketAddress socketAddress, SocketFactory factory) {
-        super(socketAddress, factory);
     }
 
     @Override

@@ -9,11 +9,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-
-import javax.net.SocketFactory;
 
 /**
  * A Listener is launched on an accepted socket connection OR on a created
@@ -34,28 +31,15 @@ public abstract class Listener implements Runnable, Closeable {
     private Socket socket;
     private ObjectInputStream input;
     private ObjectOutputStream output;
-    private InetSocketAddress socketAddress;
+    private InetSocketAddress localAddress;
     private boolean closed = false;
 
     private Thread thread;
 
     protected Listener(Socket socket) {
-        this.socketAddress = (InetSocketAddress) socket.getLocalSocketAddress();
+        this.localAddress = (InetSocketAddress) socket.getLocalSocketAddress();
         this.socket = socket;
         openStreams();
-    }
-
-    protected Listener(InetSocketAddress socketAddress, SocketFactory factory) {
-        this.socketAddress = null;
-        try {
-            InetAddress address = socketAddress.getAddress();
-            int port = socketAddress.getPort();
-            this.socket = factory.createSocket(address, port);
-            this.socketAddress = (InetSocketAddress) this.socket.getLocalSocketAddress();
-            openStreams();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -76,10 +60,12 @@ public abstract class Listener implements Runnable, Closeable {
     }
 
     protected InetSocketAddress getLocalAddress() {
-        return socketAddress;
+        return localAddress;
     }
 
     synchronized boolean sendMessage(Serializable object) {
+        if (output == null)
+            return false;
         try {
             output.writeObject(object);
             return true;
@@ -95,6 +81,9 @@ public abstract class Listener implements Runnable, Closeable {
             return;
 
         closed = true;
+
+        if (socket != null && localAddress != null)
+            SocketManager.get().removeListener(this);
 
         try {
             if (input != null)
@@ -115,6 +104,9 @@ public abstract class Listener implements Runnable, Closeable {
     }
 
     private void openStreams() {
+        this.input = null;
+        this.output = null;
+
         try {
             InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();

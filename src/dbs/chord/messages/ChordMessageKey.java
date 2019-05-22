@@ -5,7 +5,6 @@ import java.util.Objects;
 
 /**
  * The key of a ChordMessage consists of a simple text string and a Chord id.
- * The chordid may be null if it does not apply for that kind of message.
  */
 public class ChordMessageKey implements Serializable {
 
