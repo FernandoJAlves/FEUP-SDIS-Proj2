@@ -21,11 +21,13 @@ import dbs.network.SocketManager;
 
 public class Node {
 
-    // Milliseconds time unit
+    // Configuration
+    private final int CORE_POOL_SIZE = 2;
     private final int STABILIZE_DELAY = 5000;
     private final int FIXFINGERS_DELAY = 3000;
     private final int CHECK_PREDECESSOR_DELAY = 4000;
     private final int DUMP_DELAY = 10000;
+    private final boolean DUMP_NODE = true;
 
     private final NodeServerInfo self;
     private final AtomicReference<NodeServerInfo> predecessor;
@@ -41,11 +43,14 @@ public class Node {
         return instance;
     }
 
+    /**
+     * Create the Node instance with the given server socket address.
+     */
     public static Node create(InetSocketAddress serverAddress) {
         return new Node(serverAddress);
     }
 
-    Node(InetSocketAddress serverAddress) {
+    private Node(InetSocketAddress serverAddress) {
         assert instance == null;
 
         BigInteger nodeId = Chord.consistentHash(serverAddress);
@@ -56,14 +61,23 @@ public class Node {
         instance = this;
     }
 
+    /**
+     * @return The NodeInfo data for this node.
+     */
     public NodeServerInfo getSelf() {
         return self;
     }
 
+    /**
+     * @return The NodeInfo data for this node's predecessor.
+     */
     public NodeServerInfo getPredecessor() {
         return predecessor.get();
     }
 
+    /**
+     * @return The NodeInfo data for the ith finger of this node.
+     */
     public NodeServerInfo getFinger(int fingerIndex) {
         return finger.get(fingerIndex);
     }
@@ -72,8 +86,7 @@ public class Node {
      * Primary lookup interface. Returns a promise that will eventually resolve to
      * the node responsible for the given chordId, i.e. its successor.
      *
-     * It may resolve to this node immediately, in which case the object's
-     * getLocalAddress() will return null.
+     * It may resolve to this node immediately.
      */
     public CompletableFuture<NodeServerInfo> lookup(BigInteger chordId) {
         Lookup lookup = new Lookup(chordId, self);
@@ -105,7 +118,7 @@ public class Node {
     }
 
     /**
-     * Primary lookup handling.
+     * Handle generic LOOKUP message.
      */
     public void handleLookup(Lookup lookup) {
         if (isResponsible(lookup.getChordId())) {
@@ -134,16 +147,10 @@ public class Node {
         System.err.println("Failed to find finger for lookup of " + lookup.getChordId());
     }
 
-    public void stabilize() {
-        assert finger.get(1) != null;
-
-        if (!self.equals(finger.get(1))) {
-            PredecessorUpdate update = new PredecessorUpdate();
-            SocketManager.get().sendMessage(finger.get(1), update);
-        }
-    }
-
-    public void handlePredecessorUpdate(PredecessorUpdate update) {
+    /**
+     * Handle GETPREDECESSOR message.
+     */
+    public void handleGetPredecessor(PredecessorUpdate update) {
         NodeServerInfo sender = update.getSender();
 
         // initial update.
@@ -159,6 +166,9 @@ public class Node {
         SocketManager.get().sendMessage(sender, response);
     }
 
+    /**
+     * Handle PREDECESSOR message.
+     */
     public void handlePredecessorResponse(PredecessorResponse response) {
         NodeServerInfo candidate = response.getPredecessorNode();
 
@@ -175,33 +185,9 @@ public class Node {
         }
     }
 
-    // 1 --> m
-    public void fixFinger(int fingerIndex) {
-        BigInteger selfId = self.getChordId();
-        BigInteger fingerId = Chord.ithFinger(self.getChordId(), fingerIndex);
-
-        Lookup lookup = new Lookup(fingerId, self);
-
-        for (int i = Chord.m; i > 0; --i) {
-            NodeServerInfo next = finger.get(i);
-            if (next == null)
-                continue;
-
-            BigInteger nextId = next.getChordId();
-            if (nextId.equals(selfId))
-                break;
-
-            if (Chord.compare(selfId, nextId, fingerId) <= 0) {
-                boolean sent = SocketManager.get().sendMessage(next, lookup);
-
-                if (sent)
-                    return;
-            }
-        }
-
-        finger.set(fingerIndex, self);
-    }
-
+    /**
+     * Handle RESPONSIBLE message for a fix finger lookup.
+     */
     public void handleFixFinger(Responsible message, int i) {
         NodeServerInfo responsible = message.getSender();
         BigInteger responsibleId = responsible.getChordId();
@@ -211,6 +197,16 @@ public class Node {
         } else {
             System.err.println("Could not connect to chosen responsible " + responsibleId + " of finger " + i);
         }
+    }
+
+    /**
+     * Handle RESPONSIBLE message for a join lookup.
+     */
+    public void resolveSuccessor(Responsible message) {
+        finger.set(1, message.getSender());
+        System.out.println("Fuck yea");
+
+        setupObservers();
     }
 
     /**
@@ -224,6 +220,9 @@ public class Node {
         setupObservers();
     }
 
+    /**
+     * Join an existing Chord network through the given remote node's interface.
+     */
     public void join(NodeServerInfo remoteNode) {
         System.out.println(self + " joining Chord on remote node " + remoteNode);
 
@@ -236,13 +235,9 @@ public class Node {
         SocketManager.get().sendMessage(remoteNode, lookup);
     }
 
-    public void resolveSuccessor(Responsible message) {
-        finger.set(1, message.getSender());
-        System.out.println("Fuck yea");
-
-        setupObservers();
-    }
-
+    /**
+     * Launch observers, prepare thread pool and schedule protocol's periodic tasks.
+     */
     private void setupObservers() {
         // Setup permanent observers
         PredecessorUpdateObserver updater = new PredecessorUpdateObserver();
@@ -253,12 +248,12 @@ public class Node {
         ChordDispatcher.get().addObserver(lookuper);
 
         // Setup periodic runnables and pool
-        this.stabilize = new Stabilize();
-        this.fixFingers = new FixFingers();
-
-        this.pool = new ScheduledThreadPoolExecutor(2);
-        this.pool.scheduleWithFixedDelay(stabilize, 500, STABILIZE_DELAY, TimeUnit.MILLISECONDS);
-        this.pool.scheduleWithFixedDelay(fixFingers, 500, FIXFINGERS_DELAY, TimeUnit.MILLISECONDS);
+        this.pool = new ScheduledThreadPoolExecutor(CORE_POOL_SIZE);
+        pool.scheduleWithFixedDelay(new Stabilize(), 500, STABILIZE_DELAY, TimeUnit.MILLISECONDS);
+        pool.scheduleWithFixedDelay(new FixFingers(), 500, FIXFINGERS_DELAY, TimeUnit.MILLISECONDS);
+        pool.scheduleWithFixedDelay(new CheckPredecessor(), 500, CHECK_PREDECESSOR_DELAY, TimeUnit.MILLISECONDS);
+        if (DUMP_NODE)
+            pool.scheduleWithFixedDelay(new Dump(), 500, DUMP_DELAY, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -277,14 +272,16 @@ public class Node {
         return relChord.signum() > 0 && relChord.compareTo(relSelf) <= 0;
     }
 
+    /**
+     * Dump this Node's table to standard output.
+     */
     public void dumpNode() {
         System.out.println("Dump of " + self);
         System.out.println(" predecessor: " + (predecessor.get() == null ? "?" : predecessor.get()));
         System.out.println(" successor:   " + (finger.get(1) == null ? "?" : finger.get(1)));
-        // for (int i = 1; i <= Chord.m; ++i) {
-        // System.out.println(" finger[" + i + "]: " + (finger.get(i) == null ? "?" :
-        // finger.get(i)));
-        // }
+        for (int i = 1; i <= Chord.m; ++i) {
+            System.out.println(" finger[" + i + "]: " + (finger.get(i) == null ? "?" : finger.get(i)));
+        }
     }
 
     private class Dump implements Runnable {
@@ -299,7 +296,12 @@ public class Node {
 
         @Override
         public void run() {
-            stabilize();
+            assert finger.get(1) != null;
+
+            if (!self.equals(finger.get(1))) {
+                PredecessorUpdate update = new PredecessorUpdate();
+                SocketManager.get().sendMessage(finger.get(1), update);
+            }
         }
     }
 
@@ -311,7 +313,30 @@ public class Node {
         public void run() {
             if (++fingerIndex == (Chord.m + 1))
                 fingerIndex = 1;
-            fixFinger(fingerIndex);
+
+            BigInteger selfId = self.getChordId();
+            BigInteger fingerId = Chord.ithFinger(self.getChordId(), fingerIndex);
+
+            Lookup lookup = new Lookup(fingerId, self);
+
+            for (int i = Chord.m; i > 0; --i) {
+                NodeServerInfo next = finger.get(i);
+                if (next == null)
+                    continue;
+
+                BigInteger nextId = next.getChordId();
+                if (nextId.equals(selfId))
+                    break;
+
+                if (Chord.compare(selfId, nextId, fingerId) <= 0) {
+                    boolean sent = SocketManager.get().sendMessage(next, lookup);
+
+                    if (sent)
+                        return;
+                }
+            }
+
+            finger.set(fingerIndex, self);
         }
     }
 
@@ -319,7 +344,7 @@ public class Node {
 
         @Override
         public void run() {
-            checkPredecessor();
+            // ...
         }
     }
 }
