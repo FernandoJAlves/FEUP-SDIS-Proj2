@@ -2,7 +2,7 @@ package dbs.chord.messages;
 
 import java.math.BigInteger;
 
-import dbs.chord.NodeInfo;
+import dbs.chord.NodeServerInfo;
 
 /**
  * A responsible (response) is sent in response to a received Lookup (request)
@@ -13,20 +13,20 @@ import dbs.chord.NodeInfo;
  */
 public final class Responsible extends ChordMessage {
 
-    private final NodeInfo sourceNode;
-    private final NodeInfo responsibleNode;
+    private final NodeServerInfo sourceNode;
+    private final NodeServerInfo responsibleNode;
 
-    public Responsible(BigInteger chordid, NodeInfo source, NodeInfo responsible) {
-        super("RESPONSIBLE", chordid);
+    public Responsible(BigInteger chordid, NodeServerInfo source, NodeServerInfo responsible) {
+        super(new LookupKey(chordid));
         this.sourceNode = source;
         this.responsibleNode = responsible;
     }
 
-    public NodeInfo getSourceNode() {
+    public NodeServerInfo getSourceNode() {
         return sourceNode;
     }
 
-    public NodeInfo getResponsible() {
+    public NodeServerInfo getResponsible() {
         return responsibleNode;
     }
 }

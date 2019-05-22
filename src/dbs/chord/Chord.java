@@ -47,11 +47,27 @@ public class Chord {
      * @param suc A chord id.
      * @return suc - pre modulo 2^m, so that it is always positive. This means that:
      *         relative(a, b) < relative(a, c) implies a -> b -> c.
+     *
+     *         a, b, c
+     *
+     *         a --> b --> c relative(a,b, c) relative(a,c)
+     *
+     *         a --> c --> b
      */
     public static BigInteger relative(BigInteger pre, BigInteger suc) {
         BigInteger rel = suc.subtract(pre).mod(modulus);
         while (rel.signum() < 0)
             rel = rel.add(modulus);
         return rel;
+    }
+
+    /**
+     * Compare relative order of chord ids a, b, c.
+     *
+     * @return -1 if a --> b --> c, 0 if b == c, and 1 if a --> c --> b.
+     */
+    public static int compare(BigInteger a, BigInteger b, BigInteger c) {
+        BigInteger ab = relative(a, b), ac = relative(a, c);
+        return ab.compareTo(ac);
     }
 }

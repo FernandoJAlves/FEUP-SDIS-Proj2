@@ -8,9 +8,10 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 public class Node {
 
-    private final NodeInfo self;
-    private final AtomicReference<NodeInfo> predecessor;
-    private final AtomicReferenceArray<NodeInfo> finger;
+    private final NodeServerInfo self;
+    private final NodeLocalInfo localSelf;
+    private final AtomicReference<NodeLocalInfo> predecessor;
+    private final AtomicReferenceArray<NodeLocalInfo> finger;
 
     private static Node instance;
 
@@ -18,13 +19,15 @@ public class Node {
         return instance;
     }
 
-    public static Node create(InetSocketAddress socketAddress) {
-        return new Node(socketAddress);
+    public static Node create(InetSocketAddress serverAddress) {
+        return new Node(serverAddress);
     }
 
-    Node(InetSocketAddress socketAddress) {
+    Node(InetSocketAddress serverAddress) {
         assert instance == null;
-        this.self = new NodeInfo(Chord.consistentHash(socketAddress), socketAddress);
+        BigInteger nodeId = Chord.consistentHash(serverAddress);
+        this.self = new NodeServerInfo(nodeId, serverAddress);
+        this.localSelf = new NodeLocalInfo(nodeId, null);
         this.predecessor = new AtomicReference<>();
         this.finger = new AtomicReferenceArray<>(Chord.m);
         instance = this;
@@ -34,10 +37,10 @@ public class Node {
      * Primary lookup interface. Returns a promise that will eventually resolve to
      * the node responsible for the given chordid, i.e. its successor.
      */
-    public CompletableFuture<NodeInfo> lookup(BigInteger chordid) {
+    public CompletableFuture<NodeLocalInfo> lookup(BigInteger chordid) {
         // If this node is responsible, return ourselves.
         if (isResponsible(chordid)) {
-            return CompletableFuture.completedFuture(self);
+            return CompletableFuture.completedFuture(localSelf);
         }
 
         return null;
@@ -46,24 +49,21 @@ public class Node {
     /**
      *
      */
-    private NodeInfo lookupClosestPreceding(BigInteger chordid) {
-        BigInteger relChord = Chord.relative(self.getId(), chordid);
-
-        // self --> ... next ... --> chordid --> ... --> ... --> self
+    private NodeLocalInfo lookupClosestPreceding(BigInteger chordid) {
+        BigInteger selfId = self.getChordId();
 
         for (int i = Chord.m; i > 0; --i) {
-            NodeInfo next = finger.get(i);
+            NodeLocalInfo next = finger.get(i);
             if (next == null)
                 continue;
 
-            BigInteger nextid = next.getId();
-            BigInteger relNext = Chord.relative(self.getId(), nextid);
+            BigInteger nextId = next.getChordId();
 
-            if (relNext.compareTo(relChord) <= 0)
+            if (Chord.compare(selfId, nextId, chordid) <= 0)
                 return next;
         }
 
-        return self;
+        return localSelf;
     }
 
     /**
@@ -72,9 +72,9 @@ public class Node {
     private boolean isResponsible(BigInteger chordid) {
         // Return true if predecessorid -> chordid ==> selfid, which is:
         // 0 < relative(predecessorid, chordid) <= relative(predecessorid, selfid)
-        BigInteger predecessorid = predecessor.get().getId();
+        BigInteger predecessorid = predecessor.get().getChordId();
         BigInteger relChord = Chord.relative(predecessorid, chordid);
-        BigInteger relSelf = Chord.relative(predecessorid, self.getId());
+        BigInteger relSelf = Chord.relative(predecessorid, self.getChordId());
         return relChord.signum() > 0 && relChord.compareTo(relSelf) <= 0;
     }
 }

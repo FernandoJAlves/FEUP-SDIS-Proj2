@@ -40,17 +40,18 @@ public abstract class Listener implements Runnable, Closeable {
     private Thread thread;
 
     protected Listener(Socket socket) {
-        this.socketAddress = (InetSocketAddress) socket.getRemoteSocketAddress();
+        this.socketAddress = (InetSocketAddress) socket.getLocalSocketAddress();
         this.socket = socket;
         openStreams();
     }
 
-    protected Listener(InetSocketAddress socketAddress, SocketFactory factory) throws IOException {
-        this.socketAddress = socketAddress;
+    protected Listener(InetSocketAddress socketAddress, SocketFactory factory) {
+        this.socketAddress = null;
         try {
             InetAddress address = socketAddress.getAddress();
             int port = socketAddress.getPort();
             this.socket = factory.createSocket(address, port);
+            this.socketAddress = (InetSocketAddress) this.socket.getLocalSocketAddress();
             openStreams();
         } catch (IOException e) {
             e.printStackTrace();
@@ -74,7 +75,7 @@ public abstract class Listener implements Runnable, Closeable {
         }
     }
 
-    protected InetSocketAddress getSocketAddress() {
+    protected InetSocketAddress getLocalAddress() {
         return socketAddress;
     }
 

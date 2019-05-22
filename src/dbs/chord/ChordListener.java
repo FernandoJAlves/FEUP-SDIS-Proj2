@@ -1,6 +1,5 @@
 package dbs.chord;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -19,7 +18,7 @@ public final class ChordListener extends Listener {
         super(socket);
     }
 
-    public ChordListener(InetSocketAddress socketAddress, SocketFactory factory) throws IOException {
+    public ChordListener(InetSocketAddress socketAddress, SocketFactory factory) {
         super(socketAddress, factory);
     }
 
@@ -31,7 +30,7 @@ public final class ChordListener extends Listener {
         }
 
         ChordMessage message = (ChordMessage) object;
-        InetSocketAddress socketAddress = getSocketAddress();
-        ChordDispatcher.get().dispatch(message, socketAddress);
+        InetSocketAddress localAddress = getLocalAddress();
+        ChordDispatcher.get().dispatch(message, localAddress);
     }
 }

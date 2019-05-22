@@ -1,6 +1,5 @@
 package dbs.chord.observers;
 
-import java.math.BigInteger;
 import java.net.InetSocketAddress;
 
 import dbs.chord.messages.ChordMessage;
@@ -10,8 +9,8 @@ public abstract class ChordObserver {
 
     private final ChordMessageKey key;
 
-    protected ChordObserver(String kind, BigInteger chordid) {
-        this.key = new ChordMessageKey(kind, chordid);
+    protected ChordObserver(String kind) {
+        this.key = new ChordMessageKey(kind);
     }
 
     protected ChordObserver(ChordMessageKey key) {

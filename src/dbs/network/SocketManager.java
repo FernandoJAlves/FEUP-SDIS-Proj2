@@ -27,16 +27,16 @@ public class SocketManager implements Runnable {
         return instance;
     }
 
-    public static SocketManager create(InetSocketAddress socketAddress, ServerSocketFactory serverFactory,
+    public static SocketManager create(InetSocketAddress serverAddress, ServerSocketFactory serverFactory,
             SocketFactory socketFactory) throws IOException {
-        return new SocketManager(socketAddress, serverFactory, socketFactory);
+        return new SocketManager(serverAddress, serverFactory, socketFactory);
     }
 
-    SocketManager(InetSocketAddress socketAddress, ServerSocketFactory serverFactory, SocketFactory socketFactory)
+    SocketManager(InetSocketAddress serverAddress, ServerSocketFactory serverFactory, SocketFactory socketFactory)
             throws IOException {
         assert instance == null;
-        int port = socketAddress.getPort();
-        InetAddress address = socketAddress.getAddress();
+        int port = serverAddress.getPort();
+        InetAddress address = serverAddress.getAddress();
 
         this.server = serverFactory.createServerSocket(port, 15, address);
         this.listeners = new ConcurrentHashMap<>();
@@ -48,13 +48,13 @@ public class SocketManager implements Runnable {
     }
 
     void setListener(Listener listener) {
-        Listener old = listeners.put(listener.getSocketAddress(), listener);
+        Listener old = listeners.put(listener.getLocalAddress(), listener);
         if (old != null)
             old.close();
     }
 
     void removeListener(Listener listener) {
-        listeners.remove(listener.getSocketAddress());
+        listeners.remove(listener.getLocalAddress());
         listener.close();
     }
 
@@ -63,12 +63,7 @@ public class SocketManager implements Runnable {
         if (listener != null)
             return listener;
 
-        try {
-            return new ChordListener(socketAddress, factory);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return new ChordListener(socketAddress, factory);
     }
 
     public boolean sendMessage(InetSocketAddress socketAddress, Serializable message) {

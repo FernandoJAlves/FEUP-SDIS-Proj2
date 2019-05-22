@@ -1,7 +1,6 @@
 package dbs.chord.messages;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 /**
  * Base class of all Chord messages.
@@ -14,8 +13,8 @@ public abstract class ChordMessage implements Serializable {
 
     private final ChordMessageKey key;
 
-    public ChordMessage(String kind, BigInteger chordid) {
-        this.key = new ChordMessageKey(kind, chordid);
+    public ChordMessage(String kind) {
+        this.key = new ChordMessageKey(kind);
     }
 
     public ChordMessage(ChordMessageKey key) {
@@ -29,9 +28,5 @@ public abstract class ChordMessage implements Serializable {
 
     public String getKind() {
         return key.getKind();
-    }
-
-    public BigInteger getId() {
-        return key.getId();
     }
 }

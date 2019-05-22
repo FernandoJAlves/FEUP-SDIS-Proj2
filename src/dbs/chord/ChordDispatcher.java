@@ -26,9 +26,9 @@ public final class ChordDispatcher {
         observerMap.computeIfAbsent(key, ChordObserverList::new).add(observer);
     }
 
-    public void dispatch(ChordMessage message, InetSocketAddress socketAddress) {
+    public void dispatch(ChordMessage message, InetSocketAddress localAddress) {
         ChordMessageKey key = message.getKey();
         if (key != null)
-            observerMap.get(key).dispatch(message, socketAddress);
+            observerMap.get(key).dispatch(message, localAddress);
     }
 }

@@ -1,17 +1,17 @@
 package dbs.chord.messages;
 
-import dbs.chord.NodeInfo;
+import dbs.chord.NodeServerInfo;
 
 public final class PredecessorResponse extends ChordMessage {
 
-    private final NodeInfo sourceNode;
+    private final NodeServerInfo sourceNode;
 
-    public PredecessorResponse(NodeInfo source) {
-        super("PREDECESSOR_RESPONSE", null);
+    public PredecessorResponse(NodeServerInfo source) {
+        super("PREDECESSOR_RESPONSE");
         this.sourceNode = source;
     }
 
-    public NodeInfo getSourceNode() {
+    public NodeServerInfo getSourceNode() {
         return sourceNode;
     }
 }
