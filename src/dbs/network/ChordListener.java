@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.net.Socket;
 
 import dbs.chord.ChordDispatcher;
-import dbs.chord.NodeServerInfo;
+import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordMessage;
 
 /**
@@ -35,11 +35,11 @@ public class ChordListener implements Runnable {
     private ObjectOutputStream output;
 
     private boolean closed = false;
-    private NodeServerInfo remoteNode;
+    private NodeInfo remoteNode;
 
     private Thread thread;
 
-    ChordListener(Socket socket, NodeServerInfo remoteNode) {
+    ChordListener(Socket socket, NodeInfo remoteNode) {
         this.remoteNode = remoteNode;
         this.socket = socket;
         this.input = null;
@@ -130,7 +130,7 @@ public class ChordListener implements Runnable {
         }
     }
 
-    NodeServerInfo getRemoteNode() {
+    NodeInfo getRemoteNode() {
         return remoteNode;
     }
 

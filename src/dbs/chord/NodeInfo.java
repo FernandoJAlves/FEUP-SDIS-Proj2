@@ -16,12 +16,12 @@ import java.util.Objects;
  *
  * chordId = Chord.consistentHash(serverAddress)
  */
-public final class NodeServerInfo implements Serializable {
+public final class NodeInfo implements Serializable {
 
     public final BigInteger chordId;
     public final InetSocketAddress serverAddress;
 
-    public NodeServerInfo(BigInteger chordId, InetSocketAddress serverAddress) {
+    public NodeInfo(BigInteger chordId, InetSocketAddress serverAddress) {
         this.chordId = chordId;
         this.serverAddress = serverAddress;
     }
@@ -53,9 +53,9 @@ public final class NodeServerInfo implements Serializable {
             return true;
         if (obj == null)
             return false;
-        if (!(obj instanceof NodeServerInfo))
+        if (!(obj instanceof NodeInfo))
             return false;
-        NodeServerInfo other = (NodeServerInfo) obj;
+        NodeInfo other = (NodeInfo) obj;
         return Objects.equals(chordId, other.chordId) && Objects.equals(serverAddress, other.serverAddress);
     }
 

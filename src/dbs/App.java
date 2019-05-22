@@ -9,7 +9,7 @@ import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 
 import dbs.chord.Node;
-import dbs.chord.NodeServerInfo;
+import dbs.chord.NodeInfo;
 import dbs.network.SocketManager;
 
 public class App {
@@ -38,7 +38,7 @@ public class App {
             InetAddress remoteAddress = InetAddress.getByName(args[4]);
             int remotePort = Integer.parseInt(args[5]);
             InetSocketAddress remoteServerAddress = new InetSocketAddress(remoteAddress, remotePort);
-            Node.get().join(new NodeServerInfo(remoteId, remoteServerAddress));
+            Node.get().join(new NodeInfo(remoteId, remoteServerAddress));
             break;
         case "create":
             Node.get().join();
@@ -49,7 +49,7 @@ public class App {
     static void usage() {
         System.err.println("Usage:");
         System.err.println("App join ADDRESS PORT REMOTE_ID REMOTE_ADDRESS REMOTE_PORT");
-        System.err.println("App create ADDRESS PORT")
+        System.err.println("App create ADDRESS PORT");
         System.exit(0);
     }
 }

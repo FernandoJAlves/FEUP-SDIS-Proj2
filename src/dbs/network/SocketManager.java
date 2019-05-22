@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 
-import dbs.chord.NodeServerInfo;
+import dbs.chord.NodeInfo;
 
 public class SocketManager implements Runnable {
 
@@ -94,7 +94,7 @@ public class SocketManager implements Runnable {
      * Otherwise, attempts to create a new socket connected to the given node's
      * server address.
      */
-    public boolean sendMessage(NodeServerInfo remoteNode, Serializable message) {
+    public boolean sendMessage(NodeInfo remoteNode, Serializable message) {
         ChordListener listener = listeners.get(remoteNode.getChordId());
         if (listener == null) {
             listener = open(remoteNode);
@@ -119,14 +119,14 @@ public class SocketManager implements Runnable {
         listeners.remove(listener.getRemoteNode().getChordId(), listener);
     }
 
-    public boolean tryOpen(NodeServerInfo remoteNode) {
+    public boolean tryOpen(NodeInfo remoteNode) {
         if (listeners.containsKey(remoteNode.getChordId()))
             return true;
 
         return open(remoteNode) != null;
     }
 
-    private synchronized ChordListener open(NodeServerInfo remoteNode) {
+    private synchronized ChordListener open(NodeInfo remoteNode) {
         try {
             InetAddress address = remoteNode.getIp();
             int port = remoteNode.getPort();

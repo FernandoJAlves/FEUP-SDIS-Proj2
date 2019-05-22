@@ -2,7 +2,7 @@ package dbs.chord.messages;
 
 import java.math.BigInteger;
 
-import dbs.chord.NodeServerInfo;
+import dbs.chord.NodeInfo;
 
 /**
  * A lookup (request) is sent from a given source node N to find the chord Node
@@ -17,16 +17,16 @@ import dbs.chord.NodeServerInfo;
  */
 public final class Lookup extends ChordMessage {
 
-    private final NodeServerInfo sourceNode;
+    private final NodeInfo sourceNode;
     private final BigInteger chordId;
 
-    public Lookup(BigInteger chordId, NodeServerInfo source) {
+    public Lookup(BigInteger chordId, NodeInfo source) {
         super(new ChordMessageKey("LOOKUP"));
         this.sourceNode = source;
         this.chordId = chordId;
     }
 
-    public NodeServerInfo getSourceNode() {
+    public NodeInfo getSourceNode() {
         return sourceNode;
     }
 

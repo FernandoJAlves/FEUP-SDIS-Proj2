@@ -22,20 +22,18 @@ import dbs.network.SocketManager;
 public class Node {
 
     // Configuration
-    private final int CORE_POOL_SIZE = 2;
-    private final int STABILIZE_DELAY = 5000;
-    private final int FIXFINGERS_DELAY = 3000;
-    private final int CHECK_PREDECESSOR_DELAY = 4000;
-    private final int DUMP_DELAY = 10000;
-    private final boolean DUMP_NODE = true;
+    private static final int CORE_POOL_SIZE = 2;
+    private static final int STABILIZE_DELAY = 5000;
+    private static final int FIXFINGERS_DELAY = 3000;
+    private static final int CHECK_PREDECESSOR_DELAY = 4000;
+    private static final int DUMP_DELAY = 10000;
+    private static final boolean DUMP_NODE = true;
 
-    private final NodeServerInfo self;
-    private final AtomicReference<NodeServerInfo> predecessor;
-    private final AtomicReferenceArray<NodeServerInfo> finger;
+    private final NodeInfo self;
+    private final AtomicReference<NodeInfo> predecessor;
+    private final AtomicReferenceArray<NodeInfo> finger;
 
-    private Stabilize stabilize;
-    private FixFingers fixFingers;
-    private ScheduledThreadPoolExecutor pool;
+    private final ScheduledThreadPoolExecutor pool;
 
     private static Node instance;
 
@@ -55,30 +53,31 @@ public class Node {
 
         BigInteger nodeId = Chord.consistentHash(serverAddress);
 
-        this.self = new NodeServerInfo(nodeId, serverAddress);
+        this.self = new NodeInfo(nodeId, serverAddress);
         this.predecessor = new AtomicReference<>();
         this.finger = new AtomicReferenceArray<>(Chord.m + 1);
+        this.pool = new ScheduledThreadPoolExecutor(CORE_POOL_SIZE);
         instance = this;
     }
 
     /**
      * @return The NodeInfo data for this node.
      */
-    public NodeServerInfo getSelf() {
+    public NodeInfo getSelf() {
         return self;
     }
 
     /**
      * @return The NodeInfo data for this node's predecessor.
      */
-    public NodeServerInfo getPredecessor() {
+    public NodeInfo getPredecessor() {
         return predecessor.get();
     }
 
     /**
      * @return The NodeInfo data for the ith finger of this node.
      */
-    public NodeServerInfo getFinger(int fingerIndex) {
+    public NodeInfo getFinger(int fingerIndex) {
         return finger.get(fingerIndex);
     }
 
@@ -88,15 +87,15 @@ public class Node {
      *
      * It may resolve to this node immediately.
      */
-    public CompletableFuture<NodeServerInfo> lookup(BigInteger chordId) {
+    public CompletableFuture<NodeInfo> lookup(BigInteger chordId) {
         Lookup lookup = new Lookup(chordId, self);
-        CompletableFuture<NodeServerInfo> promise = new CompletableFuture<>();
+        CompletableFuture<NodeInfo> promise = new CompletableFuture<>();
         ResponsibleObserver observer = new ResponsibleObserver(chordId, promise);
 
         BigInteger selfId = self.getChordId();
 
         for (int i = Chord.m; i > 0; --i) {
-            NodeServerInfo next = finger.get(i);
+            NodeInfo next = finger.get(i);
             if (next == null)
                 continue;
 
@@ -131,7 +130,7 @@ public class Node {
         BigInteger selfId = self.getChordId();
 
         for (int i = Chord.m; i > 0; --i) {
-            NodeServerInfo next = finger.get(i);
+            NodeInfo next = finger.get(i);
             if (next == null)
                 continue;
 
@@ -151,7 +150,7 @@ public class Node {
      * Handle GETPREDECESSOR message.
      */
     public void handleGetPredecessor(PredecessorUpdate update) {
-        NodeServerInfo sender = update.getSender();
+        NodeInfo sender = update.getSender();
 
         // initial update.
         if (predecessor.get() == null) {
@@ -170,7 +169,7 @@ public class Node {
      * Handle PREDECESSOR message.
      */
     public void handlePredecessorResponse(PredecessorResponse response) {
-        NodeServerInfo candidate = response.getPredecessorNode();
+        NodeInfo candidate = response.getPredecessorNode();
 
         BigInteger candidateId = candidate.getChordId();
         BigInteger selfId = self.getChordId();
@@ -189,7 +188,7 @@ public class Node {
      * Handle RESPONSIBLE message for a fix finger lookup.
      */
     public void handleFixFinger(Responsible message, int i) {
-        NodeServerInfo responsible = message.getSender();
+        NodeInfo responsible = message.getSender();
         BigInteger responsibleId = responsible.getChordId();
 
         if (SocketManager.get().tryOpen(responsible)) {
@@ -215,18 +214,14 @@ public class Node {
     public void join() {
         System.out.println(self + " creating new Chord network");
 
-        // predecessor.set(null); // IMPLICIT
-
         setupObservers();
     }
 
     /**
      * Join an existing Chord network through the given remote node's interface.
      */
-    public void join(NodeServerInfo remoteNode) {
+    public void join(NodeInfo remoteNode) {
         System.out.println(self + " joining Chord on remote node " + remoteNode);
-
-        // predecessor.set(null); // IMPLICIT
 
         JoinObserver joiner = new JoinObserver();
         ChordDispatcher.get().addObserver(joiner);
@@ -247,8 +242,7 @@ public class Node {
         ChordDispatcher.get().addObserver(responder);
         ChordDispatcher.get().addObserver(lookuper);
 
-        // Setup periodic runnables and pool
-        this.pool = new ScheduledThreadPoolExecutor(CORE_POOL_SIZE);
+        // Setup periodic runnables
         pool.scheduleWithFixedDelay(new Stabilize(), 500, STABILIZE_DELAY, TimeUnit.MILLISECONDS);
         pool.scheduleWithFixedDelay(new FixFingers(), 500, FIXFINGERS_DELAY, TimeUnit.MILLISECONDS);
         pool.scheduleWithFixedDelay(new CheckPredecessor(), 500, CHECK_PREDECESSOR_DELAY, TimeUnit.MILLISECONDS);
@@ -257,6 +251,8 @@ public class Node {
     }
 
     /**
+     * NEEDS FIXING
+     *
      * @return true if this Node is responsible for the given chord id.
      */
     private boolean isResponsible(BigInteger chordId) {
@@ -276,12 +272,13 @@ public class Node {
      * Dump this Node's table to standard output.
      */
     public void dumpNode() {
-        System.out.println("Dump of " + self);
+        System.out.println("Table of " + self);
         System.out.println(" predecessor: " + (predecessor.get() == null ? "?" : predecessor.get()));
         System.out.println(" successor:   " + (finger.get(1) == null ? "?" : finger.get(1)));
         for (int i = 1; i <= Chord.m; ++i) {
-            System.out.println(" finger[" + i + "]: " + (finger.get(i) == null ? "?" : finger.get(i)));
+            System.out.println("  finger[" + i + "]: " + (finger.get(i) == null ? "?" : finger.get(i)));
         }
+        System.out.println();
     }
 
     private class Dump implements Runnable {
@@ -320,7 +317,7 @@ public class Node {
             Lookup lookup = new Lookup(fingerId, self);
 
             for (int i = Chord.m; i > 0; --i) {
-                NodeServerInfo next = finger.get(i);
+                NodeInfo next = finger.get(i);
                 if (next == null)
                     continue;
 
