@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -12,6 +13,7 @@ import dbs.chord.messages.LookupMessage;
 import dbs.chord.messages.PredecessorMessage;
 import dbs.chord.messages.ResponsibleMessage;
 import dbs.chord.messages.StabilizeMessage;
+import dbs.chord.observers.FixFingerObserver;
 import dbs.chord.observers.JoinObserver;
 import dbs.chord.observers.LookupObserver;
 import dbs.chord.observers.PredecessorObserver;
@@ -22,11 +24,11 @@ import dbs.network.SocketManager;
 public class Node {
 
     // Configuration
-    private static final int CORE_POOL_SIZE = 2;
+    private static final int CORE_POOL_SIZE = 4;
     private static final int STABILIZE_DELAY = 5000;
     private static final int FIXFINGERS_DELAY = 3000;
-    private static final int CHECK_PREDECESSOR_DELAY = 4000;
-    private static final int DUMP_DELAY = 10000;
+    private static final int CHECK_PREDECESSOR_DELAY = 10000;
+    private static final int DUMP_DELAY = 10050;
     private static final boolean DUMP_NODE = true;
 
     private final NodeInfo self;
@@ -116,16 +118,23 @@ public class Node {
 
         BigInteger chordId = lookup.getChordId();
 
-        NodeInfo target = lookupClosestPrecedingFinger(chordId, lookup);
-        if (target.equals(self))
-            System.err.println("Failed to find finger for lookup of " + lookup.getChordId());
+        NodeInfo closest = lookupClosestPrecedingFinger(chordId, lookup);
+        if (self.equals(closest)) {
+            NodeInfo successor = finger.get(1);
+            if (successor != null) {
+                System.out.println("Forwarding lookup to " + successor);
+                SocketManager.get().sendMessage(successor, lookup);
+            } else {
+                System.err.println("Could not forward lookup request " + lookup + " because I do not have a successor");
+            }
+        }
     }
 
     /**
      * * HANDLER: Handle STABILIZE message.
      */
-    public void handleStabilize(StabilizeMessage update) {
-        NodeInfo sender = update.getSender();
+    public void handleStabilize(StabilizeMessage message) {
+        NodeInfo sender = message.getSender();
 
         // If we don't have a predecessor, accept the given one.
         if (predecessor.get() == null) {
@@ -156,12 +165,13 @@ public class Node {
             return;
 
         NodeInfo candidate = response.getPredecessorNode();
-
         BigInteger candidateId = candidate.getChordId();
         BigInteger selfId = self.getChordId();
         BigInteger successorId = finger.get(1).getChordId();
 
-        if (Chord.strictOrdered(selfId, candidateId, successorId)) {
+        if (self.getChordId().equals(candidateId) && predecessor.get() == null) {
+            predecessor.set(response.getSender());
+        } else if (Chord.strictOrdered(selfId, candidateId, successorId)) {
             if (SocketManager.get().tryOpen(candidate)) {
                 finger.set(1, candidate);
             } else {
@@ -173,8 +183,8 @@ public class Node {
     /**
      * * HANDLER: Handle RESPONSIBLE message for a fix finger lookup.
      */
-    public void handleFixFingerResponse(ResponsibleMessage message, int i) {
-        NodeInfo responsible = message.getSender();
+    public void handleFixFingerResponse(ResponsibleMessage response, int i) {
+        NodeInfo responsible = response.getSender();
         BigInteger responsibleId = responsible.getChordId();
 
         if (SocketManager.get().tryOpen(responsible)) {
@@ -187,18 +197,23 @@ public class Node {
     /**
      * * HANDLER: Handle RESPONSIBLE message for a join lookup.
      */
-    public void handleJoinResponse(ResponsibleMessage message) {
-        finger.set(1, message.getSender());
-        System.out.println("Successfully joined network, with successor " + message.getSender());
+    public void handleJoinResponse(ResponsibleMessage response) {
+        NodeInfo responsible = response.getSender();
+        finger.set(1, responsible);
+        System.out.println("Successfully joined network, with successor " + responsible);
 
         setupObservers();
     }
+
+    private AtomicBoolean first = new AtomicBoolean();
 
     /**
      * Create a new Chord network.
      */
     public void join() {
+        first.set(true);
         System.out.println(self + " creating new Chord network");
+        finger.set(1, self);
 
         setupObservers();
     }
@@ -208,6 +223,7 @@ public class Node {
      * interface.
      */
     public void join(NodeInfo remoteNode) {
+        first.set(false);
         System.out.println(self + " joining Chord on remote node " + remoteNode);
 
         JoinObserver joiner = new JoinObserver();
@@ -226,17 +242,18 @@ public class Node {
 
         for (int i = Chord.m; i > 0; --i) {
             NodeInfo fingerNode = finger.get(i);
-            if (fingerNode == null || fingerNode.equals(self))
+            if (fingerNode == null || self.getChordId().equals(fingerNode.getChordId()))
                 continue;
 
             BigInteger fingerId = fingerNode.getChordId();
 
-            if (Chord.afterOrdered(selfId, fingerId, chordId)) {
+            if (Chord.strictOrdered(selfId, fingerId, chordId)) {
                 boolean sent = SocketManager.get().sendMessage(fingerNode, message);
 
                 if (sent) {
                     return fingerNode;
                 } else {
+                    System.err.println("Failed to send message to " + fingerNode);
                     finger.set(i, null);
                 }
             }
@@ -259,7 +276,7 @@ public class Node {
         pool.scheduleWithFixedDelay(new FixFingers(), 500, FIXFINGERS_DELAY, TimeUnit.MILLISECONDS);
         pool.scheduleWithFixedDelay(new CheckPredecessor(), 500, CHECK_PREDECESSOR_DELAY, TimeUnit.MILLISECONDS);
         if (DUMP_NODE)
-            pool.scheduleWithFixedDelay(new Dump(), 500, DUMP_DELAY, TimeUnit.MILLISECONDS);
+            pool.scheduleWithFixedDelay(new Dump(), 650, DUMP_DELAY, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -272,6 +289,9 @@ public class Node {
         if (predecessorNode == null)
             return true;
 
+        // The node should keep better track of which keys it is responsible for,
+        // so this method will improve.
+
         return Chord.afterOrdered(predecessorNode.getChordId(), chordId, self.getChordId());
     }
 
@@ -282,7 +302,7 @@ public class Node {
         System.out.println("Table of " + self);
         System.out.println(" predecessor: " + (predecessor.get() == null ? "?" : predecessor.get()));
         System.out.println(" successor:   " + (finger.get(1) == null ? "?" : finger.get(1)));
-        for (int i = 1; i <= Chord.m; ++i) {
+        for (int i = 2; i <= Chord.m; ++i) {
             System.out.println("  finger[" + i + "]: " + (finger.get(i) == null ? "?" : finger.get(i)));
         }
         System.out.println();
@@ -300,47 +320,52 @@ public class Node {
 
         @Override
         public void run() {
-            assert finger.get(1) != null;
-
-            if (!self.equals(finger.get(1))) {
+            NodeInfo next = finger.get(1);
+            if (next == null) {
+                return;
+            } else if (self.getChordId().equals(next.getChordId())) {
+                next = predecessor.get();
+                if (next != null)
+                    finger.set(1, next);
+            } else {
                 StabilizeMessage update = new StabilizeMessage();
-                SocketManager.get().sendMessage(finger.get(1), update);
+                SocketManager.get().sendMessage(next, update);
             }
         }
     }
 
     private class FixFingers implements Runnable {
 
-        int fingerIndex = 0;
+        int nextIndex = 0;
 
         @Override
         public void run() {
-            if (++fingerIndex == (Chord.m + 1))
-                fingerIndex = 1;
+            if (++nextIndex > Chord.m)
+                nextIndex = 1;
 
             BigInteger selfId = self.getChordId();
-            BigInteger fingerId = Chord.ithFinger(self.getChordId(), fingerIndex);
+            BigInteger fingerId = Chord.ithFinger(self.getChordId(), nextIndex);
+            System.out.println("Looking for ith finger " + nextIndex + " " + fingerId);
 
-            LookupMessage lookup = new LookupMessage(fingerId, self);
+            NodeInfo successor = finger.get(1);
+            if (successor != null) {
+                BigInteger successorId = successor.getChordId();
 
-            for (int i = Chord.m; i > 0; --i) {
-                NodeInfo next = finger.get(i);
-                if (next == null)
-                    continue;
-
-                BigInteger nextId = next.getChordId();
-                if (nextId.equals(selfId))
-                    break;
-
-                if (Chord.compare(selfId, nextId, fingerId) <= 0) {
-                    boolean sent = SocketManager.get().sendMessage(next, lookup);
-
-                    if (sent)
-                        return;
+                if (Chord.afterOrdered(selfId, fingerId, successorId)) {
+                    finger.set(nextIndex, successor);
+                    return;
                 }
             }
 
-            finger.set(fingerIndex, self);
+            LookupMessage lookup = new LookupMessage(fingerId, self);
+            FixFingerObserver observer = new FixFingerObserver(fingerId, nextIndex);
+            NodeInfo closest = lookupClosestPrecedingFinger(fingerId, lookup);
+
+            if (!self.getChordId().equals(closest.getChordId())) {
+                ChordDispatcher.get().addObserver(observer);
+            } else {
+                finger.set(nextIndex, self); // ?
+            }
         }
     }
 

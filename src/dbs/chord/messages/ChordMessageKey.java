@@ -38,6 +38,6 @@ public class ChordMessageKey implements Serializable {
 
     @Override
     public String toString() {
-        return "ChordMessage (key " + kind + ")";
+        return kind;
     }
 }

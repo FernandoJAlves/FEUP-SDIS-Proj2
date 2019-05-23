@@ -14,4 +14,9 @@ public final class ResponsibleMessage extends ChordMessage {
     public ResponsibleMessage(BigInteger chordId) {
         super(new ChordIdKey("RESPONSIBLE", chordId));
     }
+
+    @Override
+    public String toString() {
+        return "RESPONSIBLE(" + getKey() + ")";
+    }
 }

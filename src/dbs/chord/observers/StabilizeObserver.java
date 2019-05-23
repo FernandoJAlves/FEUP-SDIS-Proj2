@@ -8,7 +8,7 @@ import dbs.chord.messages.StabilizeMessage;
 public class StabilizeObserver extends ChordObserver {
 
     public StabilizeObserver() {
-        super(new ChordMessageKey("PREDECESSOR_UPDATE"));
+        super(new ChordMessageKey("STABILIZE"));
     }
 
     @Override
@@ -17,7 +17,7 @@ public class StabilizeObserver extends ChordObserver {
             System.err.println("StabilizeObserver received message not of type StabilizeMessage");
             return false;
         }
-        Node.get().handlePredecessorUpdate((StabilizeMessage) message);
+        Node.get().handleStabilize((StabilizeMessage) message);
         return false;
     }
 

@@ -61,6 +61,6 @@ public final class NodeInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "node(" + chordId + ", " + serverAddress + ")";
+        return "node(" + chordId + " " + Chord.percentStr(chordId) + ", " + serverAddress + ")";
     }
 }

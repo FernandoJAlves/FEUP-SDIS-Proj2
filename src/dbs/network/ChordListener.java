@@ -3,12 +3,11 @@ package dbs.network;
 import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.net.SocketException;
 
 import dbs.chord.ChordDispatcher;
 import dbs.chord.NodeInfo;
@@ -34,55 +33,65 @@ public class ChordListener implements Runnable {
     private ObjectInputStream input;
     private ObjectOutputStream output;
 
-    private boolean closed = false;
+    private boolean closed = false, connected = false;
     private NodeInfo remoteNode;
 
     private Thread thread;
 
+    /**
+     * Open streams and setup communications on an already opened and connected
+     * Socket, which has been opened by our SocketManager for the given remoteNode.
+     */
     ChordListener(Socket socket, NodeInfo remoteNode) {
-        this.remoteNode = remoteNode;
         this.socket = socket;
         this.input = null;
         this.output = null;
 
         try {
-            OutputStream out = socket.getOutputStream();
-            this.output = new ObjectOutputStream(new BufferedOutputStream(out));
+            this.output = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             this.output.flush();
-            System.out.println("A");
-            InputStream in = socket.getInputStream();
-            this.input = new ObjectInputStream(in);
-            System.out.println("B");
-            SocketManager.get().setListener(this);
-            thread = new Thread(this);
-            thread.start();
+            this.input = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             close();
+            return;
         }
+
+        this.remoteNode = remoteNode;
+        this.connected = true;
+        SocketManager.get().setListener(this);
+        this.thread = new Thread(this);
+        this.thread.start();
     }
 
+    /**
+     * Open streams and setup communications on an already opened and connected
+     * Socket, which has been accepted by our SocketManager and has not yet been
+     * identified.
+     */
     ChordListener(Socket socket) {
         this.socket = socket;
         this.input = null;
         this.output = null;
 
         try {
-            OutputStream out = socket.getOutputStream();
-            this.output = new ObjectOutputStream(new BufferedOutputStream(out));
+            this.output = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             this.output.flush();
-            System.out.println("A2");
-            InputStream in = socket.getInputStream();
-            this.input = new ObjectInputStream(in);
-            System.out.println("B2");
-            thread = new Thread(this);
-            thread.start();
+            this.input = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             close();
+            return;
         }
+
+        this.thread = new Thread(this);
+        this.thread.start();
+    }
+
+    boolean isConnected() {
+        return true;
     }
 
     @Override
@@ -94,35 +103,30 @@ public class ChordListener implements Runnable {
                 Object object = input.readObject();
                 if (object != null)
                     handleMessage((Serializable) object);
-            } catch (EOFException e) {
-                System.out.println("Socket to " + remoteNode + " closed.");
-                this.close();
-                break;
-            } catch (IOException e) {
-                System.err.println(e.getLocalizedMessage());
-                e.printStackTrace();
-            } catch (Exception e) {
-                System.err.println(e.getLocalizedMessage());
-                e.printStackTrace();
+            } catch (IOException | ClassNotFoundException e) {
+                close();
+                return;
             }
         }
     }
 
     public synchronized void close() {
+        if (remoteNode != null && connected) {
+            System.out.println("Socket to " + remoteNode + " closed().");
+            SocketManager.get().removeListener(this);
+        }
+
         if (isClosed())
             return;
 
         closed = true;
 
-        if (socket != null && remoteNode != null)
-            SocketManager.get().removeListener(this);
-
         try {
-            if (input != null)
+            if (input != null && !socket.isInputShutdown())
                 input.close();
-            else if (output != null)
+            else if (output != null && !socket.isOutputShutdown())
                 output.close();
-            else if (socket != null)
+            else if (socket != null && !socket.isClosed())
                 socket.close();
         } catch (IOException e) {
             System.err.println(e.getMessage());
@@ -134,13 +138,17 @@ public class ChordListener implements Runnable {
         return remoteNode;
     }
 
-    synchronized boolean sendMessage(Serializable object) {
+    synchronized boolean sendMessage(ChordMessage message) {
         assert remoteNode != null && output != null;
 
         try {
-            output.writeObject(object);
+            output.writeObject(message);
             output.flush();
             return true;
+        } catch (EOFException | SocketException e) {
+            e.printStackTrace();
+            close();
+            return false;
         } catch (IOException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -155,15 +163,20 @@ public class ChordListener implements Runnable {
         }
 
         ChordMessage message = (ChordMessage) object;
+        System.out.println("Received message " + message + " from " + remoteNode);
 
         if (remoteNode == null) {
             remoteNode = message.getSender();
+            connected = true;
             SocketManager.get().setListener(this);
         }
 
         ChordDispatcher.get().dispatch(message);
     }
 
+    /**
+     * @return true if this listener's socket has already been closed.
+     */
     private final boolean isClosed() {
         return socket.isClosed() || closed;
     }

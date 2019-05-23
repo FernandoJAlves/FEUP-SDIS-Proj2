@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordIdKey;
 import dbs.chord.messages.ChordMessage;
-import dbs.chord.messages.Responsible;
+import dbs.chord.messages.ResponsibleMessage;
 
 public final class ResponsibleObserver extends ChordObserver {
 
@@ -19,7 +19,7 @@ public final class ResponsibleObserver extends ChordObserver {
 
     @Override
     public boolean notify(ChordMessage message) {
-        if (!(message instanceof Responsible))
+        if (!(message instanceof ResponsibleMessage))
             return false;
         this.future.complete(message.getSender());
         return true;

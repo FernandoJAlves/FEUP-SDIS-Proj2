@@ -3,6 +3,8 @@ package dbs.chord.messages;
 import java.math.BigInteger;
 import java.util.Objects;
 
+import dbs.chord.Chord;
+
 public class ChordIdKey extends ChordMessageKey {
 
     private final BigInteger chordId;
@@ -38,6 +40,6 @@ public class ChordIdKey extends ChordMessageKey {
 
     @Override
     public String toString() {
-        return "ChordIdKey (" + getKind() + ", " + chordId + ")";
+        return "message(" + getKind() + ", " + chordId + " " + Chord.percentStr(chordId) + ")";
     }
 }

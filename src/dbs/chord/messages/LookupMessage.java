@@ -34,4 +34,9 @@ public final class LookupMessage extends ChordMessage {
     public BigInteger getChordId() {
         return chordId;
     }
+
+    @Override
+    public String toString() {
+        return "LOOKUP(" + chordId + ", " + sourceNode + ", " + getSender() + ")";
+    }
 }

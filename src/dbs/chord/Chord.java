@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class Chord {
 
-    public static final int m = 16;
+    public static final int m = 7;
     public static final BigInteger modulus = BigInteger.ONE.shiftLeft(m);
 
     /**
@@ -61,7 +61,7 @@ public class Chord {
     /**
      * Compare relative order of chord ids a, b, c.
      *
-     * @param a,b,c Chord ids.
+     * @param a,b,c chord ids.
      * @return -1 if a --> b --> c --> a; 0 if b == c; 1 if a --> c --> b --> a.
      */
     public static int compare(BigInteger a, BigInteger b, BigInteger c) {
@@ -70,7 +70,7 @@ public class Chord {
     }
 
     /**
-     * @param a,b,c Chord ids.
+     * @param a,b,c chord ids.
      * @return true if a --> b --> c in a non-strict way, i.e. they need not be
      *         distinct.
      */
@@ -79,7 +79,7 @@ public class Chord {
     }
 
     /**
-     * @param a,b,c Chord ids.
+     * @param a,b,c chord ids.
      * @return true if a --> b --> c and a != b, a != c, but possibly b == c.
      */
     public static boolean afterOrdered(BigInteger a, BigInteger b, BigInteger c) {
@@ -88,7 +88,7 @@ public class Chord {
     }
 
     /**
-     * @param a,b,c Chord ids.
+     * @param a,b,c chord ids.
      * @return true if a --> b --> c in a strict way, i.e. all three are distinct.
      */
     public static boolean strictOrdered(BigInteger a, BigInteger b, BigInteger c) {
@@ -105,9 +105,48 @@ public class Chord {
      * @return The chord id of the finger.
      */
     public static BigInteger ithFinger(BigInteger nodeId, int i) {
-        BigInteger finger = nodeId.add(BigInteger.TWO.shiftLeft(i - 1)).mod(modulus);
+        assert i > 0;
+        BigInteger finger = nodeId.add(BigInteger.ONE.shiftLeft(i - 1)).mod(modulus);
         while (finger.signum() < 0)
             finger = finger.add(modulus);
         return finger;
+    }
+
+    /**
+     * Compute the relative position of the node on the chord as a percentage
+     * distance from the origin id 0.
+     *
+     * @param id A chord id.
+     * @return chordId / 2^m as double.
+     */
+    public static double percent(BigInteger id) {
+        return id.doubleValue() / modulus.doubleValue();
+    }
+
+    /**
+     * Compute the relative distance of two nodes as a percentage distance of the
+     * length of the entire chord.
+     *
+     * @param a,b chord ids.
+     * @return (b - a) / 2^m as double.
+     */
+    public static double percent(BigInteger a, BigInteger b) {
+        return percent(relative(a, b));
+    }
+
+    /**
+     * @param id a chord id.
+     * @return percent(chordId) as a String %.
+     */
+    public static String percentStr(BigInteger id) {
+        return String.format("%.0f%%", percent(id) * 100.0);
+    }
+
+    /**
+     * @param a,b chord ids.
+     * @return percent(a,b) as a String %.
+     */
+    public static String percentStr(BigInteger a, BigInteger b) {
+        return String.format("%.0f%%", percent(a, b) * 100.0);
     }
 }

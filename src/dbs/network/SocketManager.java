@@ -1,7 +1,6 @@
 package dbs.network;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -13,6 +12,7 @@ import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 
 import dbs.chord.NodeInfo;
+import dbs.chord.messages.ChordMessage;
 
 public class SocketManager implements Runnable {
 
@@ -48,6 +48,7 @@ public class SocketManager implements Runnable {
 
         accepterThread = new Thread(this);
         accepterThread.start();
+        new Thread(new Dump()).start();
     }
 
     // public static SocketManager create(ServerSocketFactory serverFactory,
@@ -94,12 +95,19 @@ public class SocketManager implements Runnable {
      * Otherwise, attempts to create a new socket connected to the given node's
      * server address.
      */
-    public boolean sendMessage(NodeInfo remoteNode, Serializable message) {
+    public boolean sendMessage(NodeInfo remoteNode, ChordMessage message) {
+        System.out.println("Sending message " + message + " to " + remoteNode);
+
         ChordListener listener = listeners.get(remoteNode.getChordId());
         if (listener == null) {
+            System.out.println("No listener for " + remoteNode);
             listener = open(remoteNode);
-            if (listener == null)
+            if (listener == null) {
+                System.out.println("Could not open socket for remote node " + remoteNode);
                 return false;
+            } else {
+                System.out.println("Opened socket for remote node " + remoteNode);
+            }
         }
         return listener.sendMessage(message);
     }
@@ -111,7 +119,7 @@ public class SocketManager implements Runnable {
      */
     void setListener(ChordListener listener) {
         ChordListener old = listeners.put(listener.getRemoteNode().getChordId(), listener);
-        if (old != null)
+        if (old != null && old != listener)
             old.close();
     }
 
@@ -143,5 +151,26 @@ public class SocketManager implements Runnable {
         System.out.println("SocketManager's server bound to");
         System.out.println("  address: " + server.getInetAddress());
         System.out.println("  port:    " + server.getLocalPort());
+        for (BigInteger chordId : listeners.keySet()) {
+            ChordListener listener = listeners.get(chordId);
+            System.out.println("listener on node " + chordId);
+            System.out.println("connected:" + listener.isConnected() + ", " + listener.getRemoteNode());
+        }
+    }
+
+    private class Dump implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                dumpServer();
+
+                try {
+                    Thread.sleep(10000, 0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
