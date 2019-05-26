@@ -11,14 +11,10 @@ import dbs.chord.Chord;
  *
  * ResponsibleMessage message may originate in Node.handleLookup(Lookup).
  */
-public final class ResponsibleMessage extends ChordMessage {
+public final class ResponsibleMessage extends ChordIdMessage {
 
     public ResponsibleMessage(BigInteger chordId) {
-        super(new ChordIdKey("RESPONSIBLE", chordId));
-    }
-
-    public BigInteger getChordId() {
-        return ((ChordIdKey) getKey()).getChordId();
+        super("RESPONSIBLE", chordId);
     }
 
     @Override

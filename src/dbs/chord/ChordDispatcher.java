@@ -68,18 +68,6 @@ public final class ChordDispatcher {
 
     public void dispatch(ChordMessage message) {
         ChordMessageKey key = message.getKey();
-        ChordObserverList list = observerMap.get(key);
-
-        if (list != null) {
-            list.dispatch(message);
-        } else {
-            System.err.println("Unexpected: no observer list waiting on messages " + key);
-            dumpObservers();
-        }
-    }
-
-    void dumpObservers() {
-        for (ChordObserverList list : observerMap.values())
-            list.dump();
+        observerMap.computeIfAbsent(key, ChordObserverList::new).dispatch(message);
     }
 }

@@ -23,6 +23,11 @@ public abstract class ChordMessage implements Serializable {
         this.key = key;
     }
 
+    public ChordMessage(String kind) {
+        assert kind != null && sender != null;
+        this.key = new ChordMessageKey(kind);
+    }
+
     public ChordMessageKey getKey() {
         return key;
     }

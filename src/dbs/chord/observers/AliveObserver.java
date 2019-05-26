@@ -3,18 +3,24 @@ package dbs.chord.observers;
 import static dbs.chord.Chord.CHECK_PREDECESSOR_WAIT;
 
 import dbs.chord.Node;
+import dbs.chord.NodeInfo;
 import dbs.chord.messages.AliveMessage;
 import dbs.chord.messages.ChordMessage;
 
 /**
- * Permanent observer.
- *
  * Bread-and-butter observer that receives is alive responses (liveness verifications).
  */
 public final class AliveObserver extends TimeoutObserver {
 
-    public AliveObserver() {
+    private final NodeInfo waitedNode;
+
+    public AliveObserver(NodeInfo waitedNode) {
         super("ISALIVE", CHECK_PREDECESSOR_WAIT);
+        this.waitedNode = waitedNode;
+    }
+
+    public NodeInfo getPredecessorNode() {
+        return waitedNode;
     }
 
     @Override
@@ -26,7 +32,7 @@ public final class AliveObserver extends TimeoutObserver {
     @Override
     public void timeout() {
         System.out.println("Did not receive response from predecessor node");
-        Node.get().handleIsAliveTimeout();
+        Node.get().handleIsAliveTimeout(waitedNode);
     }
 
     @Override

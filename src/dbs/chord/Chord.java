@@ -15,7 +15,7 @@ public class Chord {
     // Node config: These may vary between nodes.
     public static final int NODE_TASKS_POOL_SIZE = 2;
     public static final int STABILIZE_PERIOD = 4000;
-    public static final int FIXFINGERS_PERIOD = 2000;
+    public static final int FIXFINGERS_PERIOD = 30000 / m;
     public static final int CHECK_PREDECESSOR_PERIOD = 5000;
     public static final int NODE_DUMP_PERIOD = 12000;
     public static final boolean NODE_DUMP_TABLE = true;
@@ -27,6 +27,9 @@ public class Chord {
 
     // Dispatcher config: These may vary between nodes.
     public static final int DISPATCHER_TASKS_POOL_SIZE = 4;
+
+    // Printing config
+    private static final int percentPrecision = 2;
 
     /**
      * Consistent hash, ugly implementation using a cryptographic hash function on
@@ -151,12 +154,14 @@ public class Chord {
         return percent(relative(a, b));
     }
 
+    private static final String percentFormat = "%." + percentPrecision + "f%%";
+
     /**
      * @param id a chord id.
      * @return percent(chordId) as a String %.
      */
     public static String percentStr(BigInteger id) {
-        return String.format("%.1f%%", percent(id) * 100.0);
+        return String.format(percentFormat, percent(id) * 100.0);
     }
 
     /**
@@ -164,6 +169,10 @@ public class Chord {
      * @return percent(a,b) as a String %.
      */
     public static String percentStr(BigInteger a, BigInteger b) {
-        return String.format("%.1f%%", percent(a, b) * 100.0);
+        return String.format(percentFormat, percent(a, b) * 100.0);
+    }
+
+    public static String print(NodeInfo node) {
+        return node == null ? "?" : node.toString();
     }
 }

@@ -23,7 +23,7 @@ public final class LookupMessage extends ChordMessage {
     private final BigInteger chordId;
 
     public LookupMessage(BigInteger chordId, NodeInfo source) {
-        super(new ChordMessageKey("LOOKUP"));
+        super("LOOKUP");
         this.sourceNode = source;
         this.chordId = chordId;
     }

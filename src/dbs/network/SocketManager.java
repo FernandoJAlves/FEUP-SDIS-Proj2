@@ -2,6 +2,7 @@ package dbs.network;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 
+import dbs.chord.ChordLogger;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordMessage;
 
@@ -46,47 +48,8 @@ public class SocketManager implements Runnable {
 
         dumpServer();
 
-        accepterThread = new Thread(this);
+        accepterThread = new Thread(new Accepter());
         accepterThread.start();
-    }
-
-    // public static SocketManager create(ServerSocketFactory serverFactory,
-    // SocketFactory socketFactory)
-    // throws IOException {
-    // return new SocketManager(serverFactory, socketFactory);
-    // }
-
-    // private SocketManager(ServerSocketFactory serverFactory, SocketFactory
-    // socketFactory) throws IOException {
-    // assert instance == null;
-
-    // this.server = serverFactory.createServerSocket();
-    // this.listeners = new ConcurrentHashMap<>();
-    // this.factory = socketFactory;
-    // instance = this;
-
-    // accepterThread = new Thread(this);
-    // accepterThread.start();
-    // }
-
-    @Override
-    public void run() {
-        while (true) {
-            if (server.isClosed())
-                break;
-            try {
-                Socket socket = server.accept();
-                if (socket == null)
-                    continue;
-                new ChordListener(socket);
-            } catch (IOException e) {
-                e.printStackTrace();
-                if (server.isClosed())
-                    break;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -95,20 +58,20 @@ public class SocketManager implements Runnable {
      * server address.
      */
     public boolean sendMessage(NodeInfo remoteNode, ChordMessage message) {
-        System.out.println("\u001B[32mOUT " + message + " to " + remoteNode.shortStr() + "\u001B[0m");
-
         ChordListener listener = listeners.get(remoteNode.getChordId());
         if (listener == null) {
-            System.out.println("No listener for " + remoteNode.shortStr());
             listener = open(remoteNode);
             if (listener == null) {
-                System.out.println("Could not open socket for remote node " + remoteNode.shortStr());
+                ChordLogger.logSocket("Could not open socket for remote node " + remoteNode.shortStr());
                 return false;
             } else {
-                System.out.println("Opened socket for remote node " + remoteNode.shortStr());
+                ChordLogger.logSocket("Opened socket for remote node " + remoteNode.shortStr());
             }
         }
-        return listener.sendMessage(message);
+        boolean success = listener.sendMessage(message);
+        if (!success)
+            removeListener(listener);
+        return success;
     }
 
     /**
@@ -119,7 +82,7 @@ public class SocketManager implements Runnable {
     void setListener(ChordListener listener) {
         ChordListener old = listeners.put(listener.getRemoteNode().getChordId(), listener);
         if (old != null && old != listener)
-            old.close();
+            old.finish();
     }
 
     void removeListener(ChordListener listener) {
@@ -134,16 +97,20 @@ public class SocketManager implements Runnable {
     }
 
     private synchronized ChordListener open(NodeInfo remoteNode) {
+        InetAddress address = remoteNode.getIp();
+        int port = remoteNode.getPort();
+
         try {
-            InetAddress address = remoteNode.getIp();
-            int port = remoteNode.getPort();
             Socket socket = factory.createSocket(address, port);
             ChordListener listener = new ChordListener(socket, remoteNode);
             return listener;
+        } catch (ConnectException e) {
+            ChordLogger.logSocket("Failed to connect to socket " + address + ":" + port);
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            ChordLogger.socketError(e);
         }
+
+        return null;
     }
 
     public void dumpServer() {
@@ -154,6 +121,29 @@ public class SocketManager implements Runnable {
             ChordListener listener = listeners.get(chordId);
             System.out.println("listener on node " + chordId);
             System.out.println("connected:" + listener.isConnected() + ", " + listener.getRemoteNode());
+        }
+    }
+
+    private class Accepter implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                if (server.isClosed())
+                    break;
+                try {
+                    Socket socket = server.accept();
+                    if (socket == null)
+                        continue;
+                    new ChordListener(socket);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    if (server.isClosed())
+                        break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

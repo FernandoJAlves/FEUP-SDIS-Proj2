@@ -7,7 +7,7 @@ public final class PredecessorMessage extends ChordMessage {
     private final NodeInfo predecessorNode;
 
     public PredecessorMessage(NodeInfo predecessor) {
-        super(new ChordMessageKey("PREDECESSOR"));
+        super("PREDECESSOR");
         this.predecessorNode = predecessor;
     }
 
@@ -17,6 +17,6 @@ public final class PredecessorMessage extends ChordMessage {
 
     @Override
     public String toString() {
-        return "PREDECESSOR(" + predecessorNode.shortStr() + " of " + getSender().shortStr() + ")";
+        return "PREDECESSOR [" + predecessorNode.shortStr() + "]";
     }
 }

@@ -37,6 +37,11 @@ public final class ChordObserverList {
     synchronized void dispatch(ChordMessage message) {
         Iterator<ChordObserver> iterator = observers.iterator();
 
+        if (!iterator.hasNext()) {
+            ChordLogger.internal("Unexpected: no observers waiting on messages " + key);
+            return;
+        }
+
         while (iterator.hasNext()) {
             ChordObserver observer = iterator.next();
 
