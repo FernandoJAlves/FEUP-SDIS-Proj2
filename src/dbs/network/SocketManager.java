@@ -16,7 +16,7 @@ import dbs.chord.ChordLogger;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordMessage;
 
-public class SocketManager implements Runnable {
+public class SocketManager {
 
     private final ConcurrentHashMap<BigInteger, ChordListener> listeners;
     private final ServerSocket server;
