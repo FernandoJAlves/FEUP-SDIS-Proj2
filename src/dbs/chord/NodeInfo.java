@@ -42,6 +42,15 @@ public final class NodeInfo implements Serializable {
         return serverAddress;
     }
 
+    public String shortStr() {
+        return "node(" + Chord.percentStr(chordId) + ", " + serverAddress.getPort() + ")";
+    }
+
+    @Override
+    public String toString() {
+        return "node(" + Chord.percentStr(chordId) + ", " + serverAddress + ")";
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(chordId, serverAddress);
@@ -57,10 +66,5 @@ public final class NodeInfo implements Serializable {
             return false;
         NodeInfo other = (NodeInfo) obj;
         return Objects.equals(chordId, other.chordId) && Objects.equals(serverAddress, other.serverAddress);
-    }
-
-    @Override
-    public String toString() {
-        return "node(" + chordId + " " + Chord.percentStr(chordId) + ", " + serverAddress + ")";
     }
 }

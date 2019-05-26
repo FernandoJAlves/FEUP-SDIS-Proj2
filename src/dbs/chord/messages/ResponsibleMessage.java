@@ -2,6 +2,8 @@ package dbs.chord.messages;
 
 import java.math.BigInteger;
 
+import dbs.chord.Chord;
+
 /**
  * A responsible (response) is sent in response to a received Lookup (request)
  * message, to inform the source node that this node is the one responsible for
@@ -15,8 +17,12 @@ public final class ResponsibleMessage extends ChordMessage {
         super(new ChordIdKey("RESPONSIBLE", chordId));
     }
 
+    public BigInteger getChordId() {
+        return ((ChordIdKey) getKey()).getChordId();
+    }
+
     @Override
     public String toString() {
-        return "RESPONSIBLE(" + getKey() + ")";
+        return "RESPONSIBLE(" + Chord.percentStr(getChordId()) + ")";
     }
 }

@@ -40,6 +40,6 @@ public class ChordIdKey extends ChordMessageKey {
 
     @Override
     public String toString() {
-        return "message(" + getKind() + ", " + chordId + " " + Chord.percentStr(chordId) + ")";
+        return "message(" + getKind() + ", " + Chord.percentStr(chordId) + ")";
     }
 }

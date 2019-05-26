@@ -1,6 +1,7 @@
 package dbs.chord.messages;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
@@ -32,5 +33,27 @@ public abstract class ChordMessage implements Serializable {
 
     public NodeInfo getSender() {
         return sender;
+    }
+
+    @Override
+    public String toString() {
+        return "MESSAGE(" + key + ", " + sender.shortStr() + ")";
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, sender);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof ChordMessage))
+            return false;
+        ChordMessage other = (ChordMessage) obj;
+        return Objects.equals(key, other.key) && Objects.equals(sender, other.sender);
     }
 }

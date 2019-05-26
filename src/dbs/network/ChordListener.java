@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import dbs.chord.ChordDispatcher;
+import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordMessage;
 
@@ -163,13 +164,23 @@ public class ChordListener implements Runnable {
         }
 
         ChordMessage message = (ChordMessage) object;
-        System.out.println("Received message " + message + " from " + remoteNode);
+
+        if (message.getSender().equals(Node.get().getSelf())) {
+            System.err.println("MAJOR ERROR: Received message from myself: " + message);
+            return;
+        } else if (remoteNode != null && !message.getSender().equals(remoteNode)) {
+            System.err.println("Received message from " + message.getSender().shortStr()
+                    + ", but socket is connected to " + remoteNode.shortStr());
+            return;
+        }
 
         if (remoteNode == null) {
             remoteNode = message.getSender();
             connected = true;
             SocketManager.get().setListener(this);
         }
+
+        System.out.println("\u001B[35mIN " + message + " from " + remoteNode.shortStr() + "\u001B[0m");
 
         ChordDispatcher.get().dispatch(message);
     }

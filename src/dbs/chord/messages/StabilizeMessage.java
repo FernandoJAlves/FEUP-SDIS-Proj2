@@ -8,6 +8,6 @@ public final class StabilizeMessage extends ChordMessage {
 
     @Override
     public String toString() {
-        return "STABILIZE(" + getKey() + ")";
+        return "STABILIZE";
     }
 }

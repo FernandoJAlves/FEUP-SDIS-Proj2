@@ -48,7 +48,6 @@ public class SocketManager implements Runnable {
 
         accepterThread = new Thread(this);
         accepterThread.start();
-        new Thread(new Dump()).start();
     }
 
     // public static SocketManager create(ServerSocketFactory serverFactory,
@@ -96,17 +95,17 @@ public class SocketManager implements Runnable {
      * server address.
      */
     public boolean sendMessage(NodeInfo remoteNode, ChordMessage message) {
-        System.out.println("Sending message " + message + " to " + remoteNode);
+        System.out.println("\u001B[32mOUT " + message + " to " + remoteNode.shortStr() + "\u001B[0m");
 
         ChordListener listener = listeners.get(remoteNode.getChordId());
         if (listener == null) {
-            System.out.println("No listener for " + remoteNode);
+            System.out.println("No listener for " + remoteNode.shortStr());
             listener = open(remoteNode);
             if (listener == null) {
-                System.out.println("Could not open socket for remote node " + remoteNode);
+                System.out.println("Could not open socket for remote node " + remoteNode.shortStr());
                 return false;
             } else {
-                System.out.println("Opened socket for remote node " + remoteNode);
+                System.out.println("Opened socket for remote node " + remoteNode.shortStr());
             }
         }
         return listener.sendMessage(message);
@@ -155,22 +154,6 @@ public class SocketManager implements Runnable {
             ChordListener listener = listeners.get(chordId);
             System.out.println("listener on node " + chordId);
             System.out.println("connected:" + listener.isConnected() + ", " + listener.getRemoteNode());
-        }
-    }
-
-    private class Dump implements Runnable {
-
-        @Override
-        public void run() {
-            while (true) {
-                dumpServer();
-
-                try {
-                    Thread.sleep(10000, 0);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }

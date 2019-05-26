@@ -20,6 +20,11 @@ public class ChordMessageKey implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return kind;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(kind);
     }
@@ -34,10 +39,5 @@ public class ChordMessageKey implements Serializable {
             return false;
         ChordMessageKey other = (ChordMessageKey) obj;
         return Objects.equals(kind, other.kind);
-    }
-
-    @Override
-    public String toString() {
-        return kind;
     }
 }

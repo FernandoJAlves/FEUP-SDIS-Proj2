@@ -2,6 +2,7 @@ package dbs.chord.messages;
 
 import java.math.BigInteger;
 
+import dbs.chord.Chord;
 import dbs.chord.NodeInfo;
 
 /**
@@ -37,6 +38,6 @@ public final class LookupMessage extends ChordMessage {
 
     @Override
     public String toString() {
-        return "LOOKUP(" + chordId + ", " + sourceNode + ", " + getSender() + ")";
+        return "LOOKUP(" + Chord.percentStr(chordId) + ", source " + sourceNode.shortStr() + ")";
     }
 }

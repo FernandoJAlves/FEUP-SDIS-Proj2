@@ -8,8 +8,25 @@ import java.security.NoSuchAlgorithmException;
 
 public class Chord {
 
-    public static final int m = 7;
+    // Chord protocol config: These must be the same for all nodes (should go without saying)
+    public static final int m = 16;
     public static final BigInteger modulus = BigInteger.ONE.shiftLeft(m);
+
+    // Node config: These may vary between nodes.
+    public static final int NODE_TASKS_POOL_SIZE = 2;
+    public static final int STABILIZE_PERIOD = 4000;
+    public static final int FIXFINGERS_PERIOD = 2000;
+    public static final int CHECK_PREDECESSOR_PERIOD = 5000;
+    public static final int NODE_DUMP_PERIOD = 12000;
+    public static final boolean NODE_DUMP_TABLE = true;
+
+    // Timeouts in ms for the observers to give up waiting and run timeout(). May vary between nodes.
+    public static final int CHECK_PREDECESSOR_WAIT = 3000; // AliveObserver
+    public static final int LOOKUP_WAIT = 5000; // ResponsibleObserver
+    public static final int JOIN_WAIT = 10000; // JoinObserver
+
+    // Dispatcher config: These may vary between nodes.
+    public static final int DISPATCHER_TASKS_POOL_SIZE = 4;
 
     /**
      * Consistent hash, ugly implementation using a cryptographic hash function on
@@ -117,7 +134,7 @@ public class Chord {
      * distance from the origin id 0.
      *
      * @param id A chord id.
-     * @return chordId / 2^m as double.
+     * @return chordId / 2^m as double in range [0, 1).
      */
     public static double percent(BigInteger id) {
         return id.doubleValue() / modulus.doubleValue();
@@ -128,7 +145,7 @@ public class Chord {
      * length of the entire chord.
      *
      * @param a,b chord ids.
-     * @return (b - a) / 2^m as double.
+     * @return (b - a) / 2^m as double in range [0, 1).
      */
     public static double percent(BigInteger a, BigInteger b) {
         return percent(relative(a, b));
@@ -139,7 +156,7 @@ public class Chord {
      * @return percent(chordId) as a String %.
      */
     public static String percentStr(BigInteger id) {
-        return String.format("%.0f%%", percent(id) * 100.0);
+        return String.format("%.1f%%", percent(id) * 100.0);
     }
 
     /**
@@ -147,6 +164,6 @@ public class Chord {
      * @return percent(a,b) as a String %.
      */
     public static String percentStr(BigInteger a, BigInteger b) {
-        return String.format("%.0f%%", percent(a, b) * 100.0);
+        return String.format("%.1f%%", percent(a, b) * 100.0);
     }
 }

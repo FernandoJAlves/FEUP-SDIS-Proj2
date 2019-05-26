@@ -5,20 +5,20 @@ import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.ChordMessageKey;
 import dbs.chord.messages.PredecessorMessage;
 
-public class PredecessorObserver extends ChordObserver {
+public class PredecessorObserver extends PermanentObserver {
 
     public PredecessorObserver() {
         super(new ChordMessageKey("PREDECESSOR"));
     }
 
     @Override
-    public boolean notify(ChordMessage message) {
-        if (!(message instanceof PredecessorMessage)) {
-            System.err.println("PredecessorObserver received a message not of type PredecessorMessage");
-            return false;
-        }
+    public void notify(ChordMessage message) {
+        assert message instanceof PredecessorMessage;
         Node.get().handlePredecessor((PredecessorMessage) message);
-        return false;
     }
 
+    @Override
+    public String toString() {
+        return "PredecessorObserver";
+    }
 }

@@ -17,6 +17,6 @@ public final class PredecessorMessage extends ChordMessage {
 
     @Override
     public String toString() {
-        return "PREDECESSOR(" + predecessorNode + ", " + getSender() + ")";
+        return "PREDECESSOR(" + predecessorNode.shortStr() + " of " + getSender().shortStr() + ")";
     }
 }
