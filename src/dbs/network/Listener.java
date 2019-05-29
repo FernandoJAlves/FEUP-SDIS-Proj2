@@ -119,7 +119,7 @@ public abstract class Listener implements Runnable, Closeable {
             OutputStream out = socket.getOutputStream();
             this.input = new ObjectInputStream(new BufferedInputStream(in));
             this.output = new ObjectOutputStream(new BufferedOutputStream(out));
-            SocketManager.get().setListener(this);
+            // TODO: incompatible types error here SocketManager.get().setListener(this);
             thread = new Thread(this);
             thread.start();
         } catch (IOException e) {

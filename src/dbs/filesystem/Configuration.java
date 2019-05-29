@@ -26,11 +26,11 @@ public class Configuration {
   /**
    * The directory where the backed-up files are stored
    */
-  public static final String BACKUP_FOLDER = "/tmp/dbs/backup";
+  public static final String BACKUP_FOLDER = "/tmp/dbs/backup/";
   /**
    * The directory where the restored files are stored
    */
-  public static final String RESTORE_FOLDER = "/tmp/dbs/restore";
+  public static final String RESTORE_FOLDER = "/tmp/dbs/restore/";
   /**
    * Time to wait for a filesystem request to arrive
    */

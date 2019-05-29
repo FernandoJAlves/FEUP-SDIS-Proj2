@@ -36,16 +36,6 @@ import dbs.network.SocketManager;
 
 public class Node {
 
-    /**
-     * Threadpool's number of threads
-     */
-    private final int POOL_SIZE = 5;
-
-    /**
-     * Threadpool initialization
-     */
-    private ExecutorService threadPool = Executors.newFixedThreadPool(POOL_SIZE);
-
     private final NodeInfo self;
     private final AtomicReference<NodeInfo> predecessor;
     private final AtomicReferenceArray<NodeInfo> finger;
