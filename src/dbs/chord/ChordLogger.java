@@ -12,17 +12,20 @@ public class ChordLogger {
 
     private static final boolean PRINT_IN = true;
     private static final boolean PRINT_OUT = true;
-    private static final boolean PRINT_NODE_TRACK = true;
-    private static final boolean PRINT_SOCKET_TRACK = true;
+
+    private static final boolean PRINT_NODE_IMPORTANT = true;
+    private static final boolean PRINT_NODE_TRACK = false;
+    private static final boolean PRINT_SOCKET_TRACK = false;
+
     private static final boolean PRINT_INTERNAL_ERROR = true;
     private static final boolean PRINT_EXTERNAL_ERROR = true;
     private static final boolean PRINT_NODE_ERROR = true;
     private static final boolean PRINT_IO_ERROR = true;
     private static final boolean PRINT_SOCKET_ERROR = true;
 
-    private static final boolean PRINT_NODE_STABILIZE = false;
+    private static final boolean PRINT_NODE_STABILIZE = true;
     private static final boolean PRINT_NODE_FIX_FINGERS = true;
-    private static final boolean PRINT_NODE_CHECK_PREDECESSOR = false;
+    private static final boolean PRINT_NODE_CHECK_PREDECESSOR = true;
 
     private static final HashSet<String> inSet = new HashSet<>();
     private static final HashSet<String> outSet = new HashSet<>();
@@ -52,6 +55,12 @@ public class ChordLogger {
         }
     }
 
+    public static final void logNodeImportant(String message) {
+        if (PRINT_NODE_IMPORTANT) {
+            System.out.print("\u001B[1;36m" + message + ".\u001B[0m\n");
+        }
+    }
+
     public static final void logNode(String message) {
         if (PRINT_NODE_TRACK) {
             System.out.print("\u001B[36m" + message + ".\u001B[0m\n");
@@ -78,21 +87,19 @@ public class ChordLogger {
 
     public static final void nodeError(String message) {
         if (PRINT_NODE_ERROR) {
-            System.err.print("\u001B[31mNODE ERROR: " + message + ".\u001B[0m\n");
+            System.err.print("\u001B[31mNode Error: " + message + ".\u001B[0m\n");
         }
     }
 
     public static final void ioError(IOException exception) {
         if (PRINT_IO_ERROR) {
-            System.err.print("\u001B[31mIO ERROR: " + exception.getMessage() + ".\u001B[0m\n");
-            exception.printStackTrace(System.err);
+            System.err.print("\u001B[31mIO Error: " + exception.getMessage() + ".\u001B[0m\n");
         }
     }
 
     public static final void socketError(IOException exception) {
         if (PRINT_SOCKET_ERROR) {
-            System.err.print("\u001B[31mSOCKET ERROR: " + exception.getMessage() + ".\u001B[0m\n");
-            exception.printStackTrace(System.err);
+            System.err.print("\u001B[31mSocket Error: " + exception.getMessage() + ".\u001B[0m\n");
         }
     }
 
@@ -111,7 +118,7 @@ public class ChordLogger {
 
     public static final void logCheckPredecessor(String message) {
         if (PRINT_NODE_CHECK_PREDECESSOR) {
-            System.out.print("\u001B[34mCheckPredecessor:" + message + ".\u001B[0m\n");
+            System.out.print("\u001B[34mCheckPredecessor: " + message + ".\u001B[0m\n");
         }
     }
 }

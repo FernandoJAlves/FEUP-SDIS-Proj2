@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 public class Chord {
 
     // Chord protocol config: These must be the same for all nodes (should go without saying)
-    public static final int m = 16;
+    public static final int m = 32;
     public static final BigInteger modulus = BigInteger.ONE.shiftLeft(m);
 
     // Node config: These may vary between nodes.

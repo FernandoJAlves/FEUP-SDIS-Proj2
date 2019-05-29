@@ -64,6 +64,8 @@ public class Node {
         this.pool = new ScheduledThreadPoolExecutor(NODE_TASKS_POOL_SIZE);
         instance = this;
 
+        ChordLogger.logNodeImportant("Created " + self);
+
         setupPermanentObservers();
     }
 
@@ -163,6 +165,7 @@ public class Node {
 
         // If we don't have a predecessor, accept the given one.
         if (predecessorNode == null) {
+            ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr());
             predecessor.set(senderNode);
         }
         // If we have a predecessor, accept the sender if it is strictly better than the one we have now.
@@ -172,6 +175,7 @@ public class Node {
             BigInteger selfId = self.getChordId();
 
             if (Chord.strictOrdered(predecessorId, senderId, selfId)) {
+                ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr());
                 predecessor.set(senderNode);
             }
         }
@@ -186,6 +190,7 @@ public class Node {
      */
     public void handlePredecessor(PredecessorMessage response) {
         NodeInfo successorNode = finger.get(1);
+        NodeInfo senderNode = response.getSender();
 
         // If the sender is not our successor, discard and continue.
         if (!response.getSender().equals(successorNode))
@@ -197,9 +202,11 @@ public class Node {
         BigInteger successorId = successorNode.getChordId();
 
         if (selfId.equals(candidateId) && predecessor.get() == null) {
-            predecessor.set(response.getSender());
+            ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr() + " (adopted successor)");
+            predecessor.set(senderNode);
         } else if (Chord.strictOrdered(selfId, candidateId, successorId)) {
             if (SocketManager.get().tryOpen(candidateNode)) {
+                ChordLogger.logNodeImportant("New successor: " + senderNode);
                 finger.set(1, candidateNode);
             } else {
                 ChordLogger.nodeError("Could not connect to chosen, valid candidate successor " + candidateId);
@@ -226,9 +233,11 @@ public class Node {
      */
     public void handleJoinResponse(ResponsibleMessage response) {
         NodeInfo responsibleNode = response.getSender();
+
+        ChordLogger.logNodeImportant("New successor: " + responsibleNode.shortStr());
         finger.set(1, responsibleNode);
 
-        ChordLogger.logNode("Successfully joined network, with successor " + responsibleNode);
+        ChordLogger.logNodeImportant("Successfully joined network");
 
         setupSubprotocols();
     }
@@ -255,8 +264,10 @@ public class Node {
      */
     public void handleIsAliveTimeout(NodeInfo waitedNode) {
         if (waitedNode.equals(predecessor.get())) {
-            ChordLogger.logNode("Lost connection to predecessor: did not respond KEEPALIVE request");
+            ChordLogger.logNodeImportant("Lost connection to predecessor: did not respond KEEPALIVE request");
             predecessor.set(null);
+        } else {
+            ChordLogger.logNode("IsAlive timeout discarded: predecessor changed (not " + waitedNode.shortStr() + ")");
         }
     }
 
@@ -272,7 +283,7 @@ public class Node {
      * Called by the frontend to have this Node create a new Chord network.
      */
     public void join() {
-        ChordLogger.logNode(self + " creating new Chord network");
+        ChordLogger.logNodeImportant(self + " creating new Chord network");
         finger.set(1, self);
 
         setupSubprotocols();
@@ -283,7 +294,7 @@ public class Node {
      * through the given remote node.
      */
     public void join(NodeInfo remoteNode) {
-        ChordLogger.logNode(self + " joining Chord on remote node " + remoteNode);
+        ChordLogger.logNodeImportant("Joining Chord on remote " + remoteNode);
 
         JoinObserver joiner = new JoinObserver();
         ChordDispatcher.get().addObserver(joiner);
@@ -320,11 +331,14 @@ public class Node {
                 boolean sent = assertSend(fingerNode, message);
 
                 if (sent) {
+                    ChordLogger.logNode("Message to " + chordId + " sent closest preceding finger " + i + " "
+                            + fingerNode.shortStr());
                     return fingerNode;
                 }
             }
         }
 
+        ChordLogger.logNode("No closest preceding finger for " + chordId);
         return null;
     }
 
@@ -341,7 +355,7 @@ public class Node {
         for (int i = 1; i <= Chord.m; ++i)
             ChordDispatcher.get().addObserver(new FixFingerObserver(Chord.ithFinger(selfId, i), i));
 
-        //ChordDispatcher.get().dumpObservers();
+        ChordLogger.logNode("Setup permanent observers");
     }
 
     private void setupSubprotocols() {
@@ -350,6 +364,8 @@ public class Node {
         pool.scheduleWithFixedDelay(new CheckPredecessor(), 500, CHECK_PREDECESSOR_PERIOD, TimeUnit.MILLISECONDS);
         if (NODE_DUMP_TABLE)
             pool.scheduleWithFixedDelay(new Dump(), 200, NODE_DUMP_PERIOD, TimeUnit.MILLISECONDS);
+
+        ChordLogger.logNode("Setup subprotocol tasks");
     }
 
     /**
@@ -378,7 +394,7 @@ public class Node {
         String predecessorStr = Chord.print(predecessorNode);
         String successorStr = Chord.print(successorNode);
 
-        System.out.println("Table of " + self + " (id " + self.getChordId() + ")");
+        System.out.println("\nTable of " + self + " (id " + self.getChordId() + ")");
         System.out.println(" predecessor: " + predecessorStr);
         System.out.println(" successor:   " + successorStr);
         for (int i = 2; i <= Chord.m; ++i) {
@@ -397,7 +413,7 @@ public class Node {
     private boolean assertSend(NodeInfo remoteNode, ChordMessage message) {
         boolean sent = SocketManager.get().sendMessage(remoteNode, message);
         if (!sent) {
-            ChordLogger.logNode("Failed to send message to " + remoteNode);
+            ChordLogger.logNode("Purging " + remoteNode + ": disconnected");
 
             NodeInfo predecessorNode = predecessor.get();
             if (remoteNode.equals(predecessorNode)) {

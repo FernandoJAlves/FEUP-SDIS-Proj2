@@ -62,10 +62,10 @@ public class SocketManager {
         if (listener == null) {
             listener = open(remoteNode);
             if (listener == null) {
-                ChordLogger.logSocket("Could not open socket for remote node " + remoteNode.shortStr());
+                ChordLogger.logSocket("Could not open socket for remote " + remoteNode.shortStr());
                 return false;
             } else {
-                ChordLogger.logSocket("Opened socket for remote node " + remoteNode.shortStr());
+                ChordLogger.logSocket("Opened socket for remote " + remoteNode.shortStr());
             }
         }
         boolean success = listener.sendMessage(message);
