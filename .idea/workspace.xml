@@ -2,19 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cebc7a45-e175-4d75-b01e-13b33638ada3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/test.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/chord/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/chord/Node.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/FilesystemTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/network/Listener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/network/Listener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FEUP-SDIS-Proj2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/FEUP-SDIS-Proj2.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/src/TestFilesystem.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.iml" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,10 +23,10 @@
   <component name="FileEditorManager">
     <leaf>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/src/TestFilesystem.java">
+        <entry file="file://$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="65" column="3" lean-forward="true" selection-start-line="65" selection-start-column="3" selection-end-line="65" selection-end-column="3" />
+            <state relative-caret-position="91">
+              <caret line="54" selection-start-line="54" selection-end-line="54" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -44,17 +37,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="22" column="4" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/dbs/App.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+            <state relative-caret-position="270">
+              <caret line="24" column="6" selection-start-line="24" selection-start-column="6" selection-end-line="24" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -64,6 +48,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>increase</find>
+      <find>src</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -84,6 +69,7 @@
         <option value="$PROJECT_DIR$/test/dbs/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/src/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/test/src/TestFilesystem.java" />
+        <option value="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
@@ -110,13 +96,13 @@
             <path>
               <item name="FEUP-SDIS-Proj2" type="b2602c69:ProjectViewProjectNode" />
               <item name="FEUP-SDIS-Proj2" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="FEUP-SDIS-Proj2" type="b2602c69:ProjectViewProjectNode" />
               <item name="FEUP-SDIS-Proj2" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="dbs" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -131,11 +117,14 @@
     <property name="Repository.Attach.Sources" value="false" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.editor" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="dbs.filesystem" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/test/dbs/filesystem" />
@@ -154,7 +143,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.TestFilesystem.testDelete (1)">
+  <component name="RunManager" selected="JUnit.All in FEUP-SDIS-Proj2">
     <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="dbs.App" />
       <module name="FEUP-SDIS-Proj2" />
@@ -168,12 +157,10 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TestFilesystem.testDelete (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="test" />
+    <configuration name="All in FEUP-SDIS-Proj2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FEUP-SDIS-Proj2" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="TestFilesystem" />
-      <option name="METHOD_NAME" value="testDelete" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -195,11 +182,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TestFilesystem.testWrite (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="test" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="TestFilesystem" />
-      <option name="METHOD_NAME" value="testWrite" />
+    <configuration name="TestFilesystem.testDelete" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FEUP-SDIS-Proj2" />
+      <option name="PACKAGE_NAME" value="dbs.filesystem" />
+      <option name="MAIN_CLASS_NAME" value="dbs.filesystem.TestFilesystem" />
+      <option name="METHOD_NAME" value="testDelete" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -207,14 +194,8 @@
     </configuration>
     <configuration name="TestFilesystem.testWrite" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="FEUP-SDIS-Proj2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="test.filesystem.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="test.filesystem" />
-      <option name="MAIN_CLASS_NAME" value="test.filesystem.TestFilesystem" />
+      <option name="PACKAGE_NAME" value="dbs.filesystem" />
+      <option name="MAIN_CLASS_NAME" value="dbs.filesystem.TestFilesystem" />
       <option name="METHOD_NAME" value="testWrite" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
@@ -235,17 +216,17 @@
       <item itemvalue="Application.App" />
       <item itemvalue="JUnit.Unnamed" />
       <item itemvalue="JUnit.TestFilesystem.testDelete" />
-      <item itemvalue="JUnit.TestFilesystem.testWrite" />
       <item itemvalue="JUnit.TestFilesystem.testDelete (1)" />
       <item itemvalue="JUnit.TestFilesystem.testWrite (1)" />
+      <item itemvalue="JUnit.All in FEUP-SDIS-Proj2" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.All in FEUP-SDIS-Proj2" />
+        <item itemvalue="JUnit.TestFilesystem.testWrite (1)" />
         <item itemvalue="JUnit.TestFilesystem.testDelete (1)" />
         <item itemvalue="Application.App" />
-        <item itemvalue="JUnit.TestFilesystem.testWrite (1)" />
         <item itemvalue="JUnit.TestFilesystem.testDelete" />
-        <item itemvalue="JUnit.TestFilesystem.testWrite" />
       </list>
     </recent_temporary>
   </component>
@@ -263,18 +244,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="FilesystemTest_testWrite - 2019.05.30 at 00h 21m 49s.xml">
-      <configuration name="FilesystemTest.testWrite" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="FilesystemTest_testWrite - 2019.05.30 at 00h 25m 14s.xml">
-      <configuration name="FilesystemTest.testWrite" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="FilesystemTest_testWrite - 2019.05.30 at 00h 26m 29s.xml">
-      <configuration name="FilesystemTest.testWrite" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="FilesystemTest_testWrite - 2019.05.30 at 00h 26m 37s.xml">
-      <configuration name="FilesystemTest.testWrite" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="TestFilesystem_testDelete - 2019.05.30 at 00h 31m 14s.xml">
       <configuration name="TestFilesystem.testDelete" configurationId="JUnit" />
     </history-entry>
@@ -293,6 +262,18 @@
     <history-entry file="TestFilesystem_testDelete_(1) - 2019.05.30 at 00h 44m 20s.xml">
       <configuration name="TestFilesystem.testDelete (1)" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="TestFilesystem_testDelete_(1) - 2019.05.30 at 00h 48m 38s.xml">
+      <configuration name="TestFilesystem.testDelete (1)" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestFilesystem_testDelete - 2019.05.30 at 00h 54m 35s.xml">
+      <configuration name="TestFilesystem.testDelete" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestFilesystem_testWrite - 2019.05.30 at 00h 54m 43s.xml">
+      <configuration name="TestFilesystem.testWrite" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_FEUP-SDIS-Proj2 - 2019.05.30 at 00h 54m 57s.xml">
+      <configuration name="All in FEUP-SDIS-Proj2" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1366" height="738" extended-state="6" />
@@ -306,7 +287,7 @@
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2159091" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Terminal" visible="true" weight="0.32899022" />
+      <window_info anchor="bottom" id="Terminal" visible="true" weight="0.32736155" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Messages" weight="0.25407165" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -351,9 +332,6 @@
     <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/ComparisonCriteria.class">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/test.iml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="183">
@@ -378,6 +356,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/test/test.iml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="24" column="19" lean-forward="true" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/App.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -385,10 +370,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/src/TestFilesystem.java">
+    <entry file="file://$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="65" column="3" lean-forward="true" selection-start-line="65" selection-start-column="3" selection-end-line="65" selection-end-column="3" />
+        <state relative-caret-position="91">
+          <caret line="54" selection-start-line="54" selection-end-line="54" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -397,8 +382,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="22" column="4" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
+        <state relative-caret-position="270">
+          <caret line="24" column="6" selection-start-line="24" selection-start-column="6" selection-end-line="24" selection-end-column="6" />
         </state>
       </provider>
     </entry>
@@ -452,11 +437,12 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>test</last-edited>
+          <last-edited>FEUP-SDIS-Proj2</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
                 <option value="0.2" />
+                <option value="0.6" />
               </list>
             </option>
           </splitter-proportions>

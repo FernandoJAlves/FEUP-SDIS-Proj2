@@ -1,3 +1,5 @@
+package dbs.filesystem;
+
 import dbs.filesystem.Configuration;
 import dbs.filesystem.threads.Eraser;
 import dbs.filesystem.threads.Writer;
