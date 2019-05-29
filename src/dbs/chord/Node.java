@@ -374,11 +374,11 @@ public class Node {
     }
 
     private void setupSubprotocols() {
-        pool.scheduleWithFixedDelay(new Stabilize(), 500, STABILIZE_PERIOD, TimeUnit.MILLISECONDS);
+        pool.scheduleWithFixedDelay(new Stabilize(), 100, STABILIZE_PERIOD, TimeUnit.MILLISECONDS);
         pool.scheduleWithFixedDelay(new FixFingers(), 500, FIXFINGERS_PERIOD, TimeUnit.MILLISECONDS);
-        pool.scheduleWithFixedDelay(new CheckPredecessor(), 500, CHECK_PREDECESSOR_PERIOD, TimeUnit.MILLISECONDS);
+        pool.scheduleWithFixedDelay(new CheckPredecessor(), 300, CHECK_PREDECESSOR_PERIOD, TimeUnit.MILLISECONDS);
         if (NODE_DUMP_TABLE)
-            pool.scheduleWithFixedDelay(new Dump(), 200, NODE_DUMP_PERIOD, TimeUnit.MILLISECONDS);
+            pool.scheduleWithFixedDelay(new Dump(), 1700, NODE_DUMP_PERIOD, TimeUnit.MILLISECONDS);
 
         ChordLogger.logNode("Setup subprotocol tasks");
     }

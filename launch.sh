@@ -34,12 +34,19 @@ function join {
 trap 'jobs -p | xargs kill' EXIT
 
 create 29500
-sleep 1.2s
+sleep 2.2s
 join 29501 29500
-sleep 0.2s
+sleep 2.2s
 join 29502 29500
-join 29503 29500
-: '
+'join 29503 29500
+join 29504 29500
+join 29505 29500
+sleep 2.2s
+join 29506 29500
+join 29507 29500
+join 29508 29500
+join 29509 29500
+: 
 sleep 0.3s
 join 29504 29500
 sleep 0.5s
