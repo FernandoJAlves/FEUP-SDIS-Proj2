@@ -17,19 +17,21 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import dbs.chord.messages.AliveMessage;
 import dbs.chord.messages.ChordMessage;
+import dbs.chord.messages.GetPredecessorMessage;
 import dbs.chord.messages.KeepAliveMessage;
 import dbs.chord.messages.LookupMessage;
+import dbs.chord.messages.NotifyMessage;
 import dbs.chord.messages.PredecessorMessage;
 import dbs.chord.messages.ResponsibleMessage;
-import dbs.chord.messages.StabilizeMessage;
 import dbs.chord.observers.AliveObserver;
 import dbs.chord.observers.FixFingerObserver;
+import dbs.chord.observers.GetPredecessorObserver;
 import dbs.chord.observers.JoinObserver;
 import dbs.chord.observers.KeepAliveObserver;
 import dbs.chord.observers.LookupObserver;
+import dbs.chord.observers.NotifyObserver;
 import dbs.chord.observers.PredecessorObserver;
 import dbs.chord.observers.ResponsibleObserver;
-import dbs.chord.observers.StabilizeObserver;
 import dbs.network.SocketManager;
 
 public class Node {
@@ -159,29 +161,16 @@ public class Node {
     /**
      * * HANDLER: Handle STABILIZE message from the Stabilize subprotocol.
      */
-    public void handleStabilize(StabilizeMessage message) {
+    public void handleGetPredecessor(GetPredecessorMessage message) {
         NodeInfo senderNode = message.getSender();
-        NodeInfo predecessorNode = predecessor.get();
+        NodeInfo predecessorNode = predecessor.compareAndExchange(null, senderNode);
 
-        // If we don't have a predecessor, accept the given one.
         if (predecessorNode == null) {
             ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr());
-            predecessor.set(senderNode);
-        }
-        // If we have a predecessor, accept the sender if it is strictly better than the one we have now.
-        else {
-            BigInteger predecessorId = predecessorNode.getChordId();
-            BigInteger senderId = senderNode.getChordId();
-            BigInteger selfId = self.getChordId();
-
-            if (Chord.strictOrdered(predecessorId, senderId, selfId)) {
-                ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr());
-                predecessor.set(senderNode);
-            }
+            predecessorNode = senderNode;
         }
 
-        // Regardless of the result, answer the sender our predecessor now so he can be happy as well.
-        PredecessorMessage response = new PredecessorMessage(predecessor.get());
+        PredecessorMessage response = new PredecessorMessage(predecessorNode);
         SocketManager.get().sendMessage(senderNode, response);
     }
 
@@ -201,15 +190,40 @@ public class Node {
         BigInteger selfId = self.getChordId();
         BigInteger successorId = successorNode.getChordId();
 
-        if (selfId.equals(candidateId) && predecessor.get() == null) {
-            ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr() + " (adopted successor)");
-            predecessor.set(senderNode);
+        if (selfId.equals(candidateId)) {
+            if (predecessor.compareAndSet(null, senderNode)) {
+                ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr() + " (adopted successor)");
+            }
         } else if (Chord.strictOrdered(selfId, candidateId, successorId)) {
             if (SocketManager.get().tryOpen(candidateNode)) {
-                ChordLogger.logNodeImportant("New successor: " + senderNode);
-                finger.set(1, candidateNode);
+                if (finger.compareAndSet(1, successorNode, candidateNode)) {
+                    ChordLogger.logNodeImportant("New successor: " + senderNode);
+                }
             } else {
                 ChordLogger.nodeError("Could not connect to chosen, valid candidate successor " + candidateId);
+            }
+        }
+
+        NotifyMessage message = new NotifyMessage();
+        assertSend(finger.get(1), message);
+    }
+
+    public void handleNotify(NotifyMessage message) {
+        NodeInfo senderNode = message.getSender();
+        NodeInfo predecessorNode = predecessor.compareAndExchange(null, senderNode);
+
+        if (predecessorNode == null) {
+            ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr());
+            predecessorNode = senderNode;
+        } else {
+            BigInteger predecessorId = predecessorNode.getChordId();
+            BigInteger senderId = senderNode.getChordId();
+            BigInteger selfId = self.getChordId();
+
+            if (Chord.strictOrdered(predecessorId, senderId, selfId)) {
+                if (predecessor.compareAndSet(predecessorNode, senderNode)) {
+                    ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr());
+                }
             }
         }
     }
@@ -346,10 +360,11 @@ public class Node {
      * Launch observers and schedule protocol's periodic tasks.
      */
     private void setupPermanentObservers() {
-        ChordDispatcher.get().addObserver(new StabilizeObserver());
+        ChordDispatcher.get().addObserver(new GetPredecessorObserver());
         ChordDispatcher.get().addObserver(new PredecessorObserver());
         ChordDispatcher.get().addObserver(new KeepAliveObserver());
         ChordDispatcher.get().addObserver(new LookupObserver());
+        ChordDispatcher.get().addObserver(new NotifyObserver());
 
         BigInteger selfId = self.getChordId();
         for (int i = 1; i <= Chord.m; ++i)
@@ -452,14 +467,15 @@ public class Node {
             } else if (self.getChordId().equals(next.getChordId())) {
                 next = predecessor.get();
                 if (next != null) {
-                    ChordLogger.logStabilize("adopt predecessor " + next.shortStr() + " as successor");
-                    finger.compareAndSet(1, successor, next);
+                    if (finger.compareAndSet(1, successor, next)) {
+                        ChordLogger.logNodeImportant("New successor: adopt predecessor " + next.shortStr());
+                    }
                 } else {
                     ChordLogger.logStabilize("self successor, no predecessor");
                 }
             } else {
                 ChordLogger.logStabilize("challenge");
-                StabilizeMessage message = new StabilizeMessage();
+                GetPredecessorMessage message = new GetPredecessorMessage();
                 assertSend(next, message);
             }
         }

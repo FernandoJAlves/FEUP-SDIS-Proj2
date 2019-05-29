@@ -31,7 +31,6 @@ public final class AliveObserver extends TimeoutObserver {
 
     @Override
     public void timeout() {
-        System.out.println("Did not receive response from predecessor node");
         Node.get().handleIsAliveTimeout(waitedNode);
     }
 
