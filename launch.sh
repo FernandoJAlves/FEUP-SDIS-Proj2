@@ -34,17 +34,16 @@ function join {
 trap 'jobs -p | xargs kill' EXIT
 
 create 29500
-sleep 3.2s
+sleep 1.2s
 join 29501 29500
-sleep 3.2s
+sleep 0.2s
 join 29502 29500
-sleep 3.5s
 join 29503 29500
-sleep 3.3s
-join 29504 29500
-sleep 1.5s
-join 29505 29501
 : '
+sleep 0.3s
+join 29504 29500
+sleep 0.5s
+join 29505 29501
 sleep 2s
 join 29506 29503
 join 29507 29500
@@ -64,6 +63,7 @@ join 29518 29514
 sleep 0.3s
 join 29519 29514
 '
+
 echo -n "waiting($wait, x$numwaits)"
 
 for port in $(seq 1 $numwaits); do
