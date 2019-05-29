@@ -3,10 +3,22 @@ package dbs.chord;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 public class Node {
+
+    /**
+     * Threadpool's number of threads
+     */
+    private final int POOL_SIZE = 5;
+
+    /**
+     * Threadpool initialization
+     */
+    private ExecutorService threadPool = Executors.newFixedThreadPool(POOL_SIZE);
 
     private final NodeInfo self;
     private final AtomicReference<NodeInfo> predecessor;

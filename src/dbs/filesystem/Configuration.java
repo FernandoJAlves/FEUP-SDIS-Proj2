@@ -16,7 +16,13 @@ public class Configuration {
    * OWNED -> The file's path
    * BACKEDUP -> The file's hash
    */
-  public enum Ownership {OWNED, BACKEDUP}
+  public enum Ownership {
+    OWNED("own"), BACKEDUP("backed up");
+    private String name;
+    Ownership(String name) {
+      this.name = name;
+    }
+  }
   /**
    * The directory where the backed-up files are stored
    */
@@ -25,4 +31,12 @@ public class Configuration {
    * The directory where the restored files are stored
    */
   public static final String RESTORE_FOLDER = "/tmp/dbs/restore";
+  /**
+   * Time to wait for a filesystem request to arrive
+   */
+  public static final int REQUEST_WAITING_TIME = 50;
+  /**
+   * Chunk size
+   */
+  public static final int CHUNK_SIZE = 64000;
 }

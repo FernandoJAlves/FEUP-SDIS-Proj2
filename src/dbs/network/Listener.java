@@ -21,8 +21,8 @@ import javax.net.SocketFactory;
  * handleMessage() is abstract.
  *
  * When a Listener is created, it will try (after opening the socket stream if
- * not already open) to open the input and output streams. If successful, it is
- * now ready for both input and output operations. It may be the case that
+ * not already open) to open the input and outputStream streams. If successful, it is
+ * now ready for both input and outputStream operations. It may be the case that
  * another Listener has already been registered in the SocketManager, for the
  * same socket address; in that case, the new Listener will replace the old one,
  * and inform the old one it should promptly close the connection (todo). All
