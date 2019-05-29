@@ -1,7 +1,10 @@
 package dbs.chord.messages;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.util.Objects;
+
+import dbs.chord.Node;
+import dbs.chord.NodeInfo;
 
 /**
  * Base class of all Chord messages.
@@ -13,14 +16,16 @@ import java.math.BigInteger;
 public abstract class ChordMessage implements Serializable {
 
     private final ChordMessageKey key;
-
-    public ChordMessage(String kind, BigInteger chordid) {
-        this.key = new ChordMessageKey(kind, chordid);
-    }
+    private final NodeInfo sender = Node.get().getSelf();
 
     public ChordMessage(ChordMessageKey key) {
-        assert key != null;
+        assert key != null && sender != null;
         this.key = key;
+    }
+
+    public ChordMessage(String kind) {
+        assert kind != null && sender != null;
+        this.key = new ChordMessageKey(kind);
     }
 
     public ChordMessageKey getKey() {
@@ -31,7 +36,29 @@ public abstract class ChordMessage implements Serializable {
         return key.getKind();
     }
 
-    public BigInteger getId() {
-        return key.getId();
+    public NodeInfo getSender() {
+        return sender;
+    }
+
+    @Override
+    public String toString() {
+        return "MESSAGE(" + key + ", " + sender.shortStr() + ")";
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, sender);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof ChordMessage))
+            return false;
+        ChordMessage other = (ChordMessage) obj;
+        return Objects.equals(key, other.key) && Objects.equals(sender, other.sender);
     }
 }
