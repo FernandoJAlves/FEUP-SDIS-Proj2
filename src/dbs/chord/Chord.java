@@ -13,14 +13,13 @@ public class Chord {
     public static final BigInteger modulus = BigInteger.ONE.shiftLeft(m);
 
     // All durations / delays / periods below are in milliseconds.
-    public static final int MAX_JOIN_ATTEMPTS = 3;
-    public static final boolean NODE_DUMP_TABLE = true;
+    public static final int MAX_JOIN_ATTEMPTS = 6;
     public static final int NODE_TASKS_POOL_SIZE = 2;
     public static final int DISPATCHER_TASKS_POOL_SIZE = 4;
 
-    public static final int STABILIZE_PERIOD = 4000;
+    public static final int STABILIZE_PERIOD = 1500;
     public static final int FIXFINGERS_PERIOD = 30000 / m;
-    public static final int CHECK_PREDECESSOR_PERIOD = 5000;
+    public static final int CHECK_PREDECESSOR_PERIOD = 2000;
     public static final int NODE_DUMP_PERIOD = 12000;
 
     // There is no strong guarantee that the delays will enforce the order in which the subprotocols are started.

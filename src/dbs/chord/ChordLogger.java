@@ -24,11 +24,29 @@ public final class ChordLogger {
     private static final boolean PRINT_SOCKET_ERROR = true;
     private static final boolean PRINT_DROPS = true;
 
-    private static final boolean PRINT_NODE_STABILIZE = true;
-    private static final boolean PRINT_NODE_FIX_FINGERS = true;
-    private static final boolean PRINT_NODE_CHECK_PREDECESSOR = true;
+    private static final boolean PRINT_NODE_STABILIZE = false;
+    private static final boolean PRINT_NODE_FIX_FINGERS = false;
+    private static final boolean PRINT_NODE_CHECK_PREDECESSOR = false;
+    private static final boolean PRINT_NODE_JOIN = true;
 
-    private static boolean USE_COLORS = false, USE_PREFIX = true;
+    public static boolean DUMP_NODE_TABLE = true;
+    public static boolean USE_COLORS = false, USE_PREFIX = true;
+
+    private static final HashSet<String> inSet = new HashSet<>();
+    private static final HashSet<String> outSet = new HashSet<>();
+
+    // Decide what messages get reported. This requires PRINT_IN / PRINT_OUT to be set to true.
+    static {
+        inSet.add(LookupMessage.class.getName());
+        inSet.add(ResponsibleMessage.class.getName());
+        //inSet.add(StabilizeMessage.class.getName());
+        //inSet.add(PredecessorMessage.class.getName());
+
+        outSet.add(LookupMessage.class.getName());
+        outSet.add(ResponsibleMessage.class.getName());
+        //outSet.add(StabilizeMessage.class.getName());
+        //outSet.add(PredecessorMessage.class.getName());
+    }
 
     private static void format(int code, String msg, boolean prefix) {
         if (USE_COLORS && (USE_PREFIX || prefix)) {
@@ -46,6 +64,7 @@ public final class ChordLogger {
         format(code, msg, false);
     }
 
+    // Messages received
     public static void logIn(ChordMessage message) {
         if (PRINT_IN && inSet.contains(message.getClass().getName())) {
             String node = message.getSender().shortStr();
@@ -53,6 +72,7 @@ public final class ChordLogger {
         }
     }
 
+    // Messages sent
     public static void logOut(ChordMessage message, NodeInfo destination) {
         if (PRINT_OUT && outSet.contains(message.getClass().getName())) {
             String node = destination.shortStr();
@@ -60,66 +80,77 @@ public final class ChordLogger {
         }
     }
 
+    // Important node metadata, such as new successor and predecessor.
     public static void logNodeImportant(String msg) {
         if (PRINT_NODE_IMPORTANT) {
             format(IMPORTANT, msg);
         }
     }
 
+    // Node tracking, unimportant information.
     public static void logNode(String msg) {
         if (PRINT_NODE_TRACK) {
             format(LOGINFO, msg);
         }
     }
 
+    // Socket tracking, unimportant information.
     public static void logSocket(String msg) {
         if (PRINT_SOCKET_TRACK) {
             format(NEUTRAL, msg);
         }
     }
 
+    // Internal IO errors found, such as no observers for a received message and immediate loopback messages.
     public static void internal(String msg) {
         if (PRINT_INTERNAL_ERROR) {
             format(SEVERE, "Internal: " + msg);
         }
     }
 
+    // External IO errors found, where another Node did not comply with the protocol.
     public static void external(String msg) {
         if (PRINT_EXTERNAL_ERROR) {
             format(WARNING, "External: " + msg);
         }
     }
 
-    public static void nodeError(String msg) {
+    // Disrupted progress errors, such as not being able to update successor, predecessor or joining Chord network.
+    public static void progress(String msg) {
         if (PRINT_NODE_ERROR) {
             format(ERROR, "Node: " + msg);
         }
     }
 
+    // Unexpected IOException when reading or writing a message.
     public static void ioError(IOException exception) {
         if (PRINT_IO_ERROR) {
             format(ERROR, "IO: " + exception.getMessage());
         }
     }
 
+    // Unexpected SocketException when reading or writing a message, or opening a socket.
     public static void socketError(IOException exception) {
         if (PRINT_SOCKET_ERROR) {
             format(ERROR, "Socket: " + exception.getMessage());
         }
     }
 
+    // Valid messages dropped by this Node due to unstable Chord network state.
     public static void dropped(ChordMessage message, String reason) {
         if (PRINT_DROPS) {
             format(DROP, "Dropped " + message + " from " + message.getSender().shortStr() + ": " + reason);
         }
     }
 
+    // Stabilize subprotocol messages
     public static void logStabilize(String msg) {
         if (PRINT_NODE_STABILIZE) {
             format(STABILIZE, msg, true);
         }
     }
 
+    // FixFingers subprotocol messages
     public static void logFixFingers(int i, String msg) {
         if (PRINT_NODE_FIX_FINGERS) {
             BigInteger fingerMin = Chord.ithFinger(Node.get().getSelf().getChordId(), i);
@@ -128,14 +159,22 @@ public final class ChordLogger {
         }
     }
 
+    // CheckPredecessor subprotocol messages
     public static void logCheckPredecessor(String msg) {
         if (PRINT_NODE_CHECK_PREDECESSOR) {
             format(CHECK_PREDECESSOR, msg, true);
         }
     }
 
-    private static final HashSet<String> inSet = new HashSet<>();
-    private static final HashSet<String> outSet = new HashSet<>();
+    // Join subprotocol messages
+    public static void logJoin(String msg) {
+        if (PRINT_NODE_JOIN) {
+            format(JOIN, msg, true);
+        }
+    }
+
+    // * Internals
+
     private static final String[] colorMap = new String[20];
     private static final String[] prefixMap = new String[20];
 
@@ -151,18 +190,10 @@ public final class ChordLogger {
     private static final int STABILIZE = 9;
     private static final int FIXFINGERS = 10;
     private static final int CHECK_PREDECESSOR = 11;
-    private static final int DROP = 12;
+    private static final int JOIN = 12;
+    private static final int DROP = 13;
 
     static {
-        inSet.add(LookupMessage.class.getName());
-        inSet.add(ResponsibleMessage.class.getName());
-        //inSet.add(StabilizeMessage.class.getName());
-        //inSet.add(PredecessorMessage.class.getName());
-        outSet.add(LookupMessage.class.getName());
-        outSet.add(ResponsibleMessage.class.getName());
-        //outSet.add(StabilizeMessage.class.getName());
-        //outSet.add(PredecessorMessage.class.getName());
-
         colorMap[IMPORTANT] = "1;36";
         colorMap[SEVERE] = "1;31";
         colorMap[ERROR] = "31";
@@ -175,6 +206,7 @@ public final class ChordLogger {
         colorMap[STABILIZE] = "34";
         colorMap[FIXFINGERS] = "34";
         colorMap[CHECK_PREDECESSOR] = "34";
+        colorMap[JOIN] = "1;34";
         colorMap[DROP] = "37";
 
         prefixMap[IMPORTANT] = "[IMPORTANT]";
@@ -189,6 +221,7 @@ public final class ChordLogger {
         prefixMap[STABILIZE] = "[STABILIZE]";
         prefixMap[FIXFINGERS] = "[FIXFINGERS]";
         prefixMap[CHECK_PREDECESSOR] = "[CHECK_PREDECESSOR]";
+        prefixMap[JOIN] = "[JOIN]";
         prefixMap[DROP] = "[DROP]";
     }
 }

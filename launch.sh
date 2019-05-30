@@ -1,10 +1,14 @@
 #!/bin/bash
 
 clear
+rm -rf log/295*
 
 addr="localhost"
 wait=5s
-numwaits=20
+numwaits=30
+
+m=32
+precision=2
 
 # NOTA: é preciso implementar Notify
 
@@ -16,8 +20,11 @@ function print {
 }
 
 for port in $(seq 29500 29530); do
-    map["$port"]=$(print "$port")
-    echo "$port: "${map["$port"]}""
+    id=$(print "$port")
+    percentage=$(wcalc -q "(100.0 * $id) / (2 ** $m)")
+    width=$(( precision + 3 ))
+    printf "%d: (%0*.*f%%) %d\n" "$port" "$width" "$precision" "$percentage" "$id"
+    map["$port"]="$id"
 done
 
 # $1 = server port
@@ -38,40 +45,44 @@ trap 'jobs -p | xargs kill' EXIT
 create 29500
 sleep 2.2s
 join 29501 29500
-sleep 2.2s
+sleep 0.2s
 join 29502 29500
 join 29503 29500
-join 29504 29500
-join 29505 29500
-sleep 2.2s
-join 29506 29500
-join 29507 29500
-join 29508 29500
-join 29509 29500
-: '
 sleep 0.3s
 join 29504 29500
 sleep 0.5s
 join 29505 29501
 sleep 2s
 join 29506 29503
-join 29507 29500
+join 29507 29500 # same
 join 29508 29504
 join 29509 29502
-join 29510 29500
+join 29510 29500 # same
 join 29511 29501
-sleep 2s
-join 29512 29506
+sleep 0.4s
+join 29512 29506 # same
 join 29513 29502
 join 29514 29505
-join 29515 29506
+join 29515 29506 # same
 join 29516 29500
 sleep 0.3s
 join 29517 29501
 join 29518 29514
 sleep 0.3s
 join 29519 29514
-'
+sleep 3s
+join 29520 29510 # same
+join 29521 29508
+join 29522 29503
+join 29523 29507
+join 29524 29517
+join 29525 29502
+join 29526 29509
+join 29527 29512
+join 29528 29501
+join 29529 29510 # same
+sleep 0.5s
+join 29530 29511
 
 echo -n "waiting($wait, x$numwaits)"
 
