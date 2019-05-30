@@ -10,12 +10,12 @@ public abstract class TimeoutObserver extends ChordObserver {
 
     private final int delay;
 
-    public TimeoutObserver(String kind, int delay) {
+    protected TimeoutObserver(String kind, int delay) {
         super(kind);
         this.delay = delay;
     }
 
-    public TimeoutObserver(ChordMessageKey key, int delay) {
+    protected TimeoutObserver(ChordMessageKey key, int delay) {
         super(key);
         this.delay = delay;
     }
