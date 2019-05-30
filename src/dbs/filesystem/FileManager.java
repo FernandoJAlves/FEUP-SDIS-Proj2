@@ -49,6 +49,8 @@ public class FileManager implements Runnable {
     try {
       AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
       ByteBuffer buffer = ByteBuffer.wrap(request.getContent());
+
+      // Version chunk-a-chunk
       long position = request.getChunkNum() * Configuration.CHUNK_SIZE;
 
       fileChannel.write(buffer, position, buffer, new CompletionHandler<>() {
@@ -57,6 +59,7 @@ public class FileManager implements Runnable {
           buffer.clear();
           try {
             fileChannel.close();
+            outputStream.write(1);
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -79,7 +82,7 @@ public class FileManager implements Runnable {
     PipedOutputStream outputStream = request.getPipe();
 
     Path path = Paths.get(request.getFilePath());
-    AsynchronousFileChannel fileChannel = null;
+    AsynchronousFileChannel fileChannel;
     try {
       fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
     } catch(IOException e) {
@@ -90,7 +93,7 @@ public class FileManager implements Runnable {
 
     ByteBuffer buffer = ByteBuffer.allocate(Configuration.CHUNK_SIZE);
     long position = request.getChunkNum() * Configuration.CHUNK_SIZE;
-    Future<Integer> operation = fileChannel.read(buffer,position);
+    Future<Integer> operation = fileChannel.read(buffer, position);
 
     try {
       operation.get();
@@ -99,9 +102,9 @@ public class FileManager implements Runnable {
       outputStream.write(0);
       return;
     }
-    byte[] chunkContent = new byte[Configuration.CHUNK_SIZE];
-    buffer.get(chunkContent);
-    outputStream.write(chunkContent,0, Configuration.CHUNK_SIZE);
+
+    int chunkSize = buffer.position();
+    outputStream.write(buffer.array(),0, chunkSize);
   }
 
   public void delete(DeleteRequest request) throws IOException {

@@ -23,9 +23,11 @@ public class SocketManager {
     private final ServerSocket server;
     private final SocketFactory factory;
 
-    private final Thread accepterThread;
-
     private static SocketManager instance;
+    private Accepter accepterRunner;
+    private Thread accepterThread;
+
+    private volatile boolean poisoned = false;
 
     public static SocketManager get() {
         return instance;
@@ -39,6 +41,7 @@ public class SocketManager {
     private SocketManager(InetSocketAddress serverAddress, ServerSocketFactory serverFactory,
             SocketFactory socketFactory) throws IOException {
         assert instance == null;
+
         int port = serverAddress.getPort();
         InetAddress address = serverAddress.getAddress();
 
@@ -49,6 +52,8 @@ public class SocketManager {
         instance = this;
 
         dumpServer();
+        //Runtime.getRuntime().addShutdownHook(new ShutdownSocket());
+        // ^ not working because of .interrupt()
 
         accepterThread = new Thread(new Accepter());
         accepterThread.start();
@@ -60,6 +65,9 @@ public class SocketManager {
      * server address.
      */
     public boolean sendMessage(NodeInfo remoteNode, ChordMessage message) {
+        if (poisoned)
+            throw new IllegalStateException();
+
         ChordListener listener = listeners.get(remoteNode.getChordId());
         if (listener == null) {
             listener = open(remoteNode);
@@ -99,6 +107,9 @@ public class SocketManager {
     }
 
     private synchronized ChordListener open(NodeInfo remoteNode) {
+        if (poisoned)
+            throw new IllegalStateException();
+
         InetAddress address = remoteNode.getIp();
         int port = remoteNode.getPort();
 
@@ -116,21 +127,47 @@ public class SocketManager {
     }
 
     public void dumpServer() {
-        System.out.println("SocketManager's server bound to");
-        System.out.println("  address: " + server.getInetAddress());
-        System.out.println("  port:    " + server.getLocalPort());
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("\nSocketManager's server bound to");
+        builder.append("\n  address: " + server.getInetAddress());
+        builder.append("\n  port:    " + server.getLocalPort());
         for (BigInteger chordId : listeners.keySet()) {
             ChordListener listener = listeners.get(chordId);
-            System.out.println("listener on node " + chordId);
-            System.out.println("connected:" + listener.isConnected() + ", " + listener.getRemoteNode());
+            builder.append("\nlistener on node " + chordId);
+            builder.append("\nconnected:" + listener.isConnected() + ", " + listener.getRemoteNode());
+        }
+        builder.append("\n\n");
+
+        System.out.print(builder.toString());
+    }
+
+    public int numOpenSockets() {
+        return listeners.size();
+    }
+
+    public void shutdown() {
+        try {
+            poisoned = true;
+            accepterThread.interrupt();
+            accepterThread.join();
+            for (ChordListener listener : listeners.values()) {
+                listener.finish();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     private class Accepter implements Runnable {
 
+        private Accepter() {
+            accepterRunner = this;
+        }
+
         @Override
         public void run() {
-            while (true) {
+            while (!poisoned) {
                 if (server.isClosed())
                     break;
                 try {
@@ -146,6 +183,14 @@ public class SocketManager {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private class ShutdownSocket extends Thread {
+
+        @Override
+        public void run() {
+            shutdown();
         }
     }
 }

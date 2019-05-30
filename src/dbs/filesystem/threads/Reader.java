@@ -28,7 +28,7 @@ public class Reader extends RequestManager implements Runnable {
   public void run() {
 
     int chunkNum = 0;
-    int readBytes = 0;
+    int readBytes;
     ByteArrayOutputStream fileContent = new ByteArrayOutputStream();
     byte[] chunk = new byte[Configuration.CHUNK_SIZE];
 
@@ -36,12 +36,13 @@ public class Reader extends RequestManager implements Runnable {
       FileManager.getInstance().addRequest(this.createRequest(chunkNum));
       try {
         readBytes = this.inputStream.read(chunk, 0, Configuration.CHUNK_SIZE);
-        fileContent.write(chunk);
+        fileContent.write(chunk,0, readBytes);
       } catch (IOException e) { // TODO: better approach
         Logger.getGlobal().severe("Could not read from file with key " + this.key);
         this.closeStreams();
         return;
       }
+
       if(readBytes < Configuration.CHUNK_SIZE)
         break;
       Arrays.fill(chunk, (byte)0);
@@ -49,10 +50,7 @@ public class Reader extends RequestManager implements Runnable {
     }
     Logger.getGlobal().info("Successful reading of file with key " + this.key);
 
-    byte[] fileContentBuf = fileContent.toByteArray();
-    this.closeStreams();
-
     // TODO: send file content to destination node
+    this.closeStreams();
   }
-
 }

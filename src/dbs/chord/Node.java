@@ -7,7 +7,6 @@ import static dbs.chord.Chord.FIXFINGERS_PERIOD;
 import static dbs.chord.Chord.MAX_JOIN_ATTEMPTS;
 import static dbs.chord.Chord.NODE_DUMP_DELAY;
 import static dbs.chord.Chord.NODE_DUMP_PERIOD;
-import static dbs.chord.Chord.NODE_DUMP_TABLE;
 import static dbs.chord.Chord.NODE_TASKS_POOL_SIZE;
 import static dbs.chord.Chord.STABILIZE_DELAY;
 import static dbs.chord.Chord.STABILIZE_PERIOD;
@@ -48,6 +47,7 @@ public class Node {
     private final ScheduledThreadPoolExecutor pool;
 
     private static Node instance;
+    private static Join joinRunner;
 
     public static Node get() {
         return instance;
@@ -74,6 +74,7 @@ public class Node {
         ChordLogger.logNodeImportant("Created " + self);
 
         setupPermanentObservers();
+        Runtime.getRuntime().addShutdownHook(new NodeShutdown());
     }
 
     /**
@@ -217,7 +218,7 @@ public class Node {
                     ChordLogger.logNodeImportant("New successor: " + senderNode);
                 }
             } else {
-                ChordLogger.nodeError("Could not connect to chosen, valid candidate successor " + candidateId);
+                ChordLogger.progress("Could not connect to chosen, valid candidate successor " + candidateId);
             }
         }
 
@@ -258,7 +259,7 @@ public class Node {
             finger.set(i, responsibleNode);
             ChordLogger.logFixFingers(i, "resolved: " + responsibleNode.shortStr());
         } else {
-            ChordLogger.nodeError("Could not connect to chosen valid responsible " + responsibleId + " of finger " + i);
+            ChordLogger.progress("Could not connect to chosen, valid responsible " + responsibleId + " of finger " + i);
         }
     }
 
@@ -268,10 +269,10 @@ public class Node {
     public void handleJoinResponse(ResponsibleMessage response) {
         NodeInfo responsibleNode = response.getSender();
 
-        ChordLogger.logNodeImportant("New successor: " + responsibleNode.shortStr());
+        ChordLogger.logJoin("New successor: " + responsibleNode.shortStr());
         finger.set(1, responsibleNode);
 
-        ChordLogger.logNodeImportant("Successfully joined network");
+        ChordLogger.logJoin("Successfully joined network");
 
         setupSubprotocols();
     }
@@ -310,7 +311,7 @@ public class Node {
      * * serving as the join message for this node, result of an observer timeout.
      */
     public void handleFailedJoin() {
-        ChordLogger.nodeError("Could not connect to Chord network: timeout occurred");
+        ChordLogger.logJoin("Could not connect to Chord network: timeout occurred");
         pool.submit(joinRunner);
     }
 
@@ -318,7 +319,7 @@ public class Node {
      * Called by the frontend to have this Node create a new Chord network.
      */
     public void join() {
-        ChordLogger.logNodeImportant("Creating new Chord network. Root: " + self);
+        ChordLogger.logJoin("Creating new Chord network. Root: " + self);
         finger.set(1, self);
 
         setupSubprotocols();
@@ -393,8 +394,7 @@ public class Node {
         pool.scheduleWithFixedDelay(new Stabilize(), STABILIZE_DELAY, STABILIZE_PERIOD, MS);
         pool.scheduleWithFixedDelay(new FixFingers(), FIXFINGERS_DELAY, FIXFINGERS_PERIOD, MS);
         pool.scheduleWithFixedDelay(new CheckPredecessor(), CHECK_PREDECESSOR_DELAY, CHECK_PREDECESSOR_PERIOD, MS);
-        if (NODE_DUMP_TABLE)
-            pool.scheduleWithFixedDelay(new Dump(), NODE_DUMP_DELAY, NODE_DUMP_PERIOD, MS);
+        pool.scheduleWithFixedDelay(new Dump(), NODE_DUMP_DELAY, NODE_DUMP_PERIOD, MS);
 
         ChordLogger.logNodeImportant("Setup subprotocol tasks");
     }
@@ -428,14 +428,14 @@ public class Node {
         StringBuilder builder = new StringBuilder();
 
         builder.append("\nTable of " + self + " (id " + self.getChordId() + ")");
-        builder.append(" predecessor: " + predecessorStr);
-        builder.append(" successor:   " + successorStr);
+        builder.append("\npredecessor: " + predecessorStr);
+        builder.append("\nsuccessor:   " + successorStr);
         for (int i = 2; i <= Chord.m; ++i) {
             String fingerStr = Chord.print(finger.get(i));
             String minId = Chord.percentStr(Chord.ithFinger(self.getChordId(), i));
-            builder.append(String.format("  finger[%02d] (%s): %s", i, minId, fingerStr));
+            builder.append(String.format("\n  finger[%02d] (%s): %s", i, minId, fingerStr));
         }
-        builder.append('\n');
+        builder.append("\n\n");
 
         System.out.print(builder.toString());
     }
@@ -462,11 +462,18 @@ public class Node {
         return sent;
     }
 
-    private static Dump dumpRunner;
-    private static Stabilize stabilizeRunner;
-    private static FixFingers fixFingersRunner;
-    private static CheckPredecessor checkPredecessorRunner;
-    private static Join joinRunner;
+    /**
+     * Prepare an orderly shutdown of this node's subprotocols.
+     */
+    public void shutdown() {
+        try {
+            int wait = 500;
+            pool.shutdown();
+            pool.awaitTermination(wait, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Periodically dump this node's fingers, predecessor and successor,
@@ -474,21 +481,14 @@ public class Node {
      */
     private class Dump implements Runnable {
 
-        private Dump() {
-            dumpRunner = this;
-        }
-
         @Override
         public void run() {
-            dumpNode();
+            if (ChordLogger.DUMP_NODE_TABLE)
+                dumpNode();
         }
     }
 
     private class Stabilize implements Runnable {
-
-        private Stabilize() {
-            stabilizeRunner = this;
-        }
 
         @Override
         public void run() {
@@ -514,10 +514,6 @@ public class Node {
     }
 
     private class FixFingers implements Runnable {
-
-        private FixFingers() {
-            fixFingersRunner = this;
-        }
 
         int i = 0;
 
@@ -560,10 +556,6 @@ public class Node {
 
     private class CheckPredecessor implements Runnable {
 
-        private CheckPredecessor() {
-            checkPredecessorRunner = this;
-        }
-
         @Override
         public void run() {
             NodeInfo predecessorNode = predecessor.get();
@@ -592,13 +584,15 @@ public class Node {
         @Override
         public void run() {
             if (++count == MAX_JOIN_ATTEMPTS) {
-                ChordLogger.nodeError("Failed to join Chord network on remote " + remoteNode);
+                ChordLogger.logJoin("Failed to join Chord network on remote " + remoteNode);
+                shutdown();
+                return;
             }
 
             if (count == 1) {
-                ChordLogger.logNodeImportant("Joining Chord on remote " + remoteNode);
+                ChordLogger.logJoin("Joining Chord on remote " + remoteNode);
             } else {
-                ChordLogger.logNodeImportant("Attempt " + count + " joining Chord on remote " + remoteNode);
+                ChordLogger.logJoin("Attempt " + count + " joining Chord on remote " + remoteNode);
             }
 
             JoinObserver joiner = new JoinObserver();
@@ -606,6 +600,14 @@ public class Node {
 
             LookupMessage lookup = new LookupMessage(self.getChordId(), self);
             SocketManager.get().sendMessage(remoteNode, lookup);
+        }
+    }
+
+    private class NodeShutdown extends Thread {
+
+        @Override
+        public void run() {
+            shutdown();
         }
     }
 }
