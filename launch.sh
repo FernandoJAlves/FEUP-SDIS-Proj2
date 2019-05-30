@@ -38,7 +38,7 @@ sleep 2.2s
 join 29501 29500
 sleep 2.2s
 join 29502 29500
-'join 29503 29500
+: 'join 29503 29500
 join 29504 29500
 join 29505 29500
 sleep 2.2s

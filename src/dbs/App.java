@@ -17,8 +17,8 @@ import dbs.network.SocketManager;
 
 public class App {
 
-    private static final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();//ServerSocketFactory.getDefault();
-    private static final SocketFactory socketFactory = SocketFactory.getDefault();
+    private static final ServerSocketFactory serverFactory = SSLServerSocketFactory.getDefault(); //ServerSocketFactory.getDefault();
+    private static final SocketFactory socketFactory = SSLSocketFactory.getDefault();
 
     public static void main(String[] args) throws IOException {
         if (args.length <= 1)
