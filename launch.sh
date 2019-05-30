@@ -3,7 +3,8 @@
 source config.sh
 
 clear
-[ -d "$logdir" ] && rm -rf "$logdir" && mkdir -p "$logdir"
+[ -d "$logdir" ] && rm -rf "$logdir"
+mkdir -p "$logdir"
 
 declare -A map
 
