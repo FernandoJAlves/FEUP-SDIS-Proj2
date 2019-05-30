@@ -7,6 +7,8 @@ import java.net.InetSocketAddress;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 import dbs.chord.Chord;
 import dbs.chord.Node;
