@@ -19,7 +19,7 @@ public final class ChordLogger {
 
     private static final boolean PRINT_INTERNAL_ERROR = true;
     private static final boolean PRINT_EXTERNAL_ERROR = true;
-    private static final boolean PRINT_NODE_ERROR = true;
+    private static final boolean PRINT_BAD_PROGRESS = true;
     private static final boolean PRINT_IO_ERROR = true;
     private static final boolean PRINT_SOCKET_ERROR = true;
     private static final boolean PRINT_DROPS = true;
@@ -29,8 +29,8 @@ public final class ChordLogger {
     private static final boolean PRINT_NODE_CHECK_PREDECESSOR = false;
     private static final boolean PRINT_NODE_JOIN = true;
 
-    public static boolean DUMP_NODE_TABLE = true;
-    public static boolean USE_COLORS = false, USE_PREFIX = true;
+    public static boolean DUMP_NODE_TABLE = true; // required for extract.sh
+    public static boolean USE_COLORS = true, USE_PREFIX = true;
 
     private static final HashSet<String> inSet = new HashSet<>();
     private static final HashSet<String> outSet = new HashSet<>();
@@ -117,7 +117,7 @@ public final class ChordLogger {
 
     // Disrupted progress errors, such as not being able to update successor, predecessor or joining Chord network.
     public static void progress(String msg) {
-        if (PRINT_NODE_ERROR) {
+        if (PRINT_BAD_PROGRESS) {
             format(ERROR, "Node: " + msg);
         }
     }

@@ -4,8 +4,8 @@ source config.sh
 
 rm -f tables
 
-after_grep=$(( $m + 1 ))
-catch_tail=$(( $m + 3 ))
+after_grep=$(( $m + 2 ))
+catch_tail=$(( $m + 4 ))
 
 echo "tables for:"
 

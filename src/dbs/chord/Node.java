@@ -5,6 +5,8 @@ import static dbs.chord.Chord.CHECK_PREDECESSOR_PERIOD;
 import static dbs.chord.Chord.FIXFINGERS_DELAY;
 import static dbs.chord.Chord.FIXFINGERS_PERIOD;
 import static dbs.chord.Chord.MAX_JOIN_ATTEMPTS;
+import static dbs.chord.Chord.MAX_JOIN_WAIT;
+import static dbs.chord.Chord.MIN_JOIN_WAIT;
 import static dbs.chord.Chord.NODE_DUMP_DELAY;
 import static dbs.chord.Chord.NODE_DUMP_PERIOD;
 import static dbs.chord.Chord.NODE_TASKS_POOL_SIZE;
@@ -15,6 +17,7 @@ import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
@@ -312,7 +315,8 @@ public class Node {
      */
     public void handleFailedJoin() {
         ChordLogger.logJoin("Could not connect to Chord network: timeout occurred");
-        pool.submit(joinRunner);
+        int wait = ThreadLocalRandom.current().nextInt(MIN_JOIN_WAIT, MAX_JOIN_WAIT);
+        pool.schedule(joinRunner, wait, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -435,6 +439,7 @@ public class Node {
             String minId = Chord.percentStr(Chord.ithFinger(self.getChordId(), i));
             builder.append(String.format("\n  finger[%02d] (%s): %s", i, minId, fingerStr));
         }
+        builder.append("\nNumber of client sockets open: " + SocketManager.get().numOpenSockets());
         builder.append("\n\n");
 
         System.out.print(builder.toString());
