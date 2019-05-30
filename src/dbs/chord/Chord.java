@@ -12,15 +12,16 @@ public class Chord {
     public static final int m = 32;
     public static final BigInteger modulus = BigInteger.ONE.shiftLeft(m);
 
-    // All durations / delays / periods below are in milliseconds.
-    public static final int MAX_JOIN_ATTEMPTS = 6;
+    // Reasonable small numbers here...
+    public static final int MAX_JOIN_ATTEMPTS = 5;
     public static final int NODE_TASKS_POOL_SIZE = 2;
     public static final int DISPATCHER_TASKS_POOL_SIZE = 4;
 
-    public static final int STABILIZE_PERIOD = 1500;
-    public static final int FIXFINGERS_PERIOD = 30000 / m;
+    // All durations / delays / periods below are in milliseconds.
+    public static final int STABILIZE_PERIOD = 1000;
+    public static final int FIXFINGERS_PERIOD = 15000 / m; // full loop every 15s
     public static final int CHECK_PREDECESSOR_PERIOD = 2000;
-    public static final int NODE_DUMP_PERIOD = 12000;
+    public static final int NODE_DUMP_PERIOD = FIXFINGERS_PERIOD * m + 500;
 
     // There is no strong guarantee that the delays will enforce the order in which the subprotocols are started.
     public static final int STABILIZE_DELAY = 0;
@@ -29,9 +30,13 @@ public class Chord {
     public static final int NODE_DUMP_DELAY = 200;
 
     // How long the TimeoutObservers wait before running timeout().
-    public static final int CHECK_PREDECESSOR_WAIT = 3000; // AliveObserver
-    public static final int LOOKUP_WAIT = 5000; // ResponsibleObserver
-    public static final int JOIN_WAIT = 10000; // JoinObserver
+    public static final int CHECK_PREDECESSOR_WAIT = 1200; // AliveObserver
+    public static final int LOOKUP_WAIT = 2000; // ResponsibleObserver
+    public static final int JOIN_WAIT = 3000; // JoinObserver
+
+    // How long after a failed join should the peer try again.
+    public static final int MIN_JOIN_WAIT = 0;
+    public static final int MAX_JOIN_WAIT = 1500;
 
     // Printing config
     private static final int percentPrecision = 2;
@@ -177,6 +182,9 @@ public class Chord {
         return String.format(percentFormat, percent(a, b) * 100.0);
     }
 
+    /**
+     * @return Verbose print of the given node in the finger table.
+     */
     public static String print(NodeInfo node) {
         return node == null ? "?" : node.toString();
     }

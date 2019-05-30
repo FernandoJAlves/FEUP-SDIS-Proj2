@@ -7,8 +7,6 @@ import java.net.InetSocketAddress;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocketFactory;
 
 import dbs.chord.Chord;
 import dbs.chord.Node;
@@ -16,9 +14,6 @@ import dbs.chord.NodeInfo;
 import dbs.network.SocketManager;
 
 public class App {
-
-    private static final ServerSocketFactory serverFactory = SSLServerSocketFactory.getDefault(); //ServerSocketFactory.getDefault();
-    private static final SocketFactory socketFactory = SSLSocketFactory.getDefault();
 
     public static void main(String[] args) throws IOException {
         if (args.length <= 1)
@@ -47,6 +42,9 @@ public class App {
         int port = Integer.parseInt(args[2]);
         InetSocketAddress serverAddress = new InetSocketAddress(address, port);
 
+        final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();
+        final SocketFactory socketFactory = SocketFactory.getDefault();
+
         SocketManager.create(serverAddress, serverFactory, socketFactory);
         Node.create(serverAddress);
         BigInteger remoteId = new BigInteger(args[3]);
@@ -59,6 +57,9 @@ public class App {
     static void create(String[] args) throws IOException {
         if (args.length != 3)
             usage();
+
+        final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();
+        final SocketFactory socketFactory = SocketFactory.getDefault();
 
         InetAddress address = InetAddress.getByName(args[1]);
         int port = Integer.parseInt(args[2]);

@@ -12,8 +12,7 @@ precision=2
 addr="localhost"
 
 # How long should the launch.sh wait before killing everyone.
-wait=5s
-numwaits=30
+wait=30 # seconds
 
 # Log directory
 logdir="log"

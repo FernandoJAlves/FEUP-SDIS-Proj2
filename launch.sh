@@ -27,7 +27,7 @@ function create {
 }
 
 # $1 = my server port
-# $2 = some else's server port
+# $2 = someone else's server port
 function join {
     echo "Joining new chord peer $1 to $2"
     remote="${map["$2"]}"
@@ -40,8 +40,8 @@ create 29500
 sleep 2.2s
 join 29501 29500
 sleep 0.2s
-join 29502 29500
-join 29503 29500
+join 29502 29500 # same
+join 29503 29500 # same
 sleep 0.3s
 join 29504 29500
 sleep 0.5s
@@ -78,9 +78,6 @@ join 29529 29510 # same
 sleep 0.5s
 join 29530 29511
 
-echo -n "waiting($wait, x$numwaits) "
+source countdown.sh
 
-for port in $(seq 1 $numwaits); do
-    sleep $wait
-    echo -n .
-done
+countdown $wait

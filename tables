@@ -33,6 +33,7 @@ successor:   node(01.54%, localhost/127.0.0.1:29506)
   finger[30] (01.92%): node(03.87%, localhost/127.0.0.1:29526)
   finger[31] (14.42%): node(17.06%, localhost/127.0.0.1:29502)
   finger[32] (39.42%): node(45.68%, localhost/127.0.0.1:29510)
+Number of client sockets open: 17
 
 Table of node(29.70%, localhost/127.0.0.1:29501) (id 1275522183)
 predecessor: node(29.63%, localhost/127.0.0.1:29527)
@@ -68,6 +69,7 @@ successor:   node(31.91%, localhost/127.0.0.1:29515)
   finger[30] (42.20%): node(45.68%, localhost/127.0.0.1:29510)
   finger[31] (54.70%): node(55.09%, localhost/127.0.0.1:29528)
   finger[32] (79.70%): node(80.32%, localhost/127.0.0.1:29505)
+Number of client sockets open: 13
 
 Table of node(17.06%, localhost/127.0.0.1:29502) (id 732823891)
 predecessor: node(09.68%, localhost/127.0.0.1:29512)
@@ -103,6 +105,7 @@ successor:   node(17.22%, localhost/127.0.0.1:29509)
   finger[30] (29.56%): node(29.63%, localhost/127.0.0.1:29527)
   finger[31] (42.06%): node(45.68%, localhost/127.0.0.1:29510)
   finger[32] (67.06%): node(67.34%, localhost/127.0.0.1:29524)
+Number of client sockets open: 15
 
 Table of node(27.85%, localhost/127.0.0.1:29503) (id 1196000206)
 predecessor: node(26.69%, localhost/127.0.0.1:29529)
@@ -138,6 +141,7 @@ successor:   node(29.63%, localhost/127.0.0.1:29527)
   finger[30] (40.35%): node(45.68%, localhost/127.0.0.1:29510)
   finger[31] (52.85%): node(55.09%, localhost/127.0.0.1:29528)
   finger[32] (77.85%): node(78.64%, localhost/127.0.0.1:29518)
+Number of client sockets open: 12
 
 Table of node(75.48%, localhost/127.0.0.1:29504) (id 3241878387)
 predecessor: node(67.40%, localhost/127.0.0.1:29511)
@@ -173,6 +177,7 @@ successor:   node(78.64%, localhost/127.0.0.1:29518)
   finger[30] (87.98%): node(89.42%, localhost/127.0.0.1:29500)
   finger[31] (00.48%): node(01.54%, localhost/127.0.0.1:29506)
   finger[32] (25.48%): node(26.69%, localhost/127.0.0.1:29529)
+Number of client sockets open: 17
 
 Table of node(80.32%, localhost/127.0.0.1:29505) (id 3449718421)
 predecessor: node(79.10%, localhost/127.0.0.1:29520)
@@ -208,6 +213,7 @@ successor:   node(80.91%, localhost/127.0.0.1:29522)
   finger[30] (92.82%): node(01.54%, localhost/127.0.0.1:29506)
   finger[31] (05.32%): node(06.41%, localhost/127.0.0.1:29516)
   finger[32] (30.32%): node(31.91%, localhost/127.0.0.1:29515)
+Number of client sockets open: 14
 
 Table of node(01.54%, localhost/127.0.0.1:29506) (id 66121931)
 predecessor: node(89.42%, localhost/127.0.0.1:29500)
@@ -243,6 +249,7 @@ successor:   node(03.87%, localhost/127.0.0.1:29526)
   finger[30] (14.04%): node(17.06%, localhost/127.0.0.1:29502)
   finger[31] (26.54%): node(26.69%, localhost/127.0.0.1:29529)
   finger[32] (51.54%): node(55.09%, localhost/127.0.0.1:29528)
+Number of client sockets open: 22
 
 Table of node(17.50%, localhost/127.0.0.1:29507) (id 751669357)
 predecessor: node(17.22%, localhost/127.0.0.1:29509)
@@ -278,14 +285,15 @@ successor:   node(26.69%, localhost/127.0.0.1:29529)
   finger[30] (30.00%): node(31.91%, localhost/127.0.0.1:29515)
   finger[31] (42.50%): node(45.68%, localhost/127.0.0.1:29510)
   finger[32] (67.50%): node(75.48%, localhost/127.0.0.1:29504)
+Number of client sockets open: 12
 
 Table of node(31.94%, localhost/127.0.0.1:29508) (id 1371914137)
 predecessor: node(31.91%, localhost/127.0.0.1:29515)
 successor:   node(37.86%, localhost/127.0.0.1:29517)
   finger[02] (31.94%): node(37.86%, localhost/127.0.0.1:29517)
-  finger[03] (31.94%): node(37.86%, localhost/127.0.0.1:29517)
-  finger[04] (31.94%): node(37.86%, localhost/127.0.0.1:29517)
-  finger[05] (31.94%): node(37.86%, localhost/127.0.0.1:29517)
+  finger[03] (31.94%): node(45.68%, localhost/127.0.0.1:29510)
+  finger[04] (31.94%): node(45.68%, localhost/127.0.0.1:29510)
+  finger[05] (31.94%): node(45.68%, localhost/127.0.0.1:29510)
   finger[06] (31.94%): node(37.86%, localhost/127.0.0.1:29517)
   finger[07] (31.94%): node(37.86%, localhost/127.0.0.1:29517)
   finger[08] (31.94%): node(37.86%, localhost/127.0.0.1:29517)
@@ -313,6 +321,7 @@ successor:   node(37.86%, localhost/127.0.0.1:29517)
   finger[30] (44.44%): node(45.68%, localhost/127.0.0.1:29510)
   finger[31] (56.94%): node(58.27%, localhost/127.0.0.1:29523)
   finger[32] (81.94%): node(84.63%, localhost/127.0.0.1:29514)
+Number of client sockets open: 8
 
 Table of node(17.22%, localhost/127.0.0.1:29509) (id 739684956)
 predecessor: node(17.06%, localhost/127.0.0.1:29502)
@@ -348,6 +357,7 @@ successor:   node(17.50%, localhost/127.0.0.1:29507)
   finger[30] (29.72%): node(31.91%, localhost/127.0.0.1:29515)
   finger[31] (42.22%): node(45.68%, localhost/127.0.0.1:29510)
   finger[32] (67.22%): node(67.34%, localhost/127.0.0.1:29524)
+Number of client sockets open: 7
 
 Table of node(45.68%, localhost/127.0.0.1:29510) (id 1962066006)
 predecessor: node(37.86%, localhost/127.0.0.1:29517)
@@ -383,6 +393,7 @@ successor:   node(47.48%, localhost/127.0.0.1:29530)
   finger[30] (58.18%): node(58.27%, localhost/127.0.0.1:29523)
   finger[31] (70.68%): node(75.48%, localhost/127.0.0.1:29504)
   finger[32] (95.68%): node(01.54%, localhost/127.0.0.1:29506)
+Number of client sockets open: 20
 
 Table of node(67.40%, localhost/127.0.0.1:29511) (id 2894661271)
 predecessor: node(67.34%, localhost/127.0.0.1:29524)
@@ -418,6 +429,7 @@ successor:   node(75.48%, localhost/127.0.0.1:29504)
   finger[30] (79.90%): node(80.32%, localhost/127.0.0.1:29505)
   finger[31] (92.40%): node(01.54%, localhost/127.0.0.1:29506)
   finger[32] (17.40%): node(17.50%, localhost/127.0.0.1:29507)
+Number of client sockets open: 9
 
 Table of node(09.68%, localhost/127.0.0.1:29512) (id 415605016)
 predecessor: node(07.17%, localhost/127.0.0.1:29521)
@@ -453,14 +465,15 @@ successor:   node(17.06%, localhost/127.0.0.1:29502)
   finger[30] (22.18%): node(26.69%, localhost/127.0.0.1:29529)
   finger[31] (34.68%): node(37.86%, localhost/127.0.0.1:29517)
   finger[32] (59.68%): node(60.57%, localhost/127.0.0.1:29519)
+Number of client sockets open: 9
 
 Table of node(48.27%, localhost/127.0.0.1:29513) (id 2073342464)
 predecessor: node(47.48%, localhost/127.0.0.1:29530)
 successor:   node(55.09%, localhost/127.0.0.1:29528)
   finger[02] (48.27%): node(55.09%, localhost/127.0.0.1:29528)
-  finger[03] (48.27%): node(55.09%, localhost/127.0.0.1:29528)
-  finger[04] (48.27%): node(55.09%, localhost/127.0.0.1:29528)
-  finger[05] (48.27%): node(55.09%, localhost/127.0.0.1:29528)
+  finger[03] (48.27%): node(60.57%, localhost/127.0.0.1:29519)
+  finger[04] (48.27%): node(58.27%, localhost/127.0.0.1:29523)
+  finger[05] (48.27%): node(58.27%, localhost/127.0.0.1:29523)
   finger[06] (48.27%): node(55.09%, localhost/127.0.0.1:29528)
   finger[07] (48.27%): node(55.09%, localhost/127.0.0.1:29528)
   finger[08] (48.27%): node(55.09%, localhost/127.0.0.1:29528)
@@ -488,6 +501,7 @@ successor:   node(55.09%, localhost/127.0.0.1:29528)
   finger[30] (60.77%): node(67.34%, localhost/127.0.0.1:29524)
   finger[31] (73.27%): node(75.48%, localhost/127.0.0.1:29504)
   finger[32] (98.27%): node(01.54%, localhost/127.0.0.1:29506)
+Number of client sockets open: 9
 
 Table of node(84.63%, localhost/127.0.0.1:29514) (id 3634985336)
 predecessor: node(80.91%, localhost/127.0.0.1:29522)
@@ -523,6 +537,7 @@ successor:   node(89.42%, localhost/127.0.0.1:29500)
   finger[30] (97.13%): node(01.54%, localhost/127.0.0.1:29506)
   finger[31] (09.63%): node(09.68%, localhost/127.0.0.1:29512)
   finger[32] (34.63%): node(37.86%, localhost/127.0.0.1:29517)
+Number of client sockets open: 13
 
 Table of node(31.91%, localhost/127.0.0.1:29515) (id 1370409789)
 predecessor: node(29.70%, localhost/127.0.0.1:29501)
@@ -558,6 +573,7 @@ successor:   node(31.94%, localhost/127.0.0.1:29508)
   finger[30] (44.41%): node(45.68%, localhost/127.0.0.1:29510)
   finger[31] (56.91%): node(58.27%, localhost/127.0.0.1:29523)
   finger[32] (81.91%): node(84.63%, localhost/127.0.0.1:29514)
+Number of client sockets open: 14
 
 Table of node(06.41%, localhost/127.0.0.1:29516) (id 275128690)
 predecessor: node(04.04%, localhost/127.0.0.1:29525)
@@ -593,6 +609,7 @@ successor:   node(07.17%, localhost/127.0.0.1:29521)
   finger[30] (18.91%): node(26.69%, localhost/127.0.0.1:29529)
   finger[31] (31.41%): node(31.91%, localhost/127.0.0.1:29515)
   finger[32] (56.41%): node(58.27%, localhost/127.0.0.1:29523)
+Number of client sockets open: 14
 
 Table of node(37.86%, localhost/127.0.0.1:29517) (id 1626157690)
 predecessor: node(31.94%, localhost/127.0.0.1:29508)
@@ -628,6 +645,7 @@ successor:   node(45.68%, localhost/127.0.0.1:29510)
   finger[30] (50.36%): node(55.09%, localhost/127.0.0.1:29528)
   finger[31] (62.86%): node(67.34%, localhost/127.0.0.1:29524)
   finger[32] (87.86%): node(89.42%, localhost/127.0.0.1:29500)
+Number of client sockets open: 12
 
 Table of node(78.64%, localhost/127.0.0.1:29518) (id 3377436475)
 predecessor: node(75.48%, localhost/127.0.0.1:29504)
@@ -663,6 +681,7 @@ successor:   node(79.10%, localhost/127.0.0.1:29520)
   finger[30] (91.14%): node(01.54%, localhost/127.0.0.1:29506)
   finger[31] (03.64%): node(03.87%, localhost/127.0.0.1:29526)
   finger[32] (28.64%): node(29.63%, localhost/127.0.0.1:29527)
+Number of client sockets open: 10
 
 Table of node(60.57%, localhost/127.0.0.1:29519) (id 2601539001)
 predecessor: node(58.27%, localhost/127.0.0.1:29523)
@@ -698,6 +717,7 @@ successor:   node(67.34%, localhost/127.0.0.1:29524)
   finger[30] (73.07%): node(75.48%, localhost/127.0.0.1:29504)
   finger[31] (85.57%): node(89.42%, localhost/127.0.0.1:29500)
   finger[32] (10.57%): node(17.06%, localhost/127.0.0.1:29502)
+Number of client sockets open: 13
 
 Table of node(79.10%, localhost/127.0.0.1:29520) (id 3397140134)
 predecessor: node(78.64%, localhost/127.0.0.1:29518)
@@ -733,12 +753,13 @@ successor:   node(80.32%, localhost/127.0.0.1:29505)
   finger[30] (91.60%): node(01.54%, localhost/127.0.0.1:29506)
   finger[31] (04.10%): node(06.41%, localhost/127.0.0.1:29516)
   finger[32] (29.10%): node(29.63%, localhost/127.0.0.1:29527)
+Number of client sockets open: 9
 
 Table of node(07.17%, localhost/127.0.0.1:29521) (id 307951902)
 predecessor: node(06.41%, localhost/127.0.0.1:29516)
 successor:   node(09.68%, localhost/127.0.0.1:29512)
   finger[02] (07.17%): node(09.68%, localhost/127.0.0.1:29512)
-  finger[03] (07.17%): node(09.68%, localhost/127.0.0.1:29512)
+  finger[03] (07.17%): node(17.06%, localhost/127.0.0.1:29502)
   finger[04] (07.17%): node(09.68%, localhost/127.0.0.1:29512)
   finger[05] (07.17%): node(09.68%, localhost/127.0.0.1:29512)
   finger[06] (07.17%): node(09.68%, localhost/127.0.0.1:29512)
@@ -768,6 +789,7 @@ successor:   node(09.68%, localhost/127.0.0.1:29512)
   finger[30] (19.67%): node(26.69%, localhost/127.0.0.1:29529)
   finger[31] (32.17%): node(37.86%, localhost/127.0.0.1:29517)
   finger[32] (57.17%): node(58.27%, localhost/127.0.0.1:29523)
+Number of client sockets open: 9
 
 Table of node(80.91%, localhost/127.0.0.1:29522) (id 3475267771)
 predecessor: node(80.32%, localhost/127.0.0.1:29505)
@@ -803,6 +825,7 @@ successor:   node(84.63%, localhost/127.0.0.1:29514)
   finger[30] (93.41%): node(01.54%, localhost/127.0.0.1:29506)
   finger[31] (05.91%): node(06.41%, localhost/127.0.0.1:29516)
   finger[32] (30.91%): node(31.91%, localhost/127.0.0.1:29515)
+Number of client sockets open: 8
 
 Table of node(58.27%, localhost/127.0.0.1:29523) (id 2502560820)
 predecessor: node(55.09%, localhost/127.0.0.1:29528)
@@ -838,6 +861,7 @@ successor:   node(60.57%, localhost/127.0.0.1:29519)
   finger[30] (70.77%): node(75.48%, localhost/127.0.0.1:29504)
   finger[31] (83.27%): node(84.63%, localhost/127.0.0.1:29514)
   finger[32] (08.27%): node(09.68%, localhost/127.0.0.1:29512)
+Number of client sockets open: 11
 
 Table of node(67.34%, localhost/127.0.0.1:29524) (id 2892232043)
 predecessor: node(60.57%, localhost/127.0.0.1:29519)
@@ -873,14 +897,15 @@ successor:   node(67.40%, localhost/127.0.0.1:29511)
   finger[30] (79.84%): node(80.32%, localhost/127.0.0.1:29505)
   finger[31] (92.34%): node(01.54%, localhost/127.0.0.1:29506)
   finger[32] (17.34%): node(17.50%, localhost/127.0.0.1:29507)
+Number of client sockets open: 12
 
 Table of node(04.04%, localhost/127.0.0.1:29525) (id 173686423)
 predecessor: node(03.87%, localhost/127.0.0.1:29526)
 successor:   node(06.41%, localhost/127.0.0.1:29516)
   finger[02] (04.04%): node(06.41%, localhost/127.0.0.1:29516)
-  finger[03] (04.04%): node(06.41%, localhost/127.0.0.1:29516)
-  finger[04] (04.04%): node(06.41%, localhost/127.0.0.1:29516)
-  finger[05] (04.04%): node(06.41%, localhost/127.0.0.1:29516)
+  finger[03] (04.04%): node(07.17%, localhost/127.0.0.1:29521)
+  finger[04] (04.04%): node(07.17%, localhost/127.0.0.1:29521)
+  finger[05] (04.04%): node(07.17%, localhost/127.0.0.1:29521)
   finger[06] (04.04%): node(06.41%, localhost/127.0.0.1:29516)
   finger[07] (04.04%): node(06.41%, localhost/127.0.0.1:29516)
   finger[08] (04.04%): node(06.41%, localhost/127.0.0.1:29516)
@@ -908,6 +933,7 @@ successor:   node(06.41%, localhost/127.0.0.1:29516)
   finger[30] (16.54%): node(17.06%, localhost/127.0.0.1:29502)
   finger[31] (29.04%): node(29.63%, localhost/127.0.0.1:29527)
   finger[32] (54.04%): node(55.09%, localhost/127.0.0.1:29528)
+Number of client sockets open: 8
 
 Table of node(03.87%, localhost/127.0.0.1:29526) (id 166428356)
 predecessor: node(01.54%, localhost/127.0.0.1:29506)
@@ -943,6 +969,7 @@ successor:   node(04.04%, localhost/127.0.0.1:29525)
   finger[30] (16.37%): node(17.06%, localhost/127.0.0.1:29502)
   finger[31] (28.87%): node(29.63%, localhost/127.0.0.1:29527)
   finger[32] (53.87%): node(55.09%, localhost/127.0.0.1:29528)
+Number of client sockets open: 10
 
 Table of node(29.63%, localhost/127.0.0.1:29527) (id 1272582014)
 predecessor: node(27.85%, localhost/127.0.0.1:29503)
@@ -978,6 +1005,7 @@ successor:   node(29.70%, localhost/127.0.0.1:29501)
   finger[30] (42.13%): node(45.68%, localhost/127.0.0.1:29510)
   finger[31] (54.63%): node(55.09%, localhost/127.0.0.1:29528)
   finger[32] (79.63%): node(80.32%, localhost/127.0.0.1:29505)
+Number of client sockets open: 14
 
 Table of node(55.09%, localhost/127.0.0.1:29528) (id 2366293399)
 predecessor: node(48.27%, localhost/127.0.0.1:29513)
@@ -1013,6 +1041,7 @@ successor:   node(58.27%, localhost/127.0.0.1:29523)
   finger[30] (67.59%): node(75.48%, localhost/127.0.0.1:29504)
   finger[31] (80.09%): node(80.32%, localhost/127.0.0.1:29505)
   finger[32] (05.09%): node(06.41%, localhost/127.0.0.1:29516)
+Number of client sockets open: 14
 
 Table of node(26.69%, localhost/127.0.0.1:29529) (id 1146391306)
 predecessor: node(17.50%, localhost/127.0.0.1:29507)
@@ -1048,6 +1077,7 @@ successor:   node(27.85%, localhost/127.0.0.1:29503)
   finger[30] (39.19%): node(45.68%, localhost/127.0.0.1:29510)
   finger[31] (51.69%): node(55.09%, localhost/127.0.0.1:29528)
   finger[32] (76.69%): node(78.64%, localhost/127.0.0.1:29518)
+Number of client sockets open: 14
 
 Table of node(47.48%, localhost/127.0.0.1:29530) (id 2039360920)
 predecessor: node(45.68%, localhost/127.0.0.1:29510)
@@ -1083,3 +1113,4 @@ successor:   node(48.27%, localhost/127.0.0.1:29513)
   finger[30] (59.98%): node(60.57%, localhost/127.0.0.1:29519)
   finger[31] (72.48%): node(75.48%, localhost/127.0.0.1:29504)
   finger[32] (97.48%): node(01.54%, localhost/127.0.0.1:29506)
+Number of client sockets open: 7
