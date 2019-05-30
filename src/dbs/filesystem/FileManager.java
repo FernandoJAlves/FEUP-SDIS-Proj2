@@ -51,10 +51,7 @@ public class FileManager implements Runnable {
       ByteBuffer buffer = ByteBuffer.wrap(request.getContent());
 
       // Version chunk-a-chunk
-      //long position = request.getChunkNum() * Configuration.CHUNK_SIZE;
-
-      // Version full-file
-      long position = 0;
+      long position = request.getChunkNum() * Configuration.CHUNK_SIZE;
 
       fileChannel.write(buffer, position, buffer, new CompletionHandler<>() {
         @Override
