@@ -4,6 +4,7 @@ import dbs.filesystem.messages.DeleteRequest;
 import dbs.filesystem.messages.ReadRequest;
 import dbs.filesystem.messages.Request;
 import dbs.filesystem.messages.WriteRequest;
+import dbs.filesystem.threads.Reader;
 
 import java.io.IOException;
 import java.io.PipedOutputStream;
@@ -15,9 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 /**
@@ -25,6 +24,8 @@ import java.util.logging.Logger;
  * and delete operations using the Java NIO API and a thread pool
  */
 public class FileManager implements Runnable {
+
+  private static ThreadPoolExecutor threadpool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Configuration.POOL_SIZE);
 
   private static FileManager instance;
   private final LinkedBlockingDeque<Request> queue;
@@ -40,6 +41,10 @@ public class FileManager implements Runnable {
       managerThread.start();
     }
     return instance;
+  }
+
+  public ThreadPoolExecutor getThreadpool() {
+    return threadpool;
   }
 
   public void write(WriteRequest request) throws IOException {

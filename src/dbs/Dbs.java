@@ -13,6 +13,9 @@ import javax.net.SocketFactory;
 import dbs.chord.Chord;
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
+import dbs.chord.observers.protocols.BackupResponseObserver;
+import dbs.filesystem.FileManager;
+import dbs.filesystem.threads.Reader;
 import dbs.network.SocketManager;
 
 public class Dbs implements RemoteInterface {
@@ -101,6 +104,15 @@ public class Dbs implements RemoteInterface {
         BigInteger fileId = Chord.encodeSHA256(filepath);
 
         CompletableFuture<NodeInfo> future = Node.get().lookup(fileId);
+
+        CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
+        Reader reader = null;
+        try {
+            reader = new Reader(filepath,fileFuture);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FileManager.getInstance().getThreadpool().submit(reader);
 
         //byte[] file = getFile(filepath); // bloqueia
         // pedido da API TestApp, portanto pode dar throw.
