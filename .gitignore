@@ -20,7 +20,7 @@
 *.rar
 
 # Generated folders
-dbs/
+out/
 log/
 sdis2/
 
@@ -28,3 +28,5 @@ sdis2/
 hs_err_pid*
 
 .vscode
+.idea
+*.iml

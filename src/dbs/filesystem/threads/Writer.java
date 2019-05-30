@@ -26,18 +26,19 @@ public class Writer extends RequestManager implements Runnable {
   @Override
   public void run() {
 
-    byte[] chunkBuf = new byte[Configuration.CHUNK_SIZE];
-    int response = 1;
-    for (int i = 0, j = 0; i < content.length; i+= Configuration.CHUNK_SIZE, j++)  {
-      System.arraycopy(this.content,i,chunkBuf,0, Configuration.CHUNK_SIZE);
+    for (int i = 0, j = 0; i < this.content.length; i+= Configuration.CHUNK_SIZE, j++)  {
+      int chunkSize = this.content.length - i * Configuration.CHUNK_SIZE;
+      byte[] chunkBuf = new byte[chunkSize];
+      System.arraycopy(this.content,i,chunkBuf,0, chunkSize);
+
       FileManager.getInstance().addRequest(this.createRequest(j,chunkBuf));
 
+      int response;
       try {
         response = this.inputStream.read();
       } catch (IOException e) {
         response = 0;
       }
-
       if(response == 0) {
         Logger.getGlobal().severe("Could not write backed up file with key " + this.key);
         this.closeStreams();
@@ -46,6 +47,7 @@ public class Writer extends RequestManager implements Runnable {
 
       Arrays.fill(chunkBuf, (byte)0);
     }
+
     Logger.getGlobal().info("Successful writing of backed up file with key " + this.key);
     this.closeStreams();
   }

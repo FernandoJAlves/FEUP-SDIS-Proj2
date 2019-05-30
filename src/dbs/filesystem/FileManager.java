@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,27 +34,44 @@ public class FileManager implements Runnable {
   }
 
   public static FileManager getInstance() {
-    if (instance == null)
-      return new FileManager();
+    if (instance == null) {
+      instance = new FileManager();
+      Thread managerThread = new Thread(instance);
+      managerThread.start();
+    }
     return instance;
   }
 
   public void write(WriteRequest request) throws IOException {
     PipedOutputStream outputStream = request.getPipe();
     Path path = Paths.get(request.getFilePath());
-    AsynchronousFileChannel fileChannel = null;
+
     try {
-      fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
+      AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
+      ByteBuffer buffer = ByteBuffer.wrap(request.getContent());
+      long position = request.getChunkNum() * Configuration.CHUNK_SIZE;
+
+      fileChannel.write(buffer, position, buffer, new CompletionHandler<>() {
+        @Override
+        public void completed(Integer integer, ByteBuffer byteBuffer) {
+          buffer.clear();
+          try {
+            fileChannel.close();
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          Logger.getGlobal().info("Successful chunk writing!");
+        }
+        @Override
+        public void failed(Throwable throwable, ByteBuffer byteBuffer) {
+          Logger.getGlobal().severe("Could not write chunk!");
+        }
+      });
     } catch (IOException e) {
       Logger.getGlobal().severe("File manager could not open write on path  " + path);
       outputStream.write(0);
       return;
     }
-    ByteBuffer buffer = ByteBuffer.allocate(Configuration.CHUNK_SIZE);
-    long position = request.getChunkNum() * Configuration.CHUNK_SIZE;
-    buffer.put(request.getContent());
-    fileChannel.write(buffer,position);
-    buffer.clear();
   }
 
   public void read(ReadRequest request) throws IOException {
