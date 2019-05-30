@@ -7,6 +7,8 @@ import java.net.InetSocketAddress;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
 
 import dbs.chord.Chord;
 import dbs.chord.Node;
@@ -15,7 +17,7 @@ import dbs.network.SocketManager;
 
 public class App {
 
-    private static final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();
+    private static final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();//ServerSocketFactory.getDefault();
     private static final SocketFactory socketFactory = SocketFactory.getDefault();
 
     public static void main(String[] args) throws IOException {
