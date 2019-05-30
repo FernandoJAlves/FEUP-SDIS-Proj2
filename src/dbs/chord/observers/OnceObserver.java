@@ -4,11 +4,11 @@ import dbs.chord.messages.ChordMessageKey;
 
 public abstract class OnceObserver extends ChordObserver {
 
-    public OnceObserver(String kind) {
+    protected OnceObserver(String kind) {
         super(kind);
     }
 
-    public OnceObserver(ChordMessageKey key) {
+    protected OnceObserver(ChordMessageKey key) {
         super(key);
     }
 }

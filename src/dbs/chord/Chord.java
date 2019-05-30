@@ -12,21 +12,27 @@ public class Chord {
     public static final int m = 32;
     public static final BigInteger modulus = BigInteger.ONE.shiftLeft(m);
 
-    // Node config: These may vary between nodes.
+    // All durations / delays / periods below are in milliseconds.
+    public static final int MAX_JOIN_ATTEMPTS = 3;
+    public static final boolean NODE_DUMP_TABLE = true;
     public static final int NODE_TASKS_POOL_SIZE = 2;
+    public static final int DISPATCHER_TASKS_POOL_SIZE = 4;
+
     public static final int STABILIZE_PERIOD = 4000;
     public static final int FIXFINGERS_PERIOD = 30000 / m;
     public static final int CHECK_PREDECESSOR_PERIOD = 5000;
     public static final int NODE_DUMP_PERIOD = 12000;
-    public static final boolean NODE_DUMP_TABLE = true;
 
-    // Timeouts in ms for the observers to give up waiting and run timeout(). May vary between nodes.
+    // There is no strong guarantee that the delays will enforce the order in which the subprotocols are started.
+    public static final int STABILIZE_DELAY = 0;
+    public static final int FIXFINGERS_DELAY = 50;
+    public static final int CHECK_PREDECESSOR_DELAY = 100;
+    public static final int NODE_DUMP_DELAY = 200;
+
+    // How long the TimeoutObservers wait before running timeout().
     public static final int CHECK_PREDECESSOR_WAIT = 3000; // AliveObserver
     public static final int LOOKUP_WAIT = 5000; // ResponsibleObserver
     public static final int JOIN_WAIT = 10000; // JoinObserver
-
-    // Dispatcher config: These may vary between nodes.
-    public static final int DISPATCHER_TASKS_POOL_SIZE = 4;
 
     // Printing config
     private static final int percentPrecision = 2;
@@ -154,7 +160,7 @@ public class Chord {
         return percent(relative(a, b));
     }
 
-    private static final String percentFormat = "%." + percentPrecision + "f%%";
+    private static final String percentFormat = "%0" + (3 + percentPrecision) + "." + percentPrecision + "f%%";
 
     /**
      * @param id a chord id.

@@ -17,7 +17,7 @@ import dbs.chord.NodeInfo;
  * that received it, again because our implementation is recursive and not
  * iterative.
  */
-public final class LookupMessage extends ChordMessage {
+public final class LookupMessage extends ForwardingMessage {
 
     private final NodeInfo sourceNode;
     private final BigInteger chordId;
@@ -26,6 +26,12 @@ public final class LookupMessage extends ChordMessage {
         super("LOOKUP");
         this.sourceNode = source;
         this.chordId = chordId;
+    }
+
+    public LookupMessage(LookupMessage message) {
+        super(message);
+        this.sourceNode = message.sourceNode;
+        this.chordId = message.chordId;
     }
 
     public NodeInfo getSourceNode() {
