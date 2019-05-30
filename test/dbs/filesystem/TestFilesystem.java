@@ -1,6 +1,5 @@
 package dbs.filesystem;
 
-import dbs.filesystem.Configuration;
 import dbs.filesystem.threads.Eraser;
 import dbs.filesystem.threads.Writer;
 
@@ -28,7 +27,7 @@ public class TestFilesystem {
     // Check if file was generated
     TestCase.assertTrue(file.createNewFile());
 
-    // Launch thread
+    // Launch Eraser thread
     Eraser eraser = new Eraser(path, Configuration.Ownership.OWNED);
     Thread eraserThread = new Thread(eraser);
     eraserThread.start();
@@ -56,7 +55,7 @@ public class TestFilesystem {
     // File's content to be written
     byte[] fileContent = "This is a test message!".getBytes();
 
-    // Write content to file
+    // Launch Writer Thread
     Writer writer = new Writer(fileKey, fileContent);
     Thread writerThread = new Thread(writer);
     writerThread.start();

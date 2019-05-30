@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
+import javax.net.ssl.*;
 
 import dbs.chord.ChordLogger;
 import dbs.chord.NodeInfo;
@@ -45,6 +46,7 @@ public class SocketManager {
         InetAddress address = serverAddress.getAddress();
 
         this.server = serverFactory.createServerSocket(port, 15, address);
+        //TODO: Setup do contexto SSL de this.server
         this.listeners = new ConcurrentHashMap<>();
         this.factory = socketFactory;
         instance = this;
@@ -169,7 +171,7 @@ public class SocketManager {
                 if (server.isClosed())
                     break;
                 try {
-                    Socket socket = server.accept();
+                    SSLSocket socket = (SSLSocket) server.accept();
                     if (socket == null)
                         continue;
                     new ChordListener(socket);
