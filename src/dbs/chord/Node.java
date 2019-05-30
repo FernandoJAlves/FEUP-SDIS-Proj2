@@ -15,6 +15,7 @@ import static dbs.chord.Chord.STABILIZE_PERIOD;
 
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadLocalRandom;
@@ -52,6 +53,8 @@ public class Node {
     private static Node instance;
     private static Join joinRunner;
 
+    private static HashMap<BigInteger,Integer> replicationMap;
+
     public static Node get() {
         return instance;
     }
@@ -73,6 +76,7 @@ public class Node {
         this.finger = new AtomicReferenceArray<>(Chord.m + 1);
         this.pool = new ScheduledThreadPoolExecutor(NODE_TASKS_POOL_SIZE);
         instance = this;
+        replicationMap = new HashMap<>();
 
         ChordLogger.logNodeImportant("Created " + self);
 
@@ -86,6 +90,8 @@ public class Node {
     public NodeInfo getSelf() {
         return self;
     }
+
+    public HashMap<BigInteger,Integer> getReplicationMap() { return replicationMap; }
 
     /**
      * @return The NodeInfo data for this node's predecessor.
@@ -477,6 +483,17 @@ public class Node {
             pool.awaitTermination(wait, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void addFile(BigInteger fileKey, int replicationDegree) {
+        if (replicationMap.containsKey(fileKey)) {
+            int currentRepDegree = replicationMap.get(fileKey);
+            if (replicationDegree > currentRepDegree) {
+                replicationMap.put(fileKey,replicationDegree);
+            }
+        } else {
+            replicationMap.put(fileKey,replicationDegree);
         }
     }
 

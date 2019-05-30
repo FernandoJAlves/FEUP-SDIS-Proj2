@@ -5,7 +5,6 @@ import dbs.filesystem.FileManager;
 import dbs.filesystem.messages.DeleteRequest;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public class Eraser extends RequestManager implements Runnable {
 
@@ -32,10 +31,11 @@ public class Eraser extends RequestManager implements Runnable {
       response = 0;
     }
 
-    if(response == 0)
-      Logger.getGlobal().severe("Could not delete " + this.ownership.name() + " file with key " + this.key);
-    else if (response == 1)
-      Logger.getGlobal().info("Successful deletion of " + this.ownership.name() + " file with key " + this.key);
+    /*if(response == 0)
+        Logger.getGlobal().severe("Could not delete " + this.ownership.name() + " file with key " + this.key);
+      else if (response == 1)
+        Logger.getGlobal().info("Successful deletion of " + this.ownership.name() + " file with key " + this.key);
+     */
 
     this.closeStreams();
   }

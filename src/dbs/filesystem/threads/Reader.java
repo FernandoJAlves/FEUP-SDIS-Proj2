@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Logger;
 
 public class Reader extends RequestManager implements Runnable {
 
@@ -38,7 +37,7 @@ public class Reader extends RequestManager implements Runnable {
         readBytes = this.inputStream.read(chunk, 0, Configuration.CHUNK_SIZE);
         fileContent.write(chunk,0, readBytes);
       } catch (IOException e) {
-        Logger.getGlobal().severe("Could not read from file with key " + this.key);
+        //Logger.getGlobal().severe("Could not read from file with key " + this.key);
         this.closeStreams();
         return;
       }
@@ -48,7 +47,7 @@ public class Reader extends RequestManager implements Runnable {
       Arrays.fill(chunk, (byte)0);
       chunkNum++;
     }
-    Logger.getGlobal().info("Successful reading of file with key " + this.key);
+    //Logger.getGlobal().info("Successful reading of file with key " + this.key);
 
     this.closeStreams();
 

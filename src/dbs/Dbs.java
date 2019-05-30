@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -114,13 +115,11 @@ public class Dbs implements RemoteInterface {
         }
         FileManager.getInstance().getThreadpool().submit(reader);
 
-        //byte[] file = getFile(filepath); // bloqueia
-        // pedido da API TestApp, portanto pode dar throw.
-
-        //assert file != null;
-
         CompletableFuture<Integer> resultCode;
         BackupResponseObserver observer = new BackupResponseObserver(fileId, resultCode);
+
+        // replace replicationDeg with number of observer answers
+        Node.get().addFile(fileId,replicationDeg);
     }
 
     @Override
@@ -130,10 +129,7 @@ public class Dbs implements RemoteInterface {
 
     @Override
     public void delete(String pathname) {
-  
+        HashMap<BigInteger,Integer> replicationMap = Node.get().getReplicationMap();
+        // TODO: call function to retrieve offsets of nodes
     }
-
-
-
-    
 }
