@@ -61,7 +61,7 @@ public class Chord {
             System.arraycopy(ipBytes, 0, bytes, 0, ipBytes.length);
             System.arraycopy(portBytes, 0, bytes, ipBytes.length, portBytes.length);
 
-            return relative(BigInteger.ZERO, new BigInteger(md.digest(bytes)));
+            return normalize(new BigInteger(md.digest(bytes)));
         } catch (NoSuchAlgorithmException e) {
             throw new InternalError(e);
         }
@@ -71,7 +71,6 @@ public class Chord {
         return consistentHash(socketAddress.getAddress(), socketAddress.getPort());
     }
 
-
     public static BigInteger encodeSHA256(String toEncode) {
         byte[] encodedString = {};
         try {
@@ -80,7 +79,7 @@ public class Chord {
         } catch (NoSuchAlgorithmException e) {
             throw new InternalError(e);
         }
-        return relative(BigInteger.ZERO, new BigInteger(encodedString));
+        return normalize(new BigInteger(encodedString));
     }
 
     // Function from: https://www.baeldung.com/sha-256-hashing-java
@@ -94,7 +93,6 @@ public class Chord {
         }
         return hexString.toString();
     }
-
 
     /**
      * Retrieve the relative position of b relative to a, modulo 2^m.
@@ -112,6 +110,14 @@ public class Chord {
         while (rel.signum() < 0)
             rel = rel.add(modulus);
         return rel;
+    }
+
+    /**
+     * @param i Any BigInteger, possibly out of bounds.
+     * @return The chord id designated by this BigInteger.
+     */
+    public static BigInteger normalize(BigInteger i) {
+        return relative(BigInteger.ZERO, i);
     }
 
     /**
@@ -213,5 +219,57 @@ public class Chord {
      */
     public static String print(NodeInfo node) {
         return node == null ? "?" : node.toString();
+    }
+
+    /**
+     * Given a chord id 'ID', and a replication degree 'R', compute the following
+     * chord ids -- there are R of them, all evenly spaced around the Chord circle.
+     *
+     *                             | i * 2^m |
+     *                    baseId + | ------- |, i = 0, 1, ..., R - 1.
+     *                             |_   R   _|
+     *
+     * Precondition: 2R <= 2^m.
+     *
+     * @param baseId The base chord id.
+     * @param i Compute the ith offset chord id.
+     * @param R Replication degree.
+     * @return The chord id given by the formula above.
+     */
+    public static BigInteger offset(BigInteger baseId, int i, int R) {
+        assert i >= 0 && R > 0 && i < R;
+
+        BigInteger bigI = BigInteger.valueOf(i);
+        BigInteger bigR = BigInteger.valueOf(R);
+
+        if (modulus.compareTo(bigR) >= 0)
+            throw new IllegalArgumentException("Replication degree too large");
+
+        return normalize(baseId.add(modulus.multiply(bigI).divide(bigR)));
+    }
+
+    /**
+     * Like offset(baseId, i, R), but returns an array for each i.
+     *
+     * @param baseId The base chord id.
+     * @param R Replication degree.
+     * @return The chord ids array given by the formula above, for each i in range.
+     */
+    public static BigInteger[] offsets(BigInteger baseId, int R) {
+        assert R > 0;
+
+        BigInteger bigR = BigInteger.valueOf(R);
+
+        if (modulus.compareTo(bigR) >= 0)
+            throw new IllegalArgumentException("Replication degree too large");
+
+        BigInteger[] ids = new BigInteger[R];
+
+        for (int i = 0; i < R; ++i) {
+            BigInteger bigI = BigInteger.valueOf(i);
+            ids[i] = normalize(baseId.add(modulus.multiply(bigI).divide(bigR)));
+        }
+
+        return ids;
     }
 }

@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -12,8 +13,10 @@ import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 
 import dbs.chord.Chord;
+import dbs.chord.ChordDispatcher;
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
+import dbs.chord.messages.protocol.BackupMessage;
 import dbs.chord.observers.protocols.BackupResponseObserver;
 import dbs.filesystem.FileManager;
 import dbs.filesystem.threads.Reader;
@@ -100,26 +103,89 @@ public class Dbs implements RemoteInterface {
         System.exit(0);
     }
 
+    private byte[] getFile(String filepath) {
+        return new byte[10];
+    }
+
+    private ArrayList<CompletableFuture<NodeInfo>> lookupAll(BigInteger baseId, int R) {
+        BigInteger[] ids = Chord.offsets(baseId, R);
+
+        @SuppressWarnings("unchecked")
+        ArrayList<CompletableFuture<NodeInfo>> futures = new ArrayList<>();
+
+        for (int i = 0; i < R; ++i) {
+            futures.add(Node.get().lookup(ids[i]));
+        }
+
+        return futures;
+    }
+
     @Override
-    public void backup(String filepath, int replicationDeg) {
+    public void backup(String filepath, int R) {
+        assert filepath != null && R > 0;
+
         BigInteger fileId = Chord.encodeSHA256(filepath);
 
-        CompletableFuture<NodeInfo> future = Node.get().lookup(fileId);
+        ArrayList<CompletableFuture<NodeInfo>> lookupFutures = lookupAll(fileId, R);
+        NodeInfo[] remoteNodes = new NodeInfo[R];
 
         CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
         Reader reader = null;
         try {
-            reader = new Reader(filepath,fileFuture);
+            reader = new Reader(filepath, fileFuture);
         } catch (IOException e) {
             e.printStackTrace();
         }
         FileManager.getInstance().getThreadpool().submit(reader);
 
-        CompletableFuture<Integer> resultCode;
-        BackupResponseObserver observer = new BackupResponseObserver(fileId, resultCode);
+        byte[] file = new byte[0]; // bloqueia e pode dar throw.
+        try {
+            file = fileFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        assert file != null;
+
+        try {
+            for (int i = 0; i < R; ++i) {
+                remoteNodes[i] = lookupFutures.get(i).get();
+                // pode ser null
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            // shouldn't happen, except perhaps with Ctrl+C and such interactions.
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        // mudar para array de codes:
+        CompletableFuture<Integer> codeFuture = new CompletableFuture<>();
+        int resultCode;
+
+        // array de observers:
+        BackupResponseObserver observer = new BackupResponseObserver(fileId, codeFuture);
+
+        // 1 mensagem:
+        BackupMessage message = new BackupMessage(fileId, file);
+
+        // add send loop:
+        {
+            ChordDispatcher.get().addObserver(observer);
+            SocketManager.get().sendMessage(__, message);
+        }
+
+        // ...
+        try {
+            resultCode = codeFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            // shouldn't happen, except perhaps with Ctrl+C and such interactions.
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
 
         // replace replicationDeg with number of observer answers
-        Node.get().addFile(fileId,replicationDeg);
+        Node.get().addFile(fileId,R);
     }
 
     @Override
