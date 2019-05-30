@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import javax.net.ServerSocketFactory;
@@ -99,20 +100,15 @@ public class Dbs implements RemoteInterface {
     public void backup(String filepath, int replicationDeg) {
         BigInteger fileId = Chord.encodeSHA256(filepath);
 
-        NodeInfo responsibleNode;
-        try {
-            responsibleNode = Node.get().lookup(fileId).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return;
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            return;
-        }
-        if(responsibleNode != null){
-                        
-        }
+        CompletableFuture<NodeInfo> future = Node.get().lookup(fileId);
 
+        //byte[] file = getFile(filepath); // bloqueia
+        // pedido da API TestApp, portanto pode dar throw.
+
+        //assert file != null;
+
+        CompletableFuture<Integer> resultCode;
+        BackupResponseObserver observer = new BackupResponseObserver(fileId, resultCode);
     }
 
     @Override
