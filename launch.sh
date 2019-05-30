@@ -1,16 +1,9 @@
 #!/bin/bash
 
+source config.sh
+
 clear
-rm -rf log/295*
-
-addr="localhost"
-wait=5s
-numwaits=30
-
-m=32
-precision=2
-
-# NOTA: é preciso implementar Notify
+[ -d "$logdir" ] && rm -rf "$logdir" && mkdir -p "$logdir"
 
 declare -A map
 
@@ -21,23 +14,24 @@ function print {
 
 for port in $(seq 29500 29530); do
     id=$(print "$port")
+    map["$port"]="$id"
     percentage=$(wcalc -q "(100.0 * $id) / (2 ** $m)")
     width=$(( precision + 3 ))
     printf "%d: (%0*.*f%%) %d\n" "$port" "$width" "$precision" "$percentage" "$id"
-    map["$port"]="$id"
 done
 
 # $1 = server port
 function create {
     echo "Creating first chord peer $1"
-    java -cp bin dbs.App create "$addr" "$1" > "log/$1" 2>&1 &
+    java -cp bin dbs.App create "$addr" "$1" > "$logdir/$1" 2>&1 &
 }
 
 # $1 = my server port
 # $2 = some else's server port
 function join {
     echo "Joining new chord peer $1 to $2"
-    java -cp bin dbs.App join "$addr" "$1" "${map["$2"]}" "$addr" "$2" > "log/$1" 2>&1 &
+    remote="${map["$2"]}"
+    java -cp bin dbs.App join "$addr" "$1" "$remote" "$addr" "$2" > "$logdir/$1" 2>&1 &
 }
 
 trap 'jobs -p | xargs kill' EXIT
@@ -84,7 +78,7 @@ join 29529 29510 # same
 sleep 0.5s
 join 29530 29511
 
-echo -n "waiting($wait, x$numwaits)"
+echo -n "waiting($wait, x$numwaits) "
 
 for port in $(seq 1 $numwaits); do
     sleep $wait

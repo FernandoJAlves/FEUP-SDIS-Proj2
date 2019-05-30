@@ -140,6 +140,10 @@ public class SocketManager {
         System.out.print(builder.toString());
     }
 
+    public int numOpenSockets() {
+        return listeners.size();
+    }
+
     public void shutdown() {
         try {
             poisoned = true;
