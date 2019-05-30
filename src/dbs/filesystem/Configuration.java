@@ -5,6 +5,11 @@ import java.io.PipedInputStream;
 public class Configuration {
 
   /**
+   * Number of threads
+   */
+  public static final int POOL_SIZE = 4;
+
+    /**
    * Attribute used to identify the type of write operation. Either writing a
    * backed file or a restored file
    */

@@ -17,6 +17,7 @@ import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.protocol.BackupMessage;
 import dbs.chord.observers.protocols.BackupResponseObserver;
+import dbs.filesystem.FileManager;
 import dbs.network.SocketManager;
 
 public class Dbs implements RemoteInterface {
@@ -126,7 +127,16 @@ public class Dbs implements RemoteInterface {
         ArrayList<CompletableFuture<NodeInfo>> lookupFutures = lookupAll(fileId, R);
         NodeInfo[] remoteNodes = new NodeInfo[R];
 
-        byte[] file = getFile(filepath); // bloqueia e pode dar throw.
+        CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
+        Reader reader = null;
+        try {
+            reader = new Reader(filepath, fileFuture);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FileManager.getInstance().getThreadpool().submit(reader);
+
+        byte[] file = fileFuture.get(); // bloqueia e pode dar throw.
         assert file != null;
 
         try {

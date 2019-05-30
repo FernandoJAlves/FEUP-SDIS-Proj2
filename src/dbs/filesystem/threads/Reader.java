@@ -1,23 +1,23 @@
 package dbs.filesystem.threads;
 
-import dbs.chord.NodeInfo;
 import dbs.filesystem.Configuration;
 import dbs.filesystem.FileManager;
 import dbs.filesystem.messages.ReadRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 public class Reader extends RequestManager implements Runnable {
 
   private final String key;
-  private NodeInfo destinationNode;
+  private final CompletableFuture<byte[]> future;
 
-  public Reader(String key, NodeInfo destinationNode) throws IOException {
+  public Reader(String key, CompletableFuture<byte[]> future) throws IOException {
     super();
     this.key = key;
-    this.destinationNode = destinationNode;
+    this.future = future;
   }
 
   private ReadRequest createRequest(int chunkNum) {
@@ -37,7 +37,7 @@ public class Reader extends RequestManager implements Runnable {
       try {
         readBytes = this.inputStream.read(chunk, 0, Configuration.CHUNK_SIZE);
         fileContent.write(chunk,0, readBytes);
-      } catch (IOException e) { // TODO: better approach
+      } catch (IOException e) {
         Logger.getGlobal().severe("Could not read from file with key " + this.key);
         this.closeStreams();
         return;
@@ -50,7 +50,8 @@ public class Reader extends RequestManager implements Runnable {
     }
     Logger.getGlobal().info("Successful reading of file with key " + this.key);
 
-    // TODO: send file content to destination node
     this.closeStreams();
+
+    this.future.complete(fileContent.toByteArray());
   }
 }
