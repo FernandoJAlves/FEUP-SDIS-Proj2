@@ -2,12 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cebc7a45-e175-4d75-b01e-13b33638ada3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FEUP-SDIS-Proj2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/FEUP-SDIS-Proj2.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/src/TestFilesystem.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/RequestManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/RequestManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,28 +18,64 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DefaultGradleProjectSettings">
-    <option name="testRunner" value="GRADLE" />
-    <option name="delegatedBuild" value="true" />
+    <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="false">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="91">
-              <caret line="54" selection-start-line="54" selection-end-line="54" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="150">
+              <caret line="10" column="27" lean-forward="true" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="24" column="6" selection-start-line="24" selection-start-column="6" selection-end-line="24" selection-end-column="6" />
+            <state relative-caret-position="870">
+              <caret line="64" column="26" lean-forward="true" selection-start-line="64" selection-start-column="26" selection-end-line="64" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="555">
+              <caret line="46" column="14" lean-forward="true" selection-start-line="46" selection-start-column="14" selection-end-line="46" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/RequestManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="360">
+              <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/Configuration.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="337">
+              <caret line="43" selection-start-line="43" selection-end-line="43" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="133">
+              <caret line="113" column="9" selection-start-line="113" selection-start-column="4" selection-end-line="113" selection-end-column="9" />
+              <folding>
+                <element signature="e#4372#4373#0" expanded="true" />
+                <element signature="e#4405#4406#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -49,6 +86,10 @@
     <findStrings>
       <find>increase</find>
       <find>src</find>
+      <find>TODO</find>
+      <find>Files.</find>
+      <find>inputStream</find>
+      <find>piped</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -59,33 +100,34 @@
       <list>
         <option value="$PROJECT_DIR$/src/dbs/network/Listener.java" />
         <option value="$PROJECT_DIR$/src/dbs/chord/Node.java" />
-        <option value="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/FilesystemTest.java" />
-        <option value="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" />
-        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" />
         <option value="$PROJECT_DIR$/src/test/FilesystemTest.java" />
         <option value="$PROJECT_DIR$/src/test/filesystem/FilesystemTest.java" />
         <option value="$PROJECT_DIR$/src/test/filesystem/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/test/dbs/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/src/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/test/src/TestFilesystem.java" />
-        <option value="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/RequestManager.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" />
+        <option value="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="y" value="-1" />
-    <option name="width" value="1920" />
-    <option name="height" value="1053" />
+    <option name="width" value="682" />
+    <option name="height" value="737" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -103,6 +145,21 @@
               <item name="FEUP-SDIS-Proj2" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="dbs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FEUP-SDIS-Proj2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FEUP-SDIS-Proj2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="dbs" type="462c0819:PsiDirectoryNode" />
+              <item name="filesystem" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FEUP-SDIS-Proj2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FEUP-SDIS-Proj2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="dbs" type="462c0819:PsiDirectoryNode" />
+              <item name="filesystem" type="462c0819:PsiDirectoryNode" />
+              <item name="threads" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -143,20 +200,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.All in FEUP-SDIS-Proj2">
-    <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="dbs.App" />
-      <module name="FEUP-SDIS-Proj2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="dbs.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="JUnit.TestFilesystem">
     <configuration name="All in FEUP-SDIS-Proj2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="FEUP-SDIS-Proj2" />
       <option name="PACKAGE_NAME" value="" />
@@ -165,19 +209,33 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TestFilesystem.testDelete" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="TestFilesystem" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="FEUP-SDIS-Proj2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="test.filesystem.*" />
+          <option name="PATTERN" value="dbs.filesystem.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="test.filesystem" />
-      <option name="MAIN_CLASS_NAME" value="test.filesystem.TestFilesystem" />
+      <option name="PACKAGE_NAME" value="dbs.filesystem" />
+      <option name="MAIN_CLASS_NAME" value="dbs.filesystem.TestFilesystem" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestFilesystem.testDelete (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FEUP-SDIS-Proj2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="dbs.filesystem.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="dbs.filesystem" />
+      <option name="MAIN_CLASS_NAME" value="dbs.filesystem.TestFilesystem" />
       <option name="METHOD_NAME" value="testDelete" />
       <option name="TEST_OBJECT" value="method" />
-      <option name="PARAMETERS" value="" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -187,6 +245,22 @@
       <option name="PACKAGE_NAME" value="dbs.filesystem" />
       <option name="MAIN_CLASS_NAME" value="dbs.filesystem.TestFilesystem" />
       <option name="METHOD_NAME" value="testDelete" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestFilesystem.testRead" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FEUP-SDIS-Proj2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="dbs.filesystem.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="dbs.filesystem" />
+      <option name="MAIN_CLASS_NAME" value="dbs.filesystem.TestFilesystem" />
+      <option name="METHOD_NAME" value="testRead" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -213,20 +287,20 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.App" />
       <item itemvalue="JUnit.Unnamed" />
-      <item itemvalue="JUnit.TestFilesystem.testDelete" />
-      <item itemvalue="JUnit.TestFilesystem.testDelete (1)" />
-      <item itemvalue="JUnit.TestFilesystem.testWrite (1)" />
+      <item itemvalue="JUnit.TestFilesystem.testWrite" />
       <item itemvalue="JUnit.All in FEUP-SDIS-Proj2" />
+      <item itemvalue="JUnit.TestFilesystem.testDelete (1)" />
+      <item itemvalue="JUnit.TestFilesystem.testRead" />
+      <item itemvalue="JUnit.TestFilesystem" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.All in FEUP-SDIS-Proj2" />
-        <item itemvalue="JUnit.TestFilesystem.testWrite (1)" />
+        <item itemvalue="JUnit.TestFilesystem" />
+        <item itemvalue="JUnit.TestFilesystem.testRead" />
+        <item itemvalue="JUnit.TestFilesystem.testWrite" />
         <item itemvalue="JUnit.TestFilesystem.testDelete (1)" />
-        <item itemvalue="Application.App" />
-        <item itemvalue="JUnit.TestFilesystem.testDelete" />
+        <item itemvalue="JUnit.All in FEUP-SDIS-Proj2" />
       </list>
     </recent_temporary>
   </component>
@@ -244,68 +318,95 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="TestFilesystem_testDelete - 2019.05.30 at 00h 31m 14s.xml">
-      <configuration name="TestFilesystem.testDelete" configurationId="JUnit" />
+    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 18m 19s.xml">
+      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestFilesystem_testWrite - 2019.05.30 at 00h 31m 18s.xml">
-      <configuration name="TestFilesystem.testWrite" configurationId="JUnit" />
+    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 19m 09s.xml">
+      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestFilesystem_testDelete - 2019.05.30 at 00h 36m 22s.xml">
-      <configuration name="TestFilesystem.testDelete" configurationId="JUnit" />
+    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 20m 19s.xml">
+      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestFilesystem_testDelete_(1) - 2019.05.30 at 00h 43m 13s.xml">
-      <configuration name="TestFilesystem.testDelete (1)" configurationId="JUnit" />
+    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 24m 08s.xml">
+      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestFilesystem_testWrite_(1) - 2019.05.30 at 00h 43m 21s.xml">
-      <configuration name="TestFilesystem.testWrite (1)" configurationId="JUnit" />
+    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 28m 09s.xml">
+      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestFilesystem_testDelete_(1) - 2019.05.30 at 00h 44m 20s.xml">
-      <configuration name="TestFilesystem.testDelete (1)" configurationId="JUnit" />
+    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 28m 34s.xml">
+      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestFilesystem_testDelete_(1) - 2019.05.30 at 00h 48m 38s.xml">
-      <configuration name="TestFilesystem.testDelete (1)" configurationId="JUnit" />
+    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 29m 26s.xml">
+      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestFilesystem_testDelete - 2019.05.30 at 00h 54m 35s.xml">
-      <configuration name="TestFilesystem.testDelete" configurationId="JUnit" />
+    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 34m 05s.xml">
+      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestFilesystem_testWrite - 2019.05.30 at 00h 54m 43s.xml">
-      <configuration name="TestFilesystem.testWrite" configurationId="JUnit" />
+    <history-entry file="TestFilesystem - 2019.05.30 at 18h 37m 17s.xml">
+      <configuration name="TestFilesystem" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All_in_FEUP-SDIS-Proj2 - 2019.05.30 at 00h 54m 57s.xml">
-      <configuration name="All in FEUP-SDIS-Proj2" configurationId="JUnit" />
+    <history-entry file="TestFilesystem - 2019.05.30 at 18h 37m 31s.xml">
+      <configuration name="TestFilesystem" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1366" height="738" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info id="Image Layers" />
-      <window_info id="Designer" />
-      <window_info id="UI Designer" />
-      <window_info id="Capture Tool" />
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2159091" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2189394" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Terminal" visible="true" weight="0.32736155" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" weight="0.25407165" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32899022" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.35504887" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.26547232" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39576548" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="Palette" />
-      <window_info anchor="right" id="Theme Preview" />
-      <window_info anchor="right" id="Maven" />
-      <window_info anchor="right" id="Capture Analysis" />
-      <window_info anchor="right" id="Palette&#9;" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.53094465" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.25407165" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Maven" order="4" />
+      <window_info anchor="right" id="Theme Preview" order="5" />
+      <window_info anchor="right" id="Capture Analysis" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
     </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2189394" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32899022" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32247558" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3990228" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.53094465" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.25407165" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Maven" order="4" />
+      <window_info anchor="right" id="Theme Preview" order="5" />
+      <window_info anchor="right" id="Capture Analysis" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+    </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/dbs/network/Listener.java">
@@ -322,47 +423,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/Configuration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="249">
-          <caret line="32" column="64" selection-start-line="32" selection-start-column="64" selection-end-line="32" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/ComparisonCriteria.class">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="34" selection-start-line="34" selection-end-line="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="33" selection-start-line="33" selection-end-line="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="74" column="3" selection-start-line="74" selection-start-column="3" selection-end-line="74" selection-end-column="3" />
-          <folding>
-            <element signature="e#4283#4284#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/test.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="24" column="19" lean-forward="true" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test.iml" />
     <entry file="file://$PROJECT_DIR$/src/dbs/App.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -370,20 +434,80 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="91">
-          <caret line="54" selection-start-line="54" selection-end-line="54" />
+        <state relative-caret-position="358">
+          <caret line="24" column="6" selection-start-line="24" selection-start-column="6" selection-end-line="24" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jrt:///usr/lib/jvm/java-1.11.0-openjdk-amd64!/java.base/java/nio/HeapByteBuffer.class">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="jrt:///usr/lib/jvm/java-1.11.0-openjdk-amd64!/java.base/java/nio/ByteBuffer.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="84" selection-start-line="84" selection-end-line="84" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jrt:///usr/lib/jvm/java-1.11.0-openjdk-amd64!/java.base/java/nio/Buffer.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="47" column="25" selection-start-line="47" selection-start-column="25" selection-end-line="47" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/chord/NodeInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="55" column="23" lean-forward="true" selection-start-line="55" selection-start-column="23" selection-end-line="55" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/Configuration.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="337">
+          <caret line="43" selection-start-line="43" selection-end-line="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="113" column="9" selection-start-line="113" selection-start-column="4" selection-end-line="113" selection-end-column="9" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#4372#4373#0" expanded="true" />
+            <element signature="e#4405#4406#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/RequestManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="24" column="6" selection-start-line="24" selection-start-column="6" selection-end-line="24" selection-end-column="6" />
+        <state relative-caret-position="360">
+          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="46" column="14" lean-forward="true" selection-start-line="46" selection-start-column="14" selection-end-line="46" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="870">
+          <caret line="64" column="26" lean-forward="true" selection-start-line="64" selection-start-column="26" selection-end-line="64" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="27" lean-forward="true" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
         </state>
       </provider>
     </entry>

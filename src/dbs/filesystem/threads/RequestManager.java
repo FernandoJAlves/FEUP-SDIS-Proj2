@@ -1,5 +1,7 @@
 package dbs.filesystem.threads;
 
+import dbs.filesystem.Configuration;
+
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -12,7 +14,7 @@ public class RequestManager {
 
   protected RequestManager() throws IOException {
     this.outputStream = new PipedOutputStream();
-    this.inputStream = new PipedInputStream(this.outputStream);
+    this.inputStream = new PipedInputStream(this.outputStream, Configuration.CHUNK_SIZE);
   }
 
   protected void closeStreams() {

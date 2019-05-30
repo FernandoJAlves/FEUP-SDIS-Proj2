@@ -1,5 +1,7 @@
 package dbs.filesystem;
 
+import java.io.PipedInputStream;
+
 public class Configuration {
 
   /**
