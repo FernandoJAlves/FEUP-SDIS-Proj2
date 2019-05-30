@@ -7,6 +7,8 @@ import java.net.InetSocketAddress;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 import dbs.chord.Chord;
 import dbs.chord.Node;
@@ -15,8 +17,8 @@ import dbs.network.SocketManager;
 
 public class App {
 
-    private static final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();
-    private static final SocketFactory socketFactory = SocketFactory.getDefault();
+    private static final ServerSocketFactory serverFactory = SSLServerSocketFactory.getDefault(); //ServerSocketFactory.getDefault();
+    private static final SocketFactory socketFactory = SSLSocketFactory.getDefault();
 
     public static void main(String[] args) throws IOException {
         if (args.length <= 1)
@@ -75,7 +77,9 @@ public class App {
 
         for (int i = 2; i < args.length; ++i) {
             int port = Integer.parseInt(args[i]);
-            System.out.println(Chord.consistentHash(address, port));
+            BigInteger id = Chord.consistentHash(address, port);
+            //String percentage = Chord.percentStr(id);
+            System.out.println(id);
         }
 
         System.exit(0);
