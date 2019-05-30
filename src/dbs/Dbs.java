@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutionException;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
@@ -13,7 +14,7 @@ import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 import dbs.network.SocketManager;
 
-public class App {
+public class Dbs implements RemoteInterface {
 
     public static void main(String[] args) throws IOException {
         if (args.length <= 1)
@@ -79,7 +80,7 @@ public class App {
         for (int i = 2; i < args.length; ++i) {
             int port = Integer.parseInt(args[i]);
             BigInteger id = Chord.consistentHash(address, port);
-            //String percentage = Chord.percentStr(id);
+            // String percentage = Chord.percentStr(id);
             System.out.println(id);
         }
 
@@ -88,9 +89,43 @@ public class App {
 
     static void usage() {
         System.err.println("Usage:");
-        System.err.println("App join ADDRESS PORT REMOTE_ID REMOTE_ADDRESS REMOTE_PORT");
-        System.err.println("App create ADDRESS PORT");
-        System.err.println("App print ADDRESS PORT1 PORT2 PORT3 PORT4 ...");
+        System.err.println("Dbs join ADDRESS PORT REMOTE_ID REMOTE_ADDRESS REMOTE_PORT");
+        System.err.println("Dbs create ADDRESS PORT");
+        System.err.println("Dbs print ADDRESS PORT1 PORT2 PORT3 PORT4 ...");
         System.exit(0);
     }
+
+    @Override
+    public void backup(String filepath, int replicationDeg) {
+        BigInteger fileId = Chord.encodeSHA256(filepath);
+
+        NodeInfo responsibleNode;
+        try {
+            responsibleNode = Node.get().lookup(fileId).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return;
+        }
+        if(responsibleNode != null){
+                        
+        }
+
+    }
+
+    @Override
+    public void restore(String filepath) {
+
+    }
+
+    @Override
+    public void delete(String pathname) {
+  
+    }
+
+
+
+    
 }

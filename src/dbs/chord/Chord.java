@@ -3,6 +3,7 @@ package dbs.chord;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -69,6 +70,31 @@ public class Chord {
     public static BigInteger consistentHash(InetSocketAddress socketAddress) {
         return consistentHash(socketAddress.getAddress(), socketAddress.getPort());
     }
+
+
+    public static BigInteger encodeSHA256(String toEncode) {
+        byte[] encodedString = {};
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            encodedString = digest.digest(toEncode.getBytes(StandardCharsets.UTF_8));
+        } catch (NoSuchAlgorithmException e) {
+            throw new InternalError(e);
+        }
+        return relative(BigInteger.ZERO, new BigInteger(encodedString));
+    }
+
+    // Function from: https://www.baeldung.com/sha-256-hashing-java
+    public static String bytesToHex(byte[] bytes) {
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < bytes.length; i++) {
+            String hex = Integer.toHexString(0xff & bytes[i]);
+            if (hex.length() == 1)
+                hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
 
     /**
      * Retrieve the relative position of b relative to a, modulo 2^m.

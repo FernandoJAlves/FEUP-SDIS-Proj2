@@ -9,7 +9,7 @@ declare -A map
 
 # $1 = my server port
 function print {
-    java -cp bin dbs.App print "$addr" "$1"
+    java -cp bin dbs.Dbs print "$addr" "$1"
 }
 
 for port in $(seq 29500 29530); do
@@ -23,7 +23,7 @@ done
 # $1 = server port
 function create {
     echo "Creating first chord peer $1"
-    java -cp bin dbs.App create "$addr" "$1" > "$logdir/$1" 2>&1 &
+    java -cp bin dbs.Dbs create "$addr" "$1" > "$logdir/$1" 2>&1 &
 }
 
 # $1 = my server port
@@ -31,7 +31,7 @@ function create {
 function join {
     echo "Joining new chord peer $1 to $2"
     remote="${map["$2"]}"
-    java -cp bin dbs.App join "$addr" "$1" "$remote" "$addr" "$2" > "$logdir/$1" 2>&1 &
+    java -cp bin dbs.Dbs join "$addr" "$1" "$remote" "$addr" "$2" > "$logdir/$1" 2>&1 &
 }
 
 trap 'jobs -p | xargs kill' EXIT
