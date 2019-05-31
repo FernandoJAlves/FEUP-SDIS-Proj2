@@ -7,12 +7,14 @@ import java.util.HashSet;
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.LookupMessage;
 import dbs.chord.messages.ResponsibleMessage;
-import dbs.chord.messages.protocol.*;
+import dbs.chord.messages.protocol.BackupMessage;
+import dbs.chord.messages.protocol.BackupResponseMessage;
 
 public final class ChordLogger {
 
     private static final boolean PRINT_IN = true;
     private static final boolean PRINT_OUT = true;
+    private static final boolean PRINT_LOOKUPS = true;
 
     private static final boolean PRINT_NODE_IMPORTANT = true;
     private static final boolean PRINT_NODE_TRACK = false;
@@ -82,6 +84,13 @@ public final class ChordLogger {
         if (PRINT_OUT && outSet.contains(message.getClass().getName())) {
             String node = destination.shortStr();
             format(OUTPUT, message + " to " + node);
+        }
+    }
+
+    // Lookup API requests
+    public static void logLookup(BigInteger chordId, String message) {
+        if (PRINT_LOOKUPS) {
+            format(LOOKUP, "lookup(" + Chord.percentStr(chordId) + "): " + message);
         }
     }
 
@@ -197,6 +206,7 @@ public final class ChordLogger {
     private static final int CHECK_PREDECESSOR = 11;
     private static final int JOIN = 12;
     private static final int DROP = 13;
+    private static final int LOOKUP = 14;
 
     static {
         colorMap[IMPORTANT] = "1;36";
@@ -213,6 +223,7 @@ public final class ChordLogger {
         colorMap[CHECK_PREDECESSOR] = "34";
         colorMap[JOIN] = "1;34";
         colorMap[DROP] = "37";
+        colorMap[LOOKUP] = "36";
 
         prefixMap[IMPORTANT] = "[IMPORTANT]";
         prefixMap[SEVERE] = "[SEVERE] ";
@@ -228,5 +239,6 @@ public final class ChordLogger {
         prefixMap[CHECK_PREDECESSOR] = "[CHECK_PREDECESSOR]";
         prefixMap[JOIN] = "[JOIN]";
         prefixMap[DROP] = "[DROP]";
+        prefixMap[LOOKUP] = "[LOOKUP]";
     }
 }

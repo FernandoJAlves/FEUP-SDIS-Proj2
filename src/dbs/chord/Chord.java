@@ -20,9 +20,9 @@ public class Chord {
 
     // All durations / delays / periods below are in milliseconds.
     public static final int STABILIZE_PERIOD = 1000;
-    public static final int FIXFINGERS_PERIOD = 15000 / m; // full loop every 15s
+    public static final int FIXFINGERS_PERIOD = 4000 / m; // full loop every 15s
     public static final int CHECK_PREDECESSOR_PERIOD = 2000;
-    public static final int NODE_DUMP_PERIOD = FIXFINGERS_PERIOD * m + 500;
+    public static final int NODE_DUMP_PERIOD = 15500;
 
     // There is no strong guarantee that the delays will enforce the order in which the subprotocols are started.
     public static final int STABILIZE_DELAY = 0;
