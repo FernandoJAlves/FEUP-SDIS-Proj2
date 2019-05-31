@@ -1,9 +1,6 @@
 package dbs.filesystem;
 
-<<<<<<< HEAD
-=======
 import dbs.chord.Chord;
->>>>>>> refs/remotes/origin/master
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 import dbs.filesystem.messages.DeleteRequest;
