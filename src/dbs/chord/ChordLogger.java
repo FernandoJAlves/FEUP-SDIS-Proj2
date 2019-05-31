@@ -34,10 +34,10 @@ public final class ChordLogger {
     private static final boolean PRINT_NODE_STABILIZE = false;
     private static final boolean PRINT_NODE_FIX_FINGERS = false;
     private static final boolean PRINT_NODE_CHECK_PREDECESSOR = false;
-    private static final boolean PRINT_NODE_JOIN = true;
+    private static final boolean PRINT_NODE_JOIN = false;
 
     public static boolean DUMP_NODE_TABLE = true; // required for extract.sh
-    public static boolean USE_COLORS = true, USE_PREFIX = true;
+    public static boolean USE_COLORS = false, USE_PREFIX = true;
 
     private static final HashSet<String> inSet = new HashSet<>();
     private static final HashSet<String> outSet = new HashSet<>();

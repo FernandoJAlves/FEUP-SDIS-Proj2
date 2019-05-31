@@ -11,7 +11,7 @@ the behaviour is undefined.
 
 All chord scripts should run in the project's main directory.
 
-For testing Chord in the local network we have `config.sh`, `launch.sh` and `extract.sh`.
+For testing Chord in the local network we have `config.sh`, `launch.sh` and `extract-tables.sh`.
 
 The first script, `config.sh`, sets the network's configuration variables (`m`, local address `addr`, etc.).
 All tests run in the same networks, and nodes take different ports for their server sockets.
@@ -33,7 +33,7 @@ joining the network again, in a time where it will be presumably more stable.
 After the script is done waiting, the directory `log/` will contain the logfiles for each
 of the peers, organized by server port (`29500+`). These will usually contain finger table
 dumps if they have been enabled in `ChordLogger.java`. To collect the final finger tables
-of the nodes, run `extract.sh` which will populate a file called `tables` with the last
+of the nodes, run `extract-tables.sh` which will populate a file called `tables` with the last
 finger table dump in each logfile. Then you can compare with the expected finger tables.
 
 ## Distributed Backup System
