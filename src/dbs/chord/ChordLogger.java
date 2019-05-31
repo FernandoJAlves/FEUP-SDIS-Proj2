@@ -15,6 +15,9 @@ public final class ChordLogger {
     private static final boolean PRINT_IN = true;
     private static final boolean PRINT_OUT = true;
     private static final boolean PRINT_LOOKUPS = true;
+    private static final boolean PRINT_BACKUP = true;
+    private static final boolean PRINT_RESTORE = true;
+    private static final boolean PRINT_DELETE = true;
 
     private static final boolean PRINT_NODE_IMPORTANT = true;
     private static final boolean PRINT_NODE_TRACK = false;
@@ -187,6 +190,48 @@ public final class ChordLogger {
         }
     }
 
+    // Backup subprotocol messages
+    public static void logBackup(String msg) {
+        if (PRINT_BACKUP) {
+            format(BACKUP, msg, true);
+        }
+    }
+
+    // Backup subprotocol messages
+    public static void logBackup(String filename, String msg) {
+        if (PRINT_BACKUP) {
+            format(BACKUP, "{" + filename + "} " + msg, true);
+        }
+    }
+
+    // Restore subprotocol messages
+    public static void logRestore(String msg) {
+        if (PRINT_RESTORE) {
+            format(RESTORE, msg, true);
+        }
+    }
+
+    // Restore subprotocol messages
+    public static void logRestore(String filename, String msg) {
+        if (PRINT_RESTORE) {
+            format(RESTORE, "{" + filename + "} " + msg, true);
+        }
+    }
+
+    // Delete subprotocol messages
+    public static void logDelete(String msg) {
+        if (PRINT_DELETE) {
+            format(DELETE, msg, true);
+        }
+    }
+
+    // Delete subprotocol messages
+    public static void logDelete(String filename, String msg) {
+        if (PRINT_DELETE) {
+            format(DELETE, "{" + filename + "} " + msg, true);
+        }
+    }
+
     // * Internals
 
     private static final String[] colorMap = new String[20];
@@ -207,6 +252,9 @@ public final class ChordLogger {
     private static final int JOIN = 12;
     private static final int DROP = 13;
     private static final int LOOKUP = 14;
+    private static final int BACKUP = 15;
+    private static final int RESTORE = 16;
+    private static final int DELETE = 17;
 
     static {
         colorMap[IMPORTANT] = "1;36";
@@ -224,6 +272,9 @@ public final class ChordLogger {
         colorMap[JOIN] = "1;34";
         colorMap[DROP] = "37";
         colorMap[LOOKUP] = "36";
+        colorMap[BACKUP] = "1;35";
+        colorMap[RESTORE] = "1;36";
+        colorMap[DELETE] = "1;34";
 
         prefixMap[IMPORTANT] = "[IMPORTANT]";
         prefixMap[SEVERE] = "[SEVERE] ";
@@ -240,5 +291,8 @@ public final class ChordLogger {
         prefixMap[JOIN] = "[JOIN]";
         prefixMap[DROP] = "[DROP]";
         prefixMap[LOOKUP] = "[LOOKUP]";
+        prefixMap[BACKUP] = "[BACKUP]";
+        prefixMap[RESTORE] = "[RESTORE]";
+        prefixMap[DELETE] = "[DELETE]";
     }
 }
