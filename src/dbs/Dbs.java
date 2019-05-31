@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import javax.net.ServerSocketFactory;
-import javax.net.SocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 import dbs.chord.Chord;
 import dbs.chord.ChordDispatcher;
@@ -65,8 +65,8 @@ public class Dbs implements RemoteInterface {
         int port = Integer.parseInt(args[2]);
         InetSocketAddress serverAddress = new InetSocketAddress(address, port);
 
-        final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();
-        final SocketFactory socketFactory = SocketFactory.getDefault();
+        final SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        final SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
         SocketManager.create(serverAddress, serverFactory, socketFactory);
         Node.create(serverAddress);
@@ -81,8 +81,8 @@ public class Dbs implements RemoteInterface {
         if (args.length != 3)
             usage();
 
-        final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();
-        final SocketFactory socketFactory = SocketFactory.getDefault();
+        final SSLServerSocketFactory serverFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        final SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
         InetAddress address = InetAddress.getByName(args[1]);
         int port = Integer.parseInt(args[2]);

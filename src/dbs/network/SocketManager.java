@@ -9,9 +9,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.net.ServerSocketFactory;
-import javax.net.SocketFactory;
-import javax.net.ssl.*;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 import dbs.chord.ChordLogger;
 import dbs.chord.NodeInfo;
@@ -21,7 +20,7 @@ public class SocketManager {
 
     private final ConcurrentHashMap<BigInteger, ChordListener> listeners;
     private final ServerSocket server;
-    private final SocketFactory factory;
+    private final SSLSocketFactory factory;
 
     private static SocketManager instance;
     private Accepter accepterRunner;
@@ -33,13 +32,13 @@ public class SocketManager {
         return instance;
     }
 
-    public static SocketManager create(InetSocketAddress serverAddress, ServerSocketFactory serverFactory,
-            SocketFactory socketFactory) throws IOException {
+    public static SocketManager create(InetSocketAddress serverAddress, SSLServerSocketFactory serverFactory,
+            SSLSocketFactory socketFactory) throws IOException {
         return new SocketManager(serverAddress, serverFactory, socketFactory);
     }
 
-    private SocketManager(InetSocketAddress serverAddress, ServerSocketFactory serverFactory,
-            SocketFactory socketFactory) throws IOException {
+    private SocketManager(InetSocketAddress serverAddress, SSLServerSocketFactory serverFactory,
+            SSLSocketFactory socketFactory) throws IOException {
         assert instance == null;
 
         int port = serverAddress.getPort();
