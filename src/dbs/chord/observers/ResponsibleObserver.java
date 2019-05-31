@@ -1,10 +1,8 @@
 package dbs.chord.observers;
 
 import static dbs.chord.Chord.LOOKUP_WAIT;
-
 import java.math.BigInteger;
 import java.util.concurrent.CompletableFuture;
-
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordIdKey;
 import dbs.chord.messages.ChordMessage;

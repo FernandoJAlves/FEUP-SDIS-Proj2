@@ -7,9 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.SocketException;
-
 import javax.net.ssl.SSLSocket;
-
 import dbs.chord.ChordDispatcher;
 import dbs.chord.ChordLogger;
 import dbs.chord.Node;

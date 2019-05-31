@@ -1,7 +1,6 @@
 package dbs.chord.messages.protocol;
 
 import java.math.BigInteger;
-
 import dbs.chord.Chord;
 import dbs.chord.messages.ChordMessage;
 

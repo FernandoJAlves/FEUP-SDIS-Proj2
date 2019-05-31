@@ -2,7 +2,6 @@ package dbs.chord.messages;
 
 import java.io.Serializable;
 import java.util.Objects;
-
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 

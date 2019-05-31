@@ -2,7 +2,6 @@ package dbs.chord;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.ChordMessageKey;
 import dbs.chord.observers.ChordObserver;

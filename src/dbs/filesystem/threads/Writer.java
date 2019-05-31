@@ -3,7 +3,6 @@ package dbs.filesystem.threads;
 import dbs.filesystem.Configuration;
 import dbs.filesystem.FileManager;
 import dbs.filesystem.messages.WriteRequest;
-
 import java.io.IOException;
 
 public class Writer extends RequestManager implements Runnable {

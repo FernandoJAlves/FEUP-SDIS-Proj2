@@ -1,7 +1,6 @@
 package dbs.chord.observers;
 
 import java.math.BigInteger;
-
 import dbs.chord.Node;
 import dbs.chord.messages.ChordIdKey;
 import dbs.chord.messages.ChordMessage;

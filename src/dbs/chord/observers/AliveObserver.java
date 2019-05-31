@@ -1,7 +1,6 @@
 package dbs.chord.observers;
 
 import static dbs.chord.Chord.CHECK_PREDECESSOR_WAIT;
-
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.AliveMessage;

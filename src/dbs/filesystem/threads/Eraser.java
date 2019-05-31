@@ -1,10 +1,7 @@
 package dbs.filesystem.threads;
 
-import dbs.filesystem.Configuration;
 import dbs.filesystem.FileManager;
 import dbs.filesystem.messages.DeleteRequest;
-
-import java.io.File;
 import java.io.IOException;
 
 public class Eraser extends RequestManager implements Runnable {

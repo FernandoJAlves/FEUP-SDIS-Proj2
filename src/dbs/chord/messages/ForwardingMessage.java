@@ -1,7 +1,6 @@
 package dbs.chord.messages;
 
 import java.util.LinkedList;
-
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 
