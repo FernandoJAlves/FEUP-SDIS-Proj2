@@ -9,6 +9,7 @@ import dbs.chord.messages.LookupMessage;
 import dbs.chord.messages.ResponsibleMessage;
 import dbs.chord.messages.protocol.BackupMessage;
 import dbs.chord.messages.protocol.BackupResponseMessage;
+import dbs.chord.messages.protocol.TransferMessage;
 
 public final class ChordLogger {
 
@@ -48,6 +49,7 @@ public final class ChordLogger {
         inSet.add(ResponsibleMessage.class.getName());
         inSet.add(BackupMessage.class.getName());
         inSet.add(BackupResponseMessage.class.getName());
+        inSet.add(TransferMessage.class.getName());
         //inSet.add(StabilizeMessage.class.getName());
         //inSet.add(PredecessorMessage.class.getName());
 
@@ -55,6 +57,7 @@ public final class ChordLogger {
         outSet.add(ResponsibleMessage.class.getName());
         outSet.add(BackupMessage.class.getName());
         outSet.add(BackupResponseMessage.class.getName());
+        outSet.add(TransferMessage.class.getName());
         //outSet.add(StabilizeMessage.class.getName());
         //outSet.add(PredecessorMessage.class.getName());
     }
