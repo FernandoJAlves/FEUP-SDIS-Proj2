@@ -1,5 +1,14 @@
 package dbs.filesystem;
 
+import dbs.chord.Chord;
+import dbs.chord.Node;
+import dbs.chord.NodeInfo;
+import dbs.filesystem.messages.DeleteRequest;
+import dbs.filesystem.messages.ReadRequest;
+import dbs.filesystem.messages.Request;
+import dbs.filesystem.messages.WriteRequest;
+import dbs.filesystem.threads.Reader;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PipedOutputStream;
@@ -11,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -18,14 +29,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import dbs.chord.Node;
 import dbs.filesystem.Configuration.Operation;
-import dbs.filesystem.messages.DeleteRequest;
-import dbs.filesystem.messages.ReadRequest;
-import dbs.filesystem.messages.Request;
-import dbs.filesystem.messages.WriteRequest;
-import dbs.filesystem.threads.Reader;
 import dbs.filesystem.threads.Writer;
 
 /**
@@ -214,6 +221,29 @@ public class FileManager implements Runnable {
       e.printStackTrace();
       throw new RuntimeException(e);
     }
+  }
+
+  public ArrayList<BigInteger> getFilesToTransfer() {
+    NodeInfo self = Node.get().getSelf();
+    NodeInfo predecessor = Node.get().getPredecessor();
+
+    List<String> result;
+    try {
+      Stream<Path> walk = Files.walk(Paths.get(BACKUP_FOLDER));
+      result = walk.filter(Files::isRegularFile).map(x -> x.toString()).collect(Collectors.toList());
+    } catch(IOException e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    ArrayList<BigInteger> filesToTranfer = new ArrayList<>();
+    for (String fileName : result) {
+      BigInteger fileKey = new BigInteger(fileName);
+      if (!Chord.afterOrdered(predecessor.getChordId(),fileKey,self.getChordId())) {
+        filesToTranfer.add(fileKey);
+      }
+    }
+    return filesToTranfer;
   }
 
   @Override

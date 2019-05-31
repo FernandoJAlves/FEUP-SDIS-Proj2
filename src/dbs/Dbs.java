@@ -1,5 +1,6 @@
 package dbs;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -221,7 +222,7 @@ public class Dbs implements RemoteInterface {
     public void backup(String fileName, int R) {
         assert fileName != null && R > 0;
 
-        BigInteger fileId = Chord.encodeSHA256(fileName);
+        BigInteger fileId = Chord.encodeSHA256((new File(fileName)).getName());
         ChordLogger.logBackup("Filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
 
         // collect offsets and lookup futures.
