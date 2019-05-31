@@ -1,17 +1,11 @@
 package dbs.network;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.security.KeyStore;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.net.ServerSocketFactory;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
@@ -51,7 +45,6 @@ public class SocketManager {
         this.server = (SSLServerSocket) serverFactory.createServerSocket(port, 15, address);
         this.server.setNeedClientAuth(true);
         
-        //TODO: Setup do contexto SSL de this.server
         this.listeners = new ConcurrentHashMap<>();
         this.factory = socketFactory;
         instance = this;
@@ -120,6 +113,9 @@ public class SocketManager {
 
         try {
             SSLSocket socket = (SSLSocket) factory.createSocket(address, port);
+            String[] cipherSuites = socket.getSupportedCipherSuites();
+            socket.setEnabledCipherSuites(cipherSuites);
+            socket.startHandshake();
             ChordListener listener = new ChordListener(socket, remoteNode);
             return listener;
         } catch (ConnectException e) {
@@ -177,6 +173,9 @@ public class SocketManager {
                     break;
                 try {
                     SSLSocket socket = (SSLSocket) server.accept();
+                    String[] cipherSuites = socket.getSupportedCipherSuites();
+                    socket.setEnabledCipherSuites(cipherSuites);
+                    socket.startHandshake();
                     if (socket == null)
                         continue;
                     new ChordListener(socket);
