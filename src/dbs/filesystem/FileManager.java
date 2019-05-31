@@ -1,15 +1,13 @@
 package dbs.filesystem;
 
-<<<<<<< HEAD
 import dbs.chord.Node;
 import dbs.filesystem.messages.DeleteRequest;
 import dbs.filesystem.messages.ReadRequest;
 import dbs.filesystem.messages.Request;
 import dbs.filesystem.messages.WriteRequest;
+import dbs.filesystem.threads.Eraser;
 import dbs.filesystem.threads.Reader;
 
-=======
->>>>>>> refs/remotes/origin/master
 import java.io.File;
 import java.io.IOException;
 import java.io.PipedOutputStream;
@@ -20,6 +18,7 @@ import java.nio.channels.CompletionHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -169,6 +168,17 @@ public class FileManager implements Runnable {
     this.queue.add(request);
   }
 
+  public void restoreFromBackup(String fileId){
+    Path src = Paths.get(FileManager.getInstance().BACKUP_FOLDER + fileId);
+    Path dest = Paths.get(FileManager.getInstance().RESTORE_FOLDER + fileId);
+    try {
+      Files.copy(src,dest, StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    }
+  }
+
   public CompletableFuture<byte[]> launchBackupReader(String fileName) {
     try {
       CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
@@ -212,6 +222,17 @@ public class FileManager implements Runnable {
     try {
       Writer writer = new Writer(fileName, file, Operation.RESTORE);
       threadpool.submit(writer);
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void launchEraser(String fileName) {
+    try {
+      Eraser eraser = new Eraser(fileName);
+      threadpool.submit(eraser);
     } catch (IOException e) {
       System.err.println(e.getMessage());
       e.printStackTrace();

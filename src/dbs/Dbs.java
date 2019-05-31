@@ -259,12 +259,13 @@ public class Dbs implements RemoteInterface {
         ChordLogger.logRestore("Filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
 
         Integer Rp = Node.get().getReplicationMap().get(fileId);
-        int R = Rp;
-
+        
         if (Rp == null) {
             ChordLogger.logSevere("File id " + Chord.percentStr(fileId) + " not found in this node");
             return;
         }
+
+        int R = Rp;
 
         // Iterate through the offsets, trying to restore the node.
         for (int i = 0; i < R; ++i) {
@@ -281,7 +282,8 @@ public class Dbs implements RemoteInterface {
             // Self resolve
             else if (responsible.equals(Node.get().getSelf())) {
                 ChordLogger.logRestore(fileName, "run " + iR(i, R) + " resolved to this node");
-                // TODO...
+                FileManager.getInstance().restoreFromBackup(offsetFileId.toString());
+                // copy backup/filename -> restore/filename
                 break;
             }
             // Remote resolve
@@ -301,12 +303,13 @@ public class Dbs implements RemoteInterface {
         ChordLogger.logDelete("Filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
 
         Integer Rp = Node.get().getReplicationMap().get(fileId);
-        int R = Rp;
 
         if (Rp == null) {
             ChordLogger.logSevere("File id " + Chord.percentStr(fileId) + " not found in this node");
             return;
         }
+
+        int R = Rp;
 
         // collect offsets and lookup futures.
         BigInteger[] offsetIds = Chord.offsets(fileId, R);
