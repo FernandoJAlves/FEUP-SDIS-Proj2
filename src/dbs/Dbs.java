@@ -21,6 +21,7 @@ import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.protocol.BackupMessage;
 import dbs.chord.observers.protocols.BackupResponseObserver;
+import dbs.filesystem.Configuration;
 import dbs.filesystem.FileManager;
 import dbs.filesystem.threads.Reader;
 import dbs.filesystem.threads.ResultCode;
@@ -146,7 +147,7 @@ public class Dbs implements RemoteInterface {
         CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
         Reader reader = null;
         try {
-            reader = new Reader(filepath, fileFuture);
+            reader = new Reader(filepath, fileFuture, Configuration.Operation.BACKUP);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -174,7 +175,7 @@ public class Dbs implements RemoteInterface {
             return;
         }
 
-        // mudadp para array de codes:
+        // mudado para array de codes:
         // CompletableFuture<Integer> codeFuture = new CompletableFuture<>();
         // int resultCode;
 
@@ -195,7 +196,7 @@ public class Dbs implements RemoteInterface {
         // send loop:
         for (int i = 0; i < R; i++) {
             ChordDispatcher.get().addObserver(observerArray[i]);
-            SocketManager.get().sendMessage(remoteNodes[i], message);
+            //SocketManager.get().sendMessage(remoteNodes[i], message);
         }
 
         // get all result codes
@@ -213,7 +214,6 @@ public class Dbs implements RemoteInterface {
         // replace replicationDeg with number sent (not the number of oks, otherwise it
         // would mess up future lookups)
         Node.get().addFile(fileId, R);
-        
     }
 
     @Override
