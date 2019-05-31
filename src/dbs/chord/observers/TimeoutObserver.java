@@ -1,7 +1,6 @@
 package dbs.chord.observers;
 
 import java.util.concurrent.TimeUnit;
-
 import dbs.chord.messages.ChordMessageKey;
 
 public abstract class TimeoutObserver extends ChordObserver {

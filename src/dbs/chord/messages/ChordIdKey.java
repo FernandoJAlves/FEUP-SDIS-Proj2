@@ -2,7 +2,6 @@ package dbs.chord.messages;
 
 import java.math.BigInteger;
 import java.util.Objects;
-
 import dbs.chord.Chord;
 
 public class ChordIdKey extends ChordMessageKey {

@@ -1,10 +1,8 @@
 package dbs.chord;
 
 import static dbs.chord.Chord.DISPATCHER_TASKS_POOL_SIZE;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.ChordMessageKey;
 import dbs.chord.observers.ChordObserver;

@@ -3,11 +3,9 @@ package dbs.filesystem;
 import dbs.chord.Node;
 import dbs.filesystem.threads.Eraser;
 import dbs.filesystem.threads.Writer;
-
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;

@@ -1,7 +1,6 @@
 package dbs.chord.observers;
 
 import static dbs.chord.Chord.JOIN_WAIT;
-
 import dbs.chord.Node;
 import dbs.chord.messages.ChordIdKey;
 import dbs.chord.messages.ChordMessage;

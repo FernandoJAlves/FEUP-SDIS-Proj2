@@ -12,7 +12,6 @@ import static dbs.chord.Chord.NODE_DUMP_PERIOD;
 import static dbs.chord.Chord.NODE_TASKS_POOL_SIZE;
 import static dbs.chord.Chord.STABILIZE_DELAY;
 import static dbs.chord.Chord.STABILIZE_PERIOD;
-
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -22,7 +21,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
-
 import dbs.Dbs;
 import dbs.chord.messages.AliveMessage;
 import dbs.chord.messages.ChordMessage;

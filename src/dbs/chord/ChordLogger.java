@@ -3,7 +3,6 @@ package dbs.chord;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashSet;
-
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.LookupMessage;
 import dbs.chord.messages.ResponsibleMessage;
