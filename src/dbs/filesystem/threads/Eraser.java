@@ -9,18 +9,17 @@ import java.io.IOException;
 public class Eraser extends RequestManager implements Runnable {
 
   private final String key;
-  private final Configuration.Ownership ownership;
 
-  public Eraser(String key,Configuration.Ownership ownership) throws IOException {
+  public Eraser(String key) throws IOException {
     super();
     this.key = key;
-    this.ownership = ownership;
   }
 
   private DeleteRequest createRequest() {
-    return new DeleteRequest(this.key,this.ownership, this.outputStream);
+    String filepath = Configuration.BACKUP_FOLDER + this.key;
+    return new DeleteRequest(filepath, this.outputStream);
   }
-
+  
   @Override
   public void run() {
     FileManager.getInstance().addRequest(this.createRequest());

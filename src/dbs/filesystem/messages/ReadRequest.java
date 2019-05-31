@@ -1,14 +1,13 @@
 package dbs.filesystem.messages;
 
-import dbs.filesystem.Configuration;
 import java.io.PipedOutputStream;
 
 public class ReadRequest extends Request {
 
   private int chunkNum;
 
-  public ReadRequest(String fileKey, int chunkNum, PipedOutputStream pipe) {
-    super(fileKey, Configuration.Ownership.BACKEDUP, pipe);
+  public ReadRequest(String filePath, int chunkNum, PipedOutputStream pipe) {
+    super(filePath, pipe);
     this.chunkNum = chunkNum;
   }
 
