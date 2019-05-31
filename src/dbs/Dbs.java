@@ -406,7 +406,9 @@ public class Dbs implements RemoteInterface {
     }
 
     public void transfer(NodeInfo predecessorNode) {
-        ArrayList<BigInteger> ids = FileManager.getInstance().getFilesToTransfer();
+        ArrayList<BigInteger> ids = FileManager.getInstance().getFilesToTransfer(predecessorNode);
+        int numIds = ids.size();
+        ChordLogger.logTransfer("Transferring " + numIds + " backups to " + predecessorNode.shortStr());
 
         for (BigInteger id : ids) {
             pool.submit(new Transferer(id, predecessorNode));
@@ -426,10 +428,15 @@ public class Dbs implements RemoteInterface {
 
         @Override
         public void run() {
+            // cancelar se o predecessor mudou
+
             byte[] file = waitFile(FileManager.getInstance().launchRestoreReader(fileId));
-            // APAGAR fileId
+            FileManager.getInstance().launchEraser(fileId);
             TransferMessage message = new TransferMessage(fileId, file);
             SocketManager.get().sendMessage(predecessorNode, message);
+
+            String fileStr = Chord.percentStr(fileId), predStr = predecessorNode.shortStr();
+            ChordLogger.logTransfer("Transferred file " + fileStr + " to " + predStr);
         }
     }
 }

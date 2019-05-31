@@ -16,7 +16,7 @@ fi
 for port in $(seq $minport $maxport); do
     if [ -f "$logdir/$port" ]; then
         echo "      $port"
-        echo "grep -Ee "\[$what\]" "$logdir/$port" > "$where/$port""
+        echo "grep -Ee "$what" "$logdir/$port" > "$where/$port""
         grep -Ee "$what" "$logdir/$port" > "$where/$port"
     fi
 done

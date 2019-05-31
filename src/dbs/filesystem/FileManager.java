@@ -1,15 +1,5 @@
 package dbs.filesystem;
 
-import dbs.chord.Chord;
-import dbs.chord.Node;
-import dbs.chord.NodeInfo;
-import dbs.filesystem.messages.DeleteRequest;
-import dbs.filesystem.messages.ReadRequest;
-import dbs.filesystem.messages.Request;
-import dbs.filesystem.messages.WriteRequest;
-import dbs.filesystem.threads.Eraser;
-import dbs.filesystem.threads.Reader;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PipedOutputStream;
@@ -34,7 +24,16 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import dbs.chord.Chord;
+import dbs.chord.Node;
+import dbs.chord.NodeInfo;
 import dbs.filesystem.Configuration.Operation;
+import dbs.filesystem.messages.DeleteRequest;
+import dbs.filesystem.messages.ReadRequest;
+import dbs.filesystem.messages.Request;
+import dbs.filesystem.messages.WriteRequest;
+import dbs.filesystem.threads.Eraser;
+import dbs.filesystem.threads.Reader;
 import dbs.filesystem.threads.Writer;
 
 /**
@@ -175,11 +174,11 @@ public class FileManager implements Runnable {
     this.queue.add(request);
   }
 
-  public void restoreFromBackup(String fileId){
-    Path src = Paths.get(FileManager.getInstance().BACKUP_FOLDER + fileId);
-    Path dest = Paths.get(FileManager.getInstance().RESTORE_FOLDER + fileId);
+  public void restoreFromBackup(String fileId) {
+    Path src = Paths.get(FileManager.BACKUP_FOLDER + fileId);
+    Path dest = Paths.get(FileManager.RESTORE_FOLDER + fileId);
     try {
-      Files.copy(src,dest, StandardCopyOption.REPLACE_EXISTING);
+      Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException e) {
       e.printStackTrace();
       return;
@@ -236,9 +235,10 @@ public class FileManager implements Runnable {
     }
   }
 
-  public void launchEraser(String fileName) {
+  public void launchEraser(BigInteger fileId) {
     try {
-      Eraser eraser = new Eraser(fileName);
+      String filename = fileId.toString();
+      Eraser eraser = new Eraser(filename);
       threadpool.submit(eraser);
     } catch (IOException e) {
       System.err.println(e.getMessage());
@@ -246,24 +246,22 @@ public class FileManager implements Runnable {
       throw new RuntimeException(e);
     }
   }
-  
-  public ArrayList<BigInteger> getFilesToTransfer() {
-    NodeInfo self = Node.get().getSelf();
-    NodeInfo predecessor = Node.get().getPredecessor();
 
-    List<String> result;
-    try {
-      Stream<Path> walk = Files.walk(Paths.get(BACKUP_FOLDER));
-      result = walk.filter(Files::isRegularFile).map(x -> x.toString()).collect(Collectors.toList());
-    } catch(IOException e) {
+  public ArrayList<BigInteger> getFilesToTransfer(NodeInfo predecessor) {
+    NodeInfo self = Node.get().getSelf();
+
+    List<Path> result;
+    try (Stream<Path> walk = Files.walk(Paths.get(BACKUP_FOLDER))) {
+      result = walk.filter(Files::isRegularFile).collect(Collectors.toList());
+    } catch (IOException e) {
       e.printStackTrace();
       return null;
     }
 
     ArrayList<BigInteger> filesToTranfer = new ArrayList<>();
-    for (String fileName : result) {
-      BigInteger fileKey = new BigInteger(fileName);
-      if (!Chord.afterOrdered(predecessor.getChordId(),fileKey,self.getChordId())) {
+    for (Path path : result) {
+      BigInteger fileKey = new BigInteger(path.getFileName().toString());
+      if (!Chord.afterOrdered(predecessor.getChordId(), fileKey, self.getChordId())) {
         filesToTranfer.add(fileKey);
       }
     }
