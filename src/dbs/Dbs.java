@@ -175,7 +175,7 @@ public class Dbs implements RemoteInterface {
             return;
         }
 
-        // mudadp para array de codes:
+        // mudado para array de codes:
         // CompletableFuture<Integer> codeFuture = new CompletableFuture<>();
         // int resultCode;
 
@@ -196,7 +196,7 @@ public class Dbs implements RemoteInterface {
         // send loop:
         for (int i = 0; i < R; i++) {
             ChordDispatcher.get().addObserver(observerArray[i]);
-            SocketManager.get().sendMessage(remoteNodes[i], message);
+            //SocketManager.get().sendMessage(remoteNodes[i], message);
         }
 
         // get all result codes
