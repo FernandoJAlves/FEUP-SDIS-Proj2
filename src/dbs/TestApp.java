@@ -8,7 +8,7 @@ public class TestApp {
     }
 
     public enum ProtocolList {
-        BACKUP, RESTORE, DELETE
+        BACKUP, RESTORE, DELETE, RECLAIM, STATE
     }
 
     public static boolean containsProtocol(String test) {
@@ -85,6 +85,33 @@ public class TestApp {
                     String pathname = args[2];
                     stub.delete(pathname);
                     System.out.println("DELETE!");
+                    break;
+                }
+                case "RECLAIM": {
+                    if (args.length != 3) {
+                        System.out.println("ERROR: Incorrect number of arguments in RECLAIM");
+                        return;
+                    }
+
+                    int maxDiskSpace;
+                    if(isNumber(args[2])){
+                        maxDiskSpace = Integer.parseInt(args[2]); // replication degree
+                    }
+                    else{
+                        System.out.println("ERROR: Expected a number as <oper_1> of RECLAIM");
+                        return;
+                    }
+                    stub.reclaim(maxDiskSpace);
+                    System.out.println("RECLAIM!");
+                    break;
+                }
+                case "STATE": {
+                    if (args.length != 2) {
+                        System.out.println("ERROR: Incorrect number of arguments in STATE");
+                        return;
+                    }
+                    System.out.println(stub.state());
+                    System.out.println("STATE!");
                     break;
                 }
                 
