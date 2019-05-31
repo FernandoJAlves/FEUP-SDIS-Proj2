@@ -81,16 +81,16 @@ public class Dbs implements RemoteInterface {
         KeyStore sks = KeyStore.getInstance("JKS");
         sks.load(new FileInputStream("cert/server.public"), "public".toCharArray());
         // setup client keystore
-        KeyStore cks = KeyStore.getInstance( "JKS" );
-        cks.load( new FileInputStream( "cert/client.private" ),
-                       clientPass.toCharArray() );
+        KeyStore cks = KeyStore.getInstance("JKS");
+        cks.load(new FileInputStream("cert/client.private"),
+                       clientPass.toCharArray());
         // setup SSL context
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance( "SunX509" );
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         tmf.init(sks);
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance( "SunX509" );
-        kmf.init(cks, clientPass.toCharArray() );
-        clientContext = SSLContext.getInstance( "TLS" );
-        clientContext.init( kmf.getKeyManagers(), tmf.getTrustManagers(), secureRandom);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        kmf.init(cks, clientPass.toCharArray());
+        clientContext = SSLContext.getInstance("TLS");
+        clientContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), secureRandom);
     }
 
     private static void setupServerContext() throws Exception {
@@ -98,15 +98,15 @@ public class Dbs implements RemoteInterface {
         KeyStore sks = KeyStore.getInstance("JKS");
         sks.load(new FileInputStream("cert/server.private"), "public".toCharArray());
         // setup client keystore
-        KeyStore cks = KeyStore.getInstance( "JKS" );
-        cks.load( new FileInputStream( "cert/client.public" ), serverPass.toCharArray());
+        KeyStore cks = KeyStore.getInstance("JKS");
+        cks.load(new FileInputStream("cert/client.public"), serverPass.toCharArray());
         // setup SSL context
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance( "SunX509" );
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         tmf.init(cks);
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance( "SunX509" );
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
         kmf.init(sks, serverPass.toCharArray());
-        serverContext = SSLContext.getInstance( "TLS" );
-        serverContext.init( kmf.getKeyManagers(), tmf.getTrustManagers(), secureRandom);
+        serverContext = SSLContext.getInstance("TLS");
+        serverContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), secureRandom);
     }
 
 
