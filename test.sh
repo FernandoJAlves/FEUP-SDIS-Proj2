@@ -21,5 +21,5 @@ sleep 1s;
 
 gnome-terminal -x sh -c '((sleep \'$timeout' && kill -9 $$)&);
                         sleep 1s;
-                        echo java -cp bin dbs.TestApp 29501 BACKUP /Desktop/testD.txt 3
+                        echo java -cp bin dbs.TestApp 29501 BACKUP /home/fernando/Desktop/testD.txt 3
                         exec bash;'

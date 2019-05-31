@@ -128,7 +128,7 @@ public class Dbs implements RemoteInterface {
         @SuppressWarnings("unchecked")
         ArrayList<CompletableFuture<NodeInfo>> futures = new ArrayList<>();
 
-        for (int i = 0; i < R; ++i) {
+        for (int i = 0; i < R; i++) {
             futures.add(Node.get().lookup(ids[i]));
         }
 
@@ -154,17 +154,18 @@ public class Dbs implements RemoteInterface {
         FileManager.getInstance().getThreadpool().submit(reader);
 
         // espera que o ficheiro esteja lido
-        byte[] file = new byte[0]; // bloqueia e pode dar throw.
+        byte[] file; // bloqueia e pode dar throw.
         try {
             file = fileFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            return;
         }
         assert file != null;
 
         // espera que todos os lookups retornem
         try {
-            for (int i = 0; i < R; ++i) {
+            for (int i = 0; i < R; i++) {
                 remoteNodes[i] = lookupFutures.get(i).get();
                 // pode ser null
             }
@@ -196,7 +197,16 @@ public class Dbs implements RemoteInterface {
         // send loop:
         for (int i = 0; i < R; i++) {
             ChordDispatcher.get().addObserver(observerArray[i]);
-            //SocketManager.get().sendMessage(remoteNodes[i], message);
+            System.out.print("====\nFILE: " + new String(file));
+            if(remoteNodes[i] != null){
+                System.out.println("Node: " + remoteNodes[i].chordId);
+                SocketManager.get().sendMessage(remoteNodes[i], message);
+            }
+            else{
+                System.out.println("IS NULL\n====");
+            }
+
+            
         }
 
         // get all result codes

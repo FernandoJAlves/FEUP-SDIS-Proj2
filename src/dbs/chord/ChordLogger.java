@@ -7,6 +7,7 @@ import java.util.HashSet;
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.LookupMessage;
 import dbs.chord.messages.ResponsibleMessage;
+import dbs.chord.messages.protocol.*;
 
 public final class ChordLogger {
 
@@ -39,11 +40,15 @@ public final class ChordLogger {
     static {
         inSet.add(LookupMessage.class.getName());
         inSet.add(ResponsibleMessage.class.getName());
+        inSet.add(BackupMessage.class.getName());
+        inSet.add(BackupResponseMessage.class.getName());
         //inSet.add(StabilizeMessage.class.getName());
         //inSet.add(PredecessorMessage.class.getName());
 
         outSet.add(LookupMessage.class.getName());
         outSet.add(ResponsibleMessage.class.getName());
+        outSet.add(BackupMessage.class.getName());
+        outSet.add(BackupResponseMessage.class.getName());
         //outSet.add(StabilizeMessage.class.getName());
         //outSet.add(PredecessorMessage.class.getName());
     }
