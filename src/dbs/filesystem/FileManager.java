@@ -41,7 +41,8 @@ import dbs.filesystem.threads.Writer;
  */
 public class FileManager implements Runnable {
 
-  private static ThreadPoolExecutor threadpool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Configuration.POOL_SIZE);
+  private static ThreadPoolExecutor threadpool = (ThreadPoolExecutor) Executors
+      .newFixedThreadPool(Configuration.POOL_SIZE);
   public static String BACKUP_FOLDER;
   public static String RESTORE_FOLDER;
 

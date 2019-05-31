@@ -18,6 +18,7 @@ public final class ChordLogger {
     private static final boolean PRINT_BACKUP = true;
     private static final boolean PRINT_RESTORE = true;
     private static final boolean PRINT_DELETE = true;
+    private static final boolean PRINT_TRANSFER = true;
 
     private static final boolean PRINT_NODE_IMPORTANT = true;
     private static final boolean PRINT_NODE_TRACK = false;
@@ -232,6 +233,13 @@ public final class ChordLogger {
         }
     }
 
+    // Transfer subprotocol messages
+    public static void logTransfer(String msg) {
+        if (PRINT_TRANSFER) {
+            format(TRANSFER, msg, true);
+        }
+    }
+
     // Severe messages
     public static void logSevere(String msg) {
         format(SEVERE, msg, true);
@@ -260,6 +268,7 @@ public final class ChordLogger {
     private static final int BACKUP = 15;
     private static final int RESTORE = 16;
     private static final int DELETE = 17;
+    private static final int TRANSFER = 18;
 
     static {
         colorMap[IMPORTANT] = "1;36";
@@ -280,6 +289,7 @@ public final class ChordLogger {
         colorMap[BACKUP] = "1;35";
         colorMap[RESTORE] = "1;36";
         colorMap[DELETE] = "1;34";
+        colorMap[TRANSFER] = "1;35";
 
         prefixMap[IMPORTANT] = "[IMPORTANT]";
         prefixMap[SEVERE] = "[SEVERE] ";
@@ -299,5 +309,6 @@ public final class ChordLogger {
         prefixMap[BACKUP] = "[BACKUP]";
         prefixMap[RESTORE] = "[RESTORE]";
         prefixMap[DELETE] = "[DELETE]";
+        prefixMap[TRANSFER] = "[TRANSFER]";
     }
 }

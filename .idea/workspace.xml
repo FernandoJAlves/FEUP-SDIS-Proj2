@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cebc7a45-e175-4d75-b01e-13b33638ada3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/dbs/Dbs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/Dbs.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/dbs/chord/observers/protocols/TransferObserver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/chord/ChordLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/chord/ChordLogger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/chord/messages/protocol/TransferMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/chord/messages/protocol/TransferMessage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -20,10 +22,9 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="115">
-              <caret line="224" column="49" selection-start-line="224" selection-start-column="49" selection-end-line="224" selection-end-column="49" />
+            <state relative-caret-position="150">
+              <caret line="34" column="22" selection-start-line="34" selection-start-column="22" selection-end-line="34" selection-end-column="22" />
               <folding>
-                <element signature="imports" expanded="true" />
                 <element signature="e#2791#2792#0" expanded="true" />
                 <element signature="e#2818#2819#0" expanded="true" />
                 <element signature="e#5808#5809#0" expanded="true" />
@@ -461,7 +462,7 @@
     <frame x="0" y="-1" width="1366" height="738" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19469696" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19469696" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -475,7 +476,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Terminal" order="7" visible="true" weight="0.052117262" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.26058632" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.25407165" />
@@ -775,10 +776,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="224" column="49" selection-start-line="224" selection-start-column="49" selection-end-line="224" selection-end-column="49" />
+        <state relative-caret-position="150">
+          <caret line="34" column="22" selection-start-line="34" selection-start-column="22" selection-end-line="34" selection-end-column="22" />
           <folding>
-            <element signature="imports" expanded="true" />
             <element signature="e#2791#2792#0" expanded="true" />
             <element signature="e#2818#2819#0" expanded="true" />
             <element signature="e#5808#5809#0" expanded="true" />
