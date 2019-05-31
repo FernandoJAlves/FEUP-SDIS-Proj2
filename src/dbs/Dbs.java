@@ -21,7 +21,9 @@ import dbs.chord.ChordLogger;
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.protocol.BackupMessage;
+import dbs.chord.messages.protocol.DeleteMessage;
 import dbs.chord.observers.protocols.BackupResponseObserver;
+import dbs.chord.observers.protocols.DeleteResponseObserver;
 import dbs.filesystem.Configuration;
 import dbs.filesystem.FileManager;
 import dbs.filesystem.threads.Reader;
@@ -243,8 +245,77 @@ public class Dbs implements RemoteInterface {
     }
 
     @Override
-    public void delete(String pathname) {
-        HashMap<BigInteger, Integer> replicationMap = Node.get().getReplicationMap();
-        // TODO: call function to retrieve offsets of nodes
+    public void delete(String fileName) {
+        assert fileName != null;
+
+        BigInteger fileId = Chord.encodeSHA256(fileName);
+        ChordLogger.logNodeImportant("Delete filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
+
+        int R = Node.get().getReplicationMap().get(fileId);
+
+        // collect offsets and lookup futures.
+        BigInteger[] offsetIds = Chord.offsets(fileId, R);
+        for (BigInteger i : offsetIds)
+            System.out.println(Chord.percentStr(i));
+
+        ArrayList<CompletableFuture<NodeInfo>> lookupFutures = lookupAll(fileId, R);
+
+        // espera que todos os lookups retornem
+        NodeInfo[] remoteNodes = new NodeInfo[R];
+        try {
+            for (int i = 0; i < R; i++) {
+                remoteNodes[i] = lookupFutures.get(i).get();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            // shouldn't happen, except perhaps with Ctrl+C and such interactions.
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+
+
+        // Enviar mensagens delete
+        ArrayList<CompletableFuture<ResultCode>> codeFutures = new ArrayList<>();
+        ResultCode[] resultCodes = new ResultCode[R];
+
+        for (int i = 0; i < R; i++) {
+            NodeInfo remoteNode = remoteNodes[i];
+            if (remoteNode == null) {
+                ChordLogger.progress("Remote node " + i + "/" + R + " is null, skipped");
+                continue;
+            }
+            BigInteger offsetFileId = offsetIds[i];
+
+            CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
+            codeFutures.add(codeFuture);
+
+            // create observer and message
+            DeleteResponseObserver observer = new DeleteResponseObserver(fileId, codeFuture);
+            DeleteMessage message = new DeleteMessage(offsetFileId);
+
+            // add observer, and only then send the message
+            ChordDispatcher.get().addObserver(observer);
+            SocketManager.get().sendMessage(remoteNode, message);
+
+        }
+
+        // get all result codes
+        for (int i = 0; i < R; i++) {
+            try {
+                resultCodes[i] = codeFutures.get(i).get();
+            } catch (InterruptedException | ExecutionException e) {
+                // shouldn't happen, except perhaps with Ctrl+C and such interactions.
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                return;
+            }
+        }
+
+
+
+
+        // Maybe: remover entrada do hashmap
+
     }
 }
