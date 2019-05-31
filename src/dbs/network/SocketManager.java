@@ -1,17 +1,21 @@
 package dbs.network;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.security.KeyStore;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-
 import dbs.chord.ChordLogger;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordMessage;
@@ -19,7 +23,7 @@ import dbs.chord.messages.ChordMessage;
 public class SocketManager {
 
     private final ConcurrentHashMap<BigInteger, ChordListener> listeners;
-    private final ServerSocket server;
+    private final SSLServerSocket server;
     private final SSLSocketFactory factory;
 
     private static SocketManager instance;
@@ -44,7 +48,9 @@ public class SocketManager {
         int port = serverAddress.getPort();
         InetAddress address = serverAddress.getAddress();
 
-        this.server = serverFactory.createServerSocket(port, 15, address);
+        this.server = (SSLServerSocket) serverFactory.createServerSocket(port, 15, address);
+        this.server.setNeedClientAuth(true);
+        
         //TODO: Setup do contexto SSL de this.server
         this.listeners = new ConcurrentHashMap<>();
         this.factory = socketFactory;
@@ -113,7 +119,7 @@ public class SocketManager {
         int port = remoteNode.getPort();
 
         try {
-            Socket socket = factory.createSocket(address, port);
+            SSLSocket socket = (SSLSocket) factory.createSocket(address, port);
             ChordListener listener = new ChordListener(socket, remoteNode);
             return listener;
         } catch (ConnectException e) {
@@ -170,7 +176,7 @@ public class SocketManager {
                 if (server.isClosed())
                     break;
                 try {
-                    Socket socket = server.accept();
+                    SSLSocket socket = (SSLSocket) server.accept();
                     if (socket == null)
                         continue;
                     new ChordListener(socket);

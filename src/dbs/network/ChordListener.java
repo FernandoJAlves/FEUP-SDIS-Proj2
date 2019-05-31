@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.Socket;
 import java.net.SocketException;
+
+import javax.net.ssl.SSLSocket;
 
 import dbs.chord.ChordDispatcher;
 import dbs.chord.ChordLogger;
@@ -31,7 +32,7 @@ import dbs.chord.messages.ChordMessage;
  */
 public class ChordListener implements Runnable {
 
-    private final Socket socket;
+    private final SSLSocket socket;
     private ObjectInputStream input;
     private ObjectOutputStream output;
 
@@ -44,7 +45,7 @@ public class ChordListener implements Runnable {
      * Open streams and setup communications on an already opened and connected
      * Socket, which has been opened by our SocketManager for the given remoteNode.
      */
-    ChordListener(Socket socket, NodeInfo remoteNode) {
+    ChordListener(SSLSocket socket, NodeInfo remoteNode) {
         this.socket = socket;
         this.input = null;
         this.output = null;
@@ -70,7 +71,7 @@ public class ChordListener implements Runnable {
      * Socket, which has been accepted by our SocketManager and has not yet been
      * identified.
      */
-    ChordListener(Socket socket) {
+    ChordListener(SSLSocket socket) {
         this.socket = socket;
         this.input = null;
         this.output = null;
