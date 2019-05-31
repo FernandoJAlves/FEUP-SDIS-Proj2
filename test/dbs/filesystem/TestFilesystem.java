@@ -28,7 +28,7 @@ public class TestFilesystem {
     TestCase.assertTrue(file.createNewFile());
 
     // Launch Eraser thread
-    Eraser eraser = new Eraser(path, Configuration.Ownership.OWNED);
+    Eraser eraser = new Eraser(path);
     Thread eraserThread = new Thread(eraser);
     eraserThread.start();
 
@@ -56,7 +56,7 @@ public class TestFilesystem {
     byte[] fileContent = "This is a test message!".getBytes();
 
     // Launch Writer Thread
-    Writer writer = new Writer(fileKey, fileContent);
+    Writer writer = new Writer(fileKey, fileContent, Configuration.Operation.BACKUP);
     Thread writerThread = new Thread(writer);
     writerThread.start();
 
@@ -64,5 +64,19 @@ public class TestFilesystem {
     TimeUnit.MILLISECONDS.sleep(100);
     byte[] writtenContent = Files.readAllBytes(Paths.get(path));
     Assert.assertArrayEquals(fileContent, writtenContent);
+  }
+
+  @Test
+  public void testCreateDirs() {
+
+    // Create FileManager
+    FileManager.getInstance();
+
+    // Verify directories creation
+    File backupDir = new File(Configuration.BACKUP_FOLDER);
+    assert backupDir.exists();
+
+    File restoreDir = new File(Configuration.RESTORE_FOLDER);
+    assert restoreDir.exists();
   }
 }

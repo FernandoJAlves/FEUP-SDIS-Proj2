@@ -26,5 +26,6 @@ public enum ResultCode {
         default:
             return "SDIS IS LOVE, SDIS IS LIFE";
         }
+
     }
 }

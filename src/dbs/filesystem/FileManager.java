@@ -1,5 +1,6 @@
 package dbs.filesystem;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.math.BigInteger;
@@ -40,6 +41,16 @@ public class FileManager implements Runnable {
 
   public FileManager() {
     this.queue = new LinkedBlockingDeque<>();
+    this.createFilesystem();
+  }
+
+  public void createFilesystem() {
+    File backupDir = new File(Configuration.BACKUP_FOLDER);
+    if (!backupDir.exists())
+      backupDir.mkdirs();
+    File restoreDir = new File(Configuration.RESTORE_FOLDER);
+    if (!restoreDir.exists())
+      restoreDir.mkdirs();
   }
 
   public static FileManager getInstance() {
@@ -60,7 +71,8 @@ public class FileManager implements Runnable {
     Path path = Paths.get(request.getFilePath());
 
     try {
-      AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
+      AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE,
+          StandardOpenOption.CREATE);
       ByteBuffer buffer = ByteBuffer.wrap(request.getContent());
 
       // Version chunk-a-chunk

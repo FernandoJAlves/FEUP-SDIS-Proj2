@@ -136,7 +136,7 @@ public class Dbs implements RemoteInterface {
         assert lookupFutures != null;
         try {
             NodeInfo[] remoteNodes = new NodeInfo[lookupFutures.size()];
-            for (int i = 0; i < R; i++) {
+            for (int i = 0; i < lookupFutures.size(); i++) {
                 remoteNodes[i] = lookupFutures.get(i).get();
             }
             return remoteNodes;
@@ -211,7 +211,7 @@ public class Dbs implements RemoteInterface {
                 codeFutures.add(codeFuture);
 
                 // create observer and message
-                BackupResponseObserver observer = new BackupResponseObserver(fileId, codeFuture);
+                BackupResponseObserver observer = new BackupResponseObserver(offsetFileId, codeFuture);
                 BackupMessage message = new BackupMessage(offsetFileId, file);
 
                 // add observer, and only then send the message
