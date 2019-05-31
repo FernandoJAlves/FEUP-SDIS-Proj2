@@ -7,8 +7,8 @@ import java.net.InetSocketAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -17,6 +17,7 @@ import javax.net.SocketFactory;
 
 import dbs.chord.Chord;
 import dbs.chord.ChordDispatcher;
+import dbs.chord.ChordLogger;
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.protocol.BackupMessage;
@@ -32,7 +33,7 @@ public class Dbs implements RemoteInterface {
     public static void main(String[] args) throws IOException {
         if (args.length <= 1)
             usage();
- 
+
         // rmi
         try {
             Dbs dbs = new Dbs();
@@ -42,7 +43,7 @@ public class Dbs implements RemoteInterface {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         switch (args[0]) {
         case "join":
             join(args);
@@ -140,16 +141,24 @@ public class Dbs implements RemoteInterface {
         assert filepath != null && R > 0;
 
         BigInteger fileId = Chord.encodeSHA256(filepath);
+        ChordLogger.logNodeImportant("Backup filename: " + filepath + " | file id: " + Chord.percentStr(fileId));
+
+        // collect offsets and lookup futures.
+        BigInteger[] offsetIds = Chord.offsets(fileId, R);
+        for (BigInteger i : offsetIds)
+            System.out.println(Chord.percentStr(i));
 
         ArrayList<CompletableFuture<NodeInfo>> lookupFutures = lookupAll(fileId, R);
-        NodeInfo[] remoteNodes = new NodeInfo[R];
 
+        // prepare reader and launch it in a different thread.
         CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
-        Reader reader = null;
+        Reader reader;
         try {
             reader = new Reader(filepath, fileFuture, Configuration.Operation.BACKUP);
         } catch (IOException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
+            return;
         }
         FileManager.getInstance().getThreadpool().submit(reader);
 
@@ -163,11 +172,13 @@ public class Dbs implements RemoteInterface {
         }
         assert file != null;
 
+        // * MULTITHREADING começa aqui
+
         // espera que todos os lookups retornem
+        NodeInfo[] remoteNodes = new NodeInfo[R];
         try {
             for (int i = 0; i < R; i++) {
                 remoteNodes[i] = lookupFutures.get(i).get();
-                // pode ser null
             }
         } catch (InterruptedException | ExecutionException e) {
             // shouldn't happen, except perhaps with Ctrl+C and such interactions.
@@ -176,37 +187,31 @@ public class Dbs implements RemoteInterface {
             return;
         }
 
-        // mudado para array de codes:
-        // CompletableFuture<Integer> codeFuture = new CompletableFuture<>();
-        // int resultCode;
+        // Add file to our repository.
+        Node.get().addFile(fileId, R);
 
         ArrayList<CompletableFuture<ResultCode>> codeFutures = new ArrayList<>();
         ResultCode[] resultCodes = new ResultCode[R];
 
-        // array de observers:
-        BackupResponseObserver[] observerArray = new BackupResponseObserver[R];
         for (int i = 0; i < R; i++) {
-            CompletableFuture<ResultCode> future = new CompletableFuture<>();
-            codeFutures.add(future);
-            observerArray[i] = new BackupResponseObserver(fileId, codeFutures.get(i));
-        }
-
-        // 1 mensagem:
-        BackupMessage message = new BackupMessage(fileId, file);
-
-        // send loop:
-        for (int i = 0; i < R; i++) {
-            ChordDispatcher.get().addObserver(observerArray[i]);
-            System.out.print("====\nFILE: " + new String(file));
-            if(remoteNodes[i] != null){
-                System.out.println("Node: " + remoteNodes[i].chordId);
-                SocketManager.get().sendMessage(remoteNodes[i], message);
+            NodeInfo remoteNode = remoteNodes[i];
+            if (remoteNode == null) {
+                ChordLogger.progress("Remote node " + i + "/" + R + " is null, skipped");
+                continue;
             }
-            else{
-                System.out.println("IS NULL\n====");
-            }
+            BigInteger offsetFileId = offsetIds[i];
 
-            
+            CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
+            codeFutures.add(codeFuture);
+
+            // create observer and message
+            BackupResponseObserver observer = new BackupResponseObserver(fileId, codeFuture);
+            BackupMessage message = new BackupMessage(offsetFileId, file);
+
+            // add observer, and only then send the message
+            ChordDispatcher.get().addObserver(observer);
+            SocketManager.get().sendMessage(remoteNode, message);
+
         }
 
         // get all result codes
@@ -220,10 +225,6 @@ public class Dbs implements RemoteInterface {
                 return;
             }
         }
-
-        // replace replicationDeg with number sent (not the number of oks, otherwise it
-        // would mess up future lookups)
-        Node.get().addFile(fileId, R);
     }
 
     @Override
