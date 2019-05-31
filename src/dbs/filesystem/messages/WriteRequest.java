@@ -1,7 +1,5 @@
 package dbs.filesystem.messages;
 
-import dbs.filesystem.Configuration;
-
 import java.io.PipedOutputStream;
 
 public class WriteRequest extends Request {

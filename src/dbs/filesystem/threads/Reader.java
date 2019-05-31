@@ -23,7 +23,7 @@ public class Reader extends RequestManager implements Runnable {
 
   private ReadRequest createRequest(int chunkNum) {
     String filePath = this.key;
-    if (this.operation == Configuration.Operation.BACKUP)
+    if (this.operation == Configuration.Operation.RESTORE)
       filePath = Configuration.BACKUP_FOLDER + this.key;
     return new ReadRequest(filePath, chunkNum, this.outputStream);
   }
