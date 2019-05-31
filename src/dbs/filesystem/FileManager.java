@@ -1,5 +1,6 @@
 package dbs.filesystem;
 
+import dbs.chord.Node;
 import dbs.filesystem.messages.DeleteRequest;
 import dbs.filesystem.messages.ReadRequest;
 import dbs.filesystem.messages.Request;
@@ -27,6 +28,8 @@ import java.util.logging.Logger;
 public class FileManager implements Runnable {
 
   private static ThreadPoolExecutor threadpool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Configuration.POOL_SIZE);
+  public static String BACKUP_FOLDER;
+  public static String RESTORE_FOLDER;
 
   private static FileManager instance;
   private final LinkedBlockingDeque<Request> queue;
@@ -37,10 +40,15 @@ public class FileManager implements Runnable {
   }
 
   public void createFilesystem() {
-    File backupDir = new File(Configuration.BACKUP_FOLDER);
+    String peerId = Node.get().getSelf().getChordId().toString();
+
+    BACKUP_FOLDER = Configuration.PEER_FOLDER + "/" + peerId + "/backup/";
+    RESTORE_FOLDER = Configuration.PEER_FOLDER + "/" + peerId + "/restore/";
+
+    File backupDir = new File(BACKUP_FOLDER);
     if (!backupDir.exists())
       backupDir.mkdirs();
-    File restoreDir = new File(Configuration.RESTORE_FOLDER);
+    File restoreDir = new File(RESTORE_FOLDER);
     if (!restoreDir.exists())
       restoreDir.mkdirs();
   }

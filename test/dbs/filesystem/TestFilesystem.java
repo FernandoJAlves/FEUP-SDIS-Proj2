@@ -1,5 +1,6 @@
 package dbs.filesystem;
 
+import dbs.chord.Node;
 import dbs.filesystem.threads.Eraser;
 import dbs.filesystem.threads.Writer;
 
@@ -8,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +44,7 @@ public class TestFilesystem {
 
     // Generate test file
     String fileKey = "test_file.txt";
-    String path = Configuration.BACKUP_FOLDER + fileKey;
+    String path = FileManager.BACKUP_FOLDER + fileKey;
     File file = new File(path);
 
     // Delete previous file (if it exists)
@@ -69,14 +71,16 @@ public class TestFilesystem {
   @Test
   public void testCreateDirs() {
 
+    Node node = Node.create(new InetSocketAddress("localhost",8090));
+
     // Create FileManager
     FileManager.getInstance();
 
     // Verify directories creation
-    File backupDir = new File(Configuration.BACKUP_FOLDER);
+    File backupDir = new File(FileManager.BACKUP_FOLDER);
     assert backupDir.exists();
 
-    File restoreDir = new File(Configuration.RESTORE_FOLDER);
+    File restoreDir = new File(FileManager.RESTORE_FOLDER);
     assert restoreDir.exists();
   }
 }

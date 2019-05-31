@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cebc7a45-e175-4d75-b01e-13b33638ada3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/ResultCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/ResultCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -23,12 +23,39 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="45" column="3" selection-start-line="45" selection-start-column="3" selection-end-line="45" selection-end-column="3" />
+            <state relative-caret-position="133">
+              <caret line="42" selection-start-line="42" selection-end-line="42" />
               <folding>
-                <element signature="e#1766#1767#0" expanded="true" />
-                <element signature="e#4749#4750#0" expanded="true" />
+                <element signature="e#2058#2059#0" expanded="true" />
+                <element signature="e#5041#5042#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/Configuration.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="370">
+              <caret line="40" column="45" lean-forward="true" selection-start-line="40" selection-start-column="45" selection-end-line="40" selection-end-column="45" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/chord/Node.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="65" column="47" selection-start-line="65" selection-start-column="30" selection-end-line="65" selection-end-column="47" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/chord/NodeInfo.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-25">
+              <caret line="18" column="19" selection-start-line="18" selection-start-column="19" selection-end-line="18" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -36,8 +63,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-303">
-              <caret line="18" column="31" lean-forward="true" selection-start-line="18" selection-start-column="31" selection-end-line="18" selection-end-column="31" />
+            <state relative-caret-position="163">
+              <caret line="26" column="28" selection-start-line="26" selection-start-column="28" selection-end-line="26" selection-end-column="28" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -46,10 +73,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="150">
+              <caret line="29" column="23" lean-forward="true" selection-start-line="29" selection-start-column="23" selection-end-line="29" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="80" column="3" selection-start-line="80" selection-start-column="3" selection-end-line="80" selection-end-column="3" />
+            <state relative-caret-position="176">
+              <caret line="72" column="4" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="4" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -57,11 +93,35 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="291">
+              <caret line="29" column="29" lean-forward="true" selection-start-line="29" selection-start-column="29" selection-end-line="29" selection-end-column="29" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/ResultCode.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="312">
               <caret line="26" column="29" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="175">
+              <caret line="20" column="31" selection-start-line="20" selection-start-column="31" selection-end-line="20" selection-end-column="31" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -100,6 +160,8 @@
       <find>sendMessage</find>
       <find>SocketManager.</find>
       <find>BackupMessage</find>
+      <find>Configuration.B</find>
+      <find>RESTORE_FOLDER</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -117,7 +179,6 @@
         <option value="$PROJECT_DIR$/src/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/test/src/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/RequestManager.java" />
-        <option value="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/ThreadResponse.java" />
         <option value="$PROJECT_DIR$/src/dbs/chord/Node.java" />
@@ -126,13 +187,14 @@
         <option value="$PROJECT_DIR$/src/dbs/Dbs.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/messages/DeleteRequest.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/messages/WriteRequest.java" />
-        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java" />
-        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java" />
-        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" />
         <option value="$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java" />
-        <option value="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" />
-        <option value="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/ResultCode.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java" />
+        <option value="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" />
       </list>
     </option>
   </component>
@@ -388,18 +450,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 18m 19s.xml">
-      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 19m 09s.xml">
-      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 20m 19s.xml">
-      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 24m 08s.xml">
-      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 28m 09s.xml">
       <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
@@ -418,12 +468,24 @@
     <history-entry file="TestFilesystem - 2019.05.30 at 18h 37m 31s.xml">
       <configuration name="TestFilesystem" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="TestFilesystem_testCreateDirs - 2019.05.31 at 15h 47m 55s.xml">
+      <configuration name="TestFilesystem.testCreateDirs" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestFilesystem_testCreateDirs - 2019.05.31 at 15h 57m 20s.xml">
+      <configuration name="TestFilesystem.testCreateDirs" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestFilesystem_testCreateDirs - 2019.05.31 at 16h 06m 20s.xml">
+      <configuration name="TestFilesystem.testCreateDirs" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestFilesystem_testCreateDirs - 2019.05.31 at 16h 14m 56s.xml">
+      <configuration name="TestFilesystem.testCreateDirs" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1366" height="738" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19469696" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19469696" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -432,15 +494,15 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.44625407" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.26547232" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.26547232" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39576548" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.14169382" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.2752443" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info active="true" anchor="bottom" id="Messages" order="10" visible="true" weight="0.25407165" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.25407165" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -503,13 +565,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/chord/NodeInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="55" column="23" lean-forward="true" selection-start-line="55" selection-start-column="23" selection-end-line="55" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/IOperations.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
@@ -534,13 +589,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="191">
           <caret line="39" column="32" selection-start-line="39" selection-start-column="30" selection-end-line="39" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/chord/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="387" column="32" selection-start-line="387" selection-start-column="32" selection-end-line="387" selection-end-column="32" />
         </state>
       </provider>
     </entry>
@@ -583,13 +631,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="12" column="28" selection-start-line="12" selection-start-column="28" selection-end-line="12" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/Configuration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="15" column="25" selection-start-line="15" selection-start-column="25" selection-end-line="15" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -646,16 +687,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="23" column="51" selection-start-line="23" selection-start-column="51" selection-end-line="23" selection-end-column="51" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/chord/messages/protocol/BackupResponseMessage.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="38">
@@ -684,13 +715,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="32" column="26" selection-start-line="32" selection-start-column="26" selection-end-line="32" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/chord/messages/protocol/BackupMessage.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-48">
@@ -698,10 +722,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/ResultCode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="26" column="29" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="20" column="31" selection-start-line="20" selection-start-column="31" selection-end-line="20" selection-end-column="31" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="29" column="23" lean-forward="true" selection-start-line="29" selection-start-column="23" selection-end-line="29" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/chord/NodeInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-25">
+          <caret line="18" column="19" selection-start-line="18" selection-start-column="19" selection-end-line="18" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-303">
-          <caret line="18" column="31" lean-forward="true" selection-start-line="18" selection-start-column="31" selection-end-line="18" selection-end-column="31" />
+        <state relative-caret-position="163">
+          <caret line="26" column="28" selection-start-line="26" selection-start-column="28" selection-end-line="26" selection-end-column="28" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -710,39 +765,46 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="15" column="3" lean-forward="true" selection-start-line="15" selection-start-column="3" selection-end-line="15" selection-end-column="3" />
+        <state relative-caret-position="291">
+          <caret line="29" column="29" lean-forward="true" selection-start-line="29" selection-start-column="29" selection-end-line="29" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/Configuration.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="370">
+          <caret line="40" column="45" lean-forward="true" selection-start-line="40" selection-start-column="45" selection-end-line="40" selection-end-column="45" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="45" column="3" selection-start-line="45" selection-start-column="3" selection-end-line="45" selection-end-column="3" />
+        <state relative-caret-position="133">
+          <caret line="42" selection-start-line="42" selection-end-line="42" />
           <folding>
-            <element signature="e#1766#1767#0" expanded="true" />
-            <element signature="e#4749#4750#0" expanded="true" />
+            <element signature="e#2058#2059#0" expanded="true" />
+            <element signature="e#5041#5042#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/chord/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="65" column="47" selection-start-line="65" selection-start-column="30" selection-end-line="65" selection-end-column="47" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="80" column="3" selection-start-line="80" selection-start-column="3" selection-end-line="80" selection-end-column="3" />
+        <state relative-caret-position="176">
+          <caret line="72" column="4" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="4" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/threads/ResultCode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="26" column="29" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
         </state>
       </provider>
     </entry>
