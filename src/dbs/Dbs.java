@@ -328,7 +328,7 @@ public class Dbs implements RemoteInterface {
             // Remote resolve
             else {
                 ChordLogger.logRestore(fileName, ir + " resolved to remote " + responsible.shortStr());
-                
+
                 CompletableFuture<RestoreReturn> restoreFuture = new CompletableFuture<>();
 
                 // create observer and message
@@ -396,22 +396,32 @@ public class Dbs implements RemoteInterface {
             BigInteger offsetFileId = offsetIds[i];
             String ir = "delete " + iR(offsetFileId, i, R);
 
+            // No Delete
             if (remoteNode == null) {
-                ChordLogger.progress(ir + " is null, skipped");
+                ChordLogger.logDelete(ir + " is null, skipped");
                 continue;
             }
+            // Self Delete
+            else if (remoteNode.equals(Node.get().getSelf())) {
+                ChordLogger.logDelete(fileName, ir + " stored in this node");
+                codeFutures.add(CompletableFuture.completedFuture(ResultCode.OK));
+                FileManager.getInstance().launchEraser(offsetFileId);
+            }
+            // Remote Delete
+            else{
+                ChordLogger.logDelete(fileName, ir + " stored in remote node, sending message..");
 
-            CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
-            codeFutures.add(codeFuture);
-
-            // create observer and message
-            DeleteResponseObserver observer = new DeleteResponseObserver(fileId, codeFuture);
-            DeleteMessage message = new DeleteMessage(offsetFileId);
-
-            // add observer, and only then send the message
-            ChordDispatcher.get().addObserver(observer);
-            SocketManager.get().sendMessage(remoteNode, message);
-
+                CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
+                codeFutures.add(codeFuture);
+    
+                // create observer and message
+                DeleteResponseObserver observer = new DeleteResponseObserver(offsetFileId, codeFuture);
+                DeleteMessage message = new DeleteMessage(offsetFileId);
+    
+                // add observer, and only then send the message
+                ChordDispatcher.get().addObserver(observer);
+                SocketManager.get().sendMessage(remoteNode, message);
+            }
         }
 
         // get all result codes
@@ -426,7 +436,7 @@ public class Dbs implements RemoteInterface {
             }
         }
 
-        // Maybe: remover entrada do hashmap
+        Node.get().getReplicationMap().remove(fileId);
     }
 
     public void transfer(NodeInfo predecessorNode) {

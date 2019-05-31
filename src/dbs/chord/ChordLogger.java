@@ -7,9 +7,7 @@ import java.util.HashSet;
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.LookupMessage;
 import dbs.chord.messages.ResponsibleMessage;
-import dbs.chord.messages.protocol.BackupMessage;
-import dbs.chord.messages.protocol.BackupResponseMessage;
-import dbs.chord.messages.protocol.TransferMessage;
+import dbs.chord.messages.protocol.*;
 
 public final class ChordLogger {
 
@@ -49,6 +47,10 @@ public final class ChordLogger {
         inSet.add(ResponsibleMessage.class.getName());
         inSet.add(BackupMessage.class.getName());
         inSet.add(BackupResponseMessage.class.getName());
+        inSet.add(DeleteMessage.class.getName());
+        inSet.add(DeleteResponseMessage.class.getName());
+        inSet.add(RestoreMessage.class.getName());
+        inSet.add(RestoreResponseMessage.class.getName());
         inSet.add(TransferMessage.class.getName());
         //inSet.add(StabilizeMessage.class.getName());
         //inSet.add(PredecessorMessage.class.getName());
@@ -57,6 +59,10 @@ public final class ChordLogger {
         outSet.add(ResponsibleMessage.class.getName());
         outSet.add(BackupMessage.class.getName());
         outSet.add(BackupResponseMessage.class.getName());
+        outSet.add(DeleteMessage.class.getName());
+        outSet.add(DeleteResponseMessage.class.getName());
+        outSet.add(RestoreMessage.class.getName());
+        outSet.add(RestoreResponseMessage.class.getName());
         outSet.add(TransferMessage.class.getName());
         //outSet.add(StabilizeMessage.class.getName());
         //outSet.add(PredecessorMessage.class.getName());

@@ -5,7 +5,6 @@ import java.util.concurrent.CompletableFuture;
 
 import dbs.chord.messages.ChordIdKey;
 import dbs.chord.messages.ChordMessage;
-import dbs.chord.messages.protocol.BackupResponseMessage;
 import dbs.chord.messages.protocol.DeleteResponseMessage;
 import dbs.chord.observers.TimeoutObserver;
 import dbs.filesystem.threads.ResultCode;
