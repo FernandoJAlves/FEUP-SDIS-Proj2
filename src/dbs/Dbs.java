@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -20,6 +23,7 @@ import dbs.chord.messages.protocol.BackupMessage;
 import dbs.chord.observers.protocols.BackupResponseObserver;
 import dbs.filesystem.FileManager;
 import dbs.filesystem.threads.Reader;
+import dbs.filesystem.threads.ResultCode;
 import dbs.network.SocketManager;
 
 public class Dbs implements RemoteInterface {
@@ -27,7 +31,17 @@ public class Dbs implements RemoteInterface {
     public static void main(String[] args) throws IOException {
         if (args.length <= 1)
             usage();
-
+ 
+        // rmi
+        try {
+            Dbs dbs = new Dbs();
+            RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(dbs, 0);
+            Registry registry = LocateRegistry.getRegistry();
+            registry.rebind(args[2], stub);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         switch (args[0]) {
         case "join":
             join(args);
@@ -138,6 +152,7 @@ public class Dbs implements RemoteInterface {
         }
         FileManager.getInstance().getThreadpool().submit(reader);
 
+        // espera que o ficheiro esteja lido
         byte[] file = new byte[0]; // bloqueia e pode dar throw.
         try {
             file = fileFuture.get();
@@ -146,6 +161,7 @@ public class Dbs implements RemoteInterface {
         }
         assert file != null;
 
+        // espera que todos os lookups retornem
         try {
             for (int i = 0; i < R; ++i) {
                 remoteNodes[i] = lookupFutures.get(i).get();
@@ -158,34 +174,46 @@ public class Dbs implements RemoteInterface {
             return;
         }
 
-        // mudar para array de codes:
-        CompletableFuture<Integer> codeFuture = new CompletableFuture<>();
-        int resultCode;
+        // mudadp para array de codes:
+        // CompletableFuture<Integer> codeFuture = new CompletableFuture<>();
+        // int resultCode;
+
+        ArrayList<CompletableFuture<ResultCode>> codeFutures = new ArrayList<>();
+        ResultCode[] resultCodes = new ResultCode[R];
 
         // array de observers:
-        BackupResponseObserver observer = new BackupResponseObserver(fileId, codeFuture);
+        BackupResponseObserver[] observerArray = new BackupResponseObserver[R];
+        for (int i = 0; i < R; i++) {
+            CompletableFuture<ResultCode> future = new CompletableFuture<>();
+            codeFutures.add(future);
+            observerArray[i] = new BackupResponseObserver(fileId, codeFutures.get(i));
+        }
 
         // 1 mensagem:
         BackupMessage message = new BackupMessage(fileId, file);
 
-        // add send loop:
-        {
-            ChordDispatcher.get().addObserver(observer);
-            SocketManager.get().sendMessage(__, message);
+        // send loop:
+        for (int i = 0; i < R; i++) {
+            ChordDispatcher.get().addObserver(observerArray[i]);
+            SocketManager.get().sendMessage(remoteNodes[i], message);
         }
 
-        // ...
-        try {
-            resultCode = codeFuture.get();
-        } catch (InterruptedException | ExecutionException e) {
-            // shouldn't happen, except perhaps with Ctrl+C and such interactions.
-            System.err.println(e.getMessage());
-            e.printStackTrace();
-            return;
+        // get all result codes
+        for (int i = 0; i < R; i++) {
+            try {
+                resultCodes[i] = codeFutures.get(i).get();
+            } catch (InterruptedException | ExecutionException e) {
+                // shouldn't happen, except perhaps with Ctrl+C and such interactions.
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+                return;
+            }
         }
 
-        // replace replicationDeg with number of observer answers
-        Node.get().addFile(fileId,R);
+        // replace replicationDeg with number sent (not the number of oks, otherwise it
+        // would mess up future lookups)
+        Node.get().addFile(fileId, R);
+        
     }
 
     @Override
@@ -195,7 +223,7 @@ public class Dbs implements RemoteInterface {
 
     @Override
     public void delete(String pathname) {
-        HashMap<BigInteger,Integer> replicationMap = Node.get().getReplicationMap();
+        HashMap<BigInteger, Integer> replicationMap = Node.get().getReplicationMap();
         // TODO: call function to retrieve offsets of nodes
     }
 }

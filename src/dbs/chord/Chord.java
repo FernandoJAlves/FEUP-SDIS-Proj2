@@ -260,7 +260,7 @@ public class Chord {
 
         BigInteger bigR = BigInteger.valueOf(R);
 
-        if (modulus.compareTo(bigR) >= 0)
+        if (modulus.compareTo(bigR) <= 0) //TODO: Rever isto, impedia de escolher rep degree
             throw new IllegalArgumentException("Replication degree too large");
 
         BigInteger[] ids = new BigInteger[R];

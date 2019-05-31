@@ -2,6 +2,8 @@
 
 source config.sh
 
+export LC_NUMERIC="en_US.UTF-8"
+
 clear
 [ -d "$logdir" ] && rm -rf "$logdir"
 mkdir -p "$logdir"
@@ -13,7 +15,7 @@ function print {
     java -cp bin dbs.Dbs print "$addr" "$1"
 }
 
-for port in $(seq 29500 29530); do
+for port in $(seq 29500 29510); do
     id=$(print "$port")
     map["$port"]="$id"
     percentage=$(wcalc -q "(100.0 * $id) / (2 ** $m)")
@@ -45,7 +47,7 @@ join 29502 29500 # same
 join 29503 29500 # same
 sleep 0.3s
 join 29504 29500
-sleep 0.5s
+: 'sleep 0.5s
 join 29505 29501
 sleep 2s
 join 29506 29503
@@ -77,7 +79,7 @@ join 29527 29512
 join 29528 29501
 join 29529 29510 # same
 sleep 0.5s
-join 29530 29511
+join 29530 29511'
 
 source countdown.sh
 

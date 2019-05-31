@@ -171,7 +171,7 @@ public class SocketManager {
                 if (server.isClosed())
                     break;
                 try {
-                    SSLSocket socket = (SSLSocket) server.accept();
+                    Socket socket = server.accept();
                     if (socket == null)
                         continue;
                     new ChordListener(socket);

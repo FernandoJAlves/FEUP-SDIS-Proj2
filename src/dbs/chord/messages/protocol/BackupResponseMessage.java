@@ -4,17 +4,18 @@ import java.math.BigInteger;
 
 import dbs.chord.Chord;
 import dbs.chord.messages.ChordIdMessage;
+import dbs.filesystem.threads.ResultCode;
 
 public final class BackupResponseMessage extends ChordIdMessage {
 
-    private final int code;
+    private final ResultCode code;
 
-    public BackupResponseMessage(BigInteger fileId, int code) {
+    public BackupResponseMessage(BigInteger fileId, ResultCode code) {
         super("BACKUPRESPONSE", fileId);
         this.code = code;
     }
 
-    public int getResultCode() {
+    public ResultCode getResultCode() {
         return code;
     }
 

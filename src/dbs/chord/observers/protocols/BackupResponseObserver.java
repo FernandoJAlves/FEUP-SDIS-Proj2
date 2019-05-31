@@ -7,14 +7,15 @@ import dbs.chord.messages.ChordIdKey;
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.protocol.BackupResponseMessage;
 import dbs.chord.observers.TimeoutObserver;
+import dbs.filesystem.threads.ResultCode;
 
 public final class BackupResponseObserver extends TimeoutObserver {
 
     public static final int BACKUPRESPONSE_WAIT = 2000;
 
-    private final CompletableFuture<Integer> future;
-
-    public BackupResponseObserver(BigInteger fileId, CompletableFuture<Integer> future) {
+    private final CompletableFuture<ResultCode> future;
+    
+    public BackupResponseObserver(BigInteger fileId, CompletableFuture<ResultCode> future) {
         super(new ChordIdKey("BACKUPRESPONSE", fileId), BACKUPRESPONSE_WAIT);
         this.future = future;
     }
