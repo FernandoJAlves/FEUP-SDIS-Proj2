@@ -42,7 +42,6 @@ public class BackupObserver extends PermanentObserver {
         //TODO: Handle writer response
         BackupResponseMessage responseMessage = new BackupResponseMessage(backupMessage.getFileId(), ResultCode.OK);
         SocketManager.get().sendMessage(remoteNode, responseMessage);
-
     }
 
     @Override

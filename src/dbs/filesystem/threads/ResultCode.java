@@ -23,6 +23,8 @@ public enum ResultCode {
             return "NOT_FOUND";
         case INTERNAL_ERROR:
             return "INTERNAL_ERROR";
+        default:
+            return "UNKNOWN";
         }
     }
 }
