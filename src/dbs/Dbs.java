@@ -121,14 +121,9 @@ public class Dbs implements RemoteInterface {
         System.exit(0);
     }
 
-    private byte[] getFile(String filepath) {
-        return new byte[10];
-    }
-
     private ArrayList<CompletableFuture<NodeInfo>> lookupAll(BigInteger baseId, int R) {
         BigInteger[] ids = Chord.offsets(baseId, R);
 
-        @SuppressWarnings("unchecked")
         ArrayList<CompletableFuture<NodeInfo>> futures = new ArrayList<>();
 
         for (int i = 0; i < R; i++) {
@@ -138,18 +133,19 @@ public class Dbs implements RemoteInterface {
         return futures;
     }
 
+    private String iR(int i, int R) {
+        return "" + (i + 1) + "/" + R;
+    }
+
     @Override
     public void backup(String filepath, int R) {
         assert filepath != null && R > 0;
 
         BigInteger fileId = Chord.encodeSHA256(filepath);
-        ChordLogger.logNodeImportant("Backup filename: " + filepath + " | file id: " + Chord.percentStr(fileId));
+        ChordLogger.logBackup("Filename: " + filepath + " | file id: " + Chord.percentStr(fileId));
 
         // collect offsets and lookup futures.
         BigInteger[] offsetIds = Chord.offsets(fileId, R);
-        for (BigInteger i : offsetIds)
-            System.out.println(Chord.percentStr(i));
-
         ArrayList<CompletableFuture<NodeInfo>> lookupFutures = lookupAll(fileId, R);
 
         // prepare reader and launch it in a different thread.
@@ -197,29 +193,43 @@ public class Dbs implements RemoteInterface {
 
         for (int i = 0; i < R; i++) {
             NodeInfo remoteNode = remoteNodes[i];
+            // No backup
             if (remoteNode == null) {
-                ChordLogger.progress("Remote node " + i + "/" + R + " is null, skipped");
-                continue;
+                ChordLogger.logBackup(filepath, "instance " + iR(i, R) + " is null, skipped");
+                codeFutures.add(CompletableFuture.completedFuture(null));
             }
-            BigInteger offsetFileId = offsetIds[i];
+            // Self backup
+            else if (remoteNode == Node.get().getSelf()) {
+                ChordLogger.logBackup(filepath, "instance " + iR(i, R) + " stored in this node");
+                codeFutures.add(CompletableFuture.completedFuture(ResultCode.OK));
+                // TODO...
+            }
+            // Remote backup
+            else {
+                ChordLogger.logBackup(filepath, "instance " + iR(i, R) + " stored in remote node, sending message..");
+                BigInteger offsetFileId = offsetIds[i];
 
-            CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
-            codeFutures.add(codeFuture);
+                CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
+                codeFutures.add(codeFuture);
 
-            // create observer and message
-            BackupResponseObserver observer = new BackupResponseObserver(fileId, codeFuture);
-            BackupMessage message = new BackupMessage(offsetFileId, file);
+                // create observer and message
+                BackupResponseObserver observer = new BackupResponseObserver(fileId, codeFuture);
+                BackupMessage message = new BackupMessage(offsetFileId, file);
 
-            // add observer, and only then send the message
-            ChordDispatcher.get().addObserver(observer);
-            SocketManager.get().sendMessage(remoteNode, message);
-
+                // add observer, and only then send the message
+                ChordDispatcher.get().addObserver(observer);
+                SocketManager.get().sendMessage(remoteNode, message);
+            }
         }
 
-        // get all result codes
         for (int i = 0; i < R; i++) {
             try {
                 resultCodes[i] = codeFutures.get(i).get();
+                if (resultCodes[i] != null) {
+                    ChordLogger.logBackup(filepath, "result " + iR(i, R) + ": " + resultCodes[i]);
+                } else {
+                    ChordLogger.logBackup(filepath, "result " + iR(i, R) + ": null");
+                }
             } catch (InterruptedException | ExecutionException e) {
                 // shouldn't happen, except perhaps with Ctrl+C and such interactions.
                 System.err.println(e.getMessage());
@@ -231,7 +241,7 @@ public class Dbs implements RemoteInterface {
 
     @Override
     public void restore(String filepath) {
-
+        assert filepath != null;
     }
 
     @Override
