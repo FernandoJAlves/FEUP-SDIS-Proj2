@@ -25,6 +25,6 @@ public final class BackupResponseMessage extends ChordIdMessage {
 
     @Override
     public String toString() {
-        return "BACKUPRESPONSE(" + Chord.percentStr(getChordId()) + ")";
+        return "BACKUPRESPONSE(" + Chord.percentStr(getChordId()) + ") [" + code + "]";
     }
 }

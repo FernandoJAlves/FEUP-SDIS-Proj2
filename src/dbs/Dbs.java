@@ -40,19 +40,20 @@ public class Dbs implements RemoteInterface {
         return instance;
     }
 
-    public static void main(String[] args) throws IOException {
-        if (args.length <= 1)
-            usage();
-
-        // rmi
+    private static void setupRMI(String name) {
         try {
             instance = new Dbs();
             RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(instance, 0);
             Registry registry = LocateRegistry.getRegistry();
-            registry.rebind(args[2], stub);
+            registry.rebind(name, stub);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        if (args.length <= 1)
+            usage();
 
         switch (args[0]) {
         case "join":
@@ -73,6 +74,8 @@ public class Dbs implements RemoteInterface {
         if (args.length != 6)
             usage();
 
+        setupRMI(args[2]);
+
         InetAddress address = InetAddress.getByName(args[1]);
         int port = Integer.parseInt(args[2]);
         InetSocketAddress serverAddress = new InetSocketAddress(address, port);
@@ -92,6 +95,8 @@ public class Dbs implements RemoteInterface {
     static void create(String[] args) throws IOException {
         if (args.length != 3)
             usage();
+
+        setupRMI(args[2]);
 
         final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();
         final SocketFactory socketFactory = SocketFactory.getDefault();
@@ -394,7 +399,7 @@ public class Dbs implements RemoteInterface {
     }
 
     public void transfer(NodeInfo predecessorNode) {
-        ArrayList<BigInteger> ids = null;
+        ArrayList<BigInteger> ids = FileManager.getInstance().getFilesToTransfer();
 
         for (BigInteger id : ids) {
             pool.submit(new Transferer(id, predecessorNode));

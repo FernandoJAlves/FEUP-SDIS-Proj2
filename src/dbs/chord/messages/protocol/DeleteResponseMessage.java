@@ -25,6 +25,6 @@ public final class DeleteResponseMessage extends ChordIdMessage {
 
     @Override
     public String toString() {
-        return "DELETERESPONSE(" + Chord.percentStr(getChordId()) + ")";
+        return "DELETERESPONSE(" + Chord.percentStr(getChordId()) + ") [" + code + "]";
     }
 }

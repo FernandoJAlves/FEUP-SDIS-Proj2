@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
+import dbs.Dbs;
 import dbs.chord.messages.AliveMessage;
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.GetPredecessorMessage;
@@ -223,6 +224,7 @@ public class Node {
         if (predecessorNode == null) {
             ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr());
             predecessorNode = senderNode;
+            Dbs.get().transfer(predecessorNode);
         }
 
         PredecessorMessage response = new PredecessorMessage(predecessorNode);
@@ -270,6 +272,8 @@ public class Node {
 
         if (predecessorNode == null) {
             ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr());
+            predecessorNode = senderNode;
+            Dbs.get().transfer(predecessorNode);
         } else {
             BigInteger predecessorId = predecessorNode.getChordId();
             BigInteger senderId = senderNode.getChordId();
@@ -278,6 +282,8 @@ public class Node {
             if (Chord.strictOrdered(predecessorId, senderId, selfId)) {
                 if (predecessor.compareAndSet(predecessorNode, senderNode)) {
                     ChordLogger.logNodeImportant("New predecessor: " + senderNode.shortStr());
+                    predecessorNode = senderNode;
+                    Dbs.get().transfer(predecessorNode);
                 }
             }
         }
