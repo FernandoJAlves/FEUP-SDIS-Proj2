@@ -3,6 +3,7 @@ package dbs.chord.observers.protocols;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordMessage;
 import dbs.chord.messages.protocol.DeleteMessage;
 import dbs.chord.messages.protocol.RestoreMessage;
@@ -22,6 +23,7 @@ public class RestoreObserver extends PermanentObserver {
     public void notify(ChordMessage message) {
         assert message instanceof RestoreMessage;
         
+        NodeInfo remoteNode = message.getSender();
         RestoreMessage response = (RestoreMessage) message;
         CompletableFuture<byte[]> future = FileManager.getInstance().launchRestoreReader(response.getFileId());
 
@@ -35,12 +37,7 @@ public class RestoreObserver extends PermanentObserver {
         }
 
         RestoreResponseMessage responseMessage = new RestoreResponseMessage(response.getFileId(), file, ResultCode.OK);
-
-        dbs.chord.NodeInfo remoteNode = message.getSender();
-
         SocketManager.get().sendMessage(remoteNode, responseMessage);
-
-        // SomeClass.get().handleBackup((BackupMessage) message);
     }
 
     @Override

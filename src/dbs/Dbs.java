@@ -21,11 +21,14 @@ import dbs.chord.ChordDispatcher;
 import dbs.chord.ChordLogger;
 import dbs.chord.Node;
 import dbs.chord.NodeInfo;
+import dbs.chord.RestoreReturn;
 import dbs.chord.messages.protocol.BackupMessage;
 import dbs.chord.messages.protocol.DeleteMessage;
+import dbs.chord.messages.protocol.RestoreMessage;
 import dbs.chord.messages.protocol.TransferMessage;
 import dbs.chord.observers.protocols.BackupResponseObserver;
 import dbs.chord.observers.protocols.DeleteResponseObserver;
+import dbs.chord.observers.protocols.RestoreResponseObserver;
 import dbs.filesystem.FileManager;
 import dbs.filesystem.threads.ResultCode;
 import dbs.network.SocketManager;
@@ -325,7 +328,28 @@ public class Dbs implements RemoteInterface {
             // Remote resolve
             else {
                 ChordLogger.logRestore(fileName, ir + " resolved to remote " + responsible.shortStr());
-                // TODO...
+                
+                CompletableFuture<RestoreReturn> restoreFuture = new CompletableFuture<>();
+
+                // create observer and message
+                RestoreResponseObserver observer = new RestoreResponseObserver(offsetFileId, restoreFuture);
+                RestoreMessage message = new RestoreMessage(offsetFileId);
+
+                // add observer, and only then send the message
+                ChordDispatcher.get().addObserver(observer);
+                SocketManager.get().sendMessage(responsible, message);
+
+                RestoreReturn restoreReturn;
+                try {
+                    restoreReturn = restoreFuture.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    System.err.println(e.getMessage());
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+
+                FileManager.getInstance().launchRestoreWriter(fileId.toString(), restoreReturn.getFileContent());
+
                 break;
             }
         }
