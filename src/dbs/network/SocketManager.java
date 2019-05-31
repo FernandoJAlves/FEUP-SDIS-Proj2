@@ -1,18 +1,21 @@
 package dbs.network;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.security.KeyStore;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ServerSocketFactory;
-import javax.net.SocketFactory;
-import javax.net.ssl.*;
-
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import dbs.chord.ChordLogger;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordMessage;
@@ -20,8 +23,8 @@ import dbs.chord.messages.ChordMessage;
 public class SocketManager {
 
     private final ConcurrentHashMap<BigInteger, ChordListener> listeners;
-    private final ServerSocket server;
-    private final SocketFactory factory;
+    private final SSLServerSocket server;
+    private final SSLSocketFactory factory;
 
     private static SocketManager instance;
     private Accepter accepterRunner;
@@ -33,19 +36,21 @@ public class SocketManager {
         return instance;
     }
 
-    public static SocketManager create(InetSocketAddress serverAddress, ServerSocketFactory serverFactory,
-            SocketFactory socketFactory) throws IOException {
+    public static SocketManager create(InetSocketAddress serverAddress, SSLServerSocketFactory serverFactory,
+            SSLSocketFactory socketFactory) throws IOException {
         return new SocketManager(serverAddress, serverFactory, socketFactory);
     }
 
-    private SocketManager(InetSocketAddress serverAddress, ServerSocketFactory serverFactory,
-            SocketFactory socketFactory) throws IOException {
+    private SocketManager(InetSocketAddress serverAddress, SSLServerSocketFactory serverFactory,
+            SSLSocketFactory socketFactory) throws IOException {
         assert instance == null;
 
         int port = serverAddress.getPort();
         InetAddress address = serverAddress.getAddress();
 
-        this.server = serverFactory.createServerSocket(port, 15, address);
+        this.server = (SSLServerSocket) serverFactory.createServerSocket(port, 15, address);
+        this.server.setNeedClientAuth(true);
+        
         //TODO: Setup do contexto SSL de this.server
         this.listeners = new ConcurrentHashMap<>();
         this.factory = socketFactory;
@@ -114,7 +119,7 @@ public class SocketManager {
         int port = remoteNode.getPort();
 
         try {
-            Socket socket = factory.createSocket(address, port);
+            SSLSocket socket = (SSLSocket) factory.createSocket(address, port);
             ChordListener listener = new ChordListener(socket, remoteNode);
             return listener;
         } catch (ConnectException e) {
@@ -171,7 +176,7 @@ public class SocketManager {
                 if (server.isClosed())
                     break;
                 try {
-                    Socket socket = server.accept();
+                    SSLSocket socket = (SSLSocket) server.accept();
                     if (socket == null)
                         continue;
                     new ChordListener(socket);

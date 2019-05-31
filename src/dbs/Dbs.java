@@ -1,6 +1,7 @@
 package dbs;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -8,13 +9,19 @@ import java.net.InetSocketAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import javax.net.ServerSocketFactory;
-import javax.net.SocketFactory;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 
 import dbs.chord.Chord;
 import dbs.chord.ChordDispatcher;
@@ -54,7 +61,18 @@ public class Dbs implements RemoteInterface {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    private static SecureRandom secureRandom;
+    private static SSLContext serverContext;
+    private static SSLContext clientContext;
+    private static String clientPass = "clientpw";
+    private static String serverPass = "serverpw";
+
+    public static void main(String[] args) throws Exception {
+        secureRandom = new SecureRandom();
+        secureRandom.nextInt();
+        setupClientContext();
+        setupServerContext();
+        
         if (args.length <= 1)
             usage();
 
@@ -73,7 +91,42 @@ public class Dbs implements RemoteInterface {
         }
     }
 
-    static void join(String[] args) throws IOException {
+    private static void setupClientContext() throws Exception {
+        // setup server keystore
+        KeyStore sks = KeyStore.getInstance("JKS");
+        sks.load(new FileInputStream("cert/server.public"), "public".toCharArray());
+        // setup client keystore
+        KeyStore cks = KeyStore.getInstance("JKS");
+        cks.load(new FileInputStream("cert/client.private"),
+                       clientPass.toCharArray());
+        // setup SSL context
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+        tmf.init(sks);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        kmf.init(cks, clientPass.toCharArray());
+        clientContext = SSLContext.getInstance("TLS");
+        clientContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), secureRandom);
+    }
+
+    private static void setupServerContext() throws Exception {
+        // setup server keystore
+        KeyStore sks = KeyStore.getInstance("JKS");
+        sks.load(new FileInputStream("cert/server.private"), "public".toCharArray());
+        // setup client keystore
+        KeyStore cks = KeyStore.getInstance("JKS");
+        cks.load(new FileInputStream("cert/client.public"), serverPass.toCharArray());
+        // setup SSL context
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+        tmf.init(cks);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        kmf.init(sks, serverPass.toCharArray());
+        serverContext = SSLContext.getInstance("TLS");
+        serverContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), secureRandom);
+    }
+
+
+
+    static void join(String[] args) throws Exception {
         if (args.length != 6)
             usage();
 
@@ -83,8 +136,8 @@ public class Dbs implements RemoteInterface {
         int port = Integer.parseInt(args[2]);
         InetSocketAddress serverAddress = new InetSocketAddress(address, port);
 
-        final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();
-        final SocketFactory socketFactory = SocketFactory.getDefault();
+        final SSLSocketFactory socketFactory = clientContext.getSocketFactory();
+        final SSLServerSocketFactory serverFactory = serverContext.getServerSocketFactory();
 
         SocketManager.create(serverAddress, serverFactory, socketFactory);
         Node.create(serverAddress);
@@ -95,14 +148,15 @@ public class Dbs implements RemoteInterface {
         Node.get().join(new NodeInfo(remoteId, remoteServerAddress));
     }
 
-    static void create(String[] args) throws IOException {
+    static void create(String[] args) throws Exception {
+        
         if (args.length != 3)
             usage();
 
         setupRMI(args[2]);
 
-        final ServerSocketFactory serverFactory = ServerSocketFactory.getDefault();
-        final SocketFactory socketFactory = SocketFactory.getDefault();
+        final SSLSocketFactory socketFactory = clientContext.getSocketFactory();
+        final SSLServerSocketFactory serverFactory = serverContext.getServerSocketFactory();
 
         InetAddress address = InetAddress.getByName(args[1]);
         int port = Integer.parseInt(args[2]);
