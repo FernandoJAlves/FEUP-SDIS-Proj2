@@ -6,16 +6,22 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -494,8 +500,37 @@ public class Dbs implements RemoteInterface {
     }
 
     @Override
-    public void reclaim(int maxSize){
+    public int reclaim(int maxSize){
 
+        int currSize = 0;
+
+        List <Path> result;
+        try (Stream<Path> walk = Files.walk(Paths.get(FileManager.BACKUP_FOLDER))) {
+          result = walk.filter(Files::isRegularFile).collect(Collectors.toList());
+        } catch (IOException e) {
+          e.printStackTrace();
+          return -1;
+        }
+    
+        // Get current size
+        for (Path path : result) {
+          File f = path.toFile();
+          currSize += f.length();
+        }
+
+        while(currSize > maxSize){
+            for (Path path : result) {
+                File f = path.toFile();
+
+                currSize -= f.length();
+
+                System.out.println("CURRSIZE: " + currSize);
+                f.delete();
+            }
+        }
+
+
+        return currSize;
     }
 
     @Override
