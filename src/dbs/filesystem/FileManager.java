@@ -7,6 +7,7 @@ import dbs.filesystem.messages.DeleteRequest;
 import dbs.filesystem.messages.ReadRequest;
 import dbs.filesystem.messages.Request;
 import dbs.filesystem.messages.WriteRequest;
+import dbs.filesystem.threads.Eraser;
 import dbs.filesystem.threads.Reader;
 
 import java.io.File;
@@ -19,6 +20,7 @@ import java.nio.channels.CompletionHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -173,6 +175,17 @@ public class FileManager implements Runnable {
     this.queue.add(request);
   }
 
+  public void restoreFromBackup(String fileId){
+    Path src = Paths.get(FileManager.getInstance().BACKUP_FOLDER + fileId);
+    Path dest = Paths.get(FileManager.getInstance().RESTORE_FOLDER + fileId);
+    try {
+      Files.copy(src,dest, StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    }
+  }
+
   public CompletableFuture<byte[]> launchBackupReader(String fileName) {
     try {
       CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
@@ -223,6 +236,17 @@ public class FileManager implements Runnable {
     }
   }
 
+  public void launchEraser(String fileName) {
+    try {
+      Eraser eraser = new Eraser(fileName);
+      threadpool.submit(eraser);
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+  
   public ArrayList<BigInteger> getFilesToTransfer() {
     NodeInfo self = Node.get().getSelf();
     NodeInfo predecessor = Node.get().getPredecessor();
