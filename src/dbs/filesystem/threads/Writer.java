@@ -22,9 +22,9 @@ public class Writer extends RequestManager implements Runnable {
   private WriteRequest createRequest(int chunkNum, byte[] content) {
     String filePath = null;
     if (this.operation == Configuration.Operation.BACKUP) {
-      filePath = Configuration.BACKUP_FOLDER + this.key;
+      filePath = FileManager.BACKUP_FOLDER + this.key;
     } else if (this.operation == Configuration.Operation.RESTORE) {
-      filePath = Configuration.RESTORE_FOLDER + this.key;
+      filePath = FileManager.RESTORE_FOLDER + this.key;
     }
     assert filePath != null;
     return new WriteRequest(filePath, chunkNum, content, this.outputStream);

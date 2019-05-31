@@ -4,6 +4,7 @@ import dbs.filesystem.Configuration;
 import dbs.filesystem.FileManager;
 import dbs.filesystem.messages.DeleteRequest;
 
+import java.io.File;
 import java.io.IOException;
 
 public class Eraser extends RequestManager implements Runnable {
@@ -16,7 +17,7 @@ public class Eraser extends RequestManager implements Runnable {
   }
 
   private DeleteRequest createRequest() {
-    String filepath = Configuration.BACKUP_FOLDER + this.key;
+    String filepath = FileManager.BACKUP_FOLDER + this.key;
     return new DeleteRequest(filepath, this.outputStream);
   }
   
