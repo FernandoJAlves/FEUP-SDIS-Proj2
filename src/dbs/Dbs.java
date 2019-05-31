@@ -11,7 +11,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -70,9 +69,10 @@ public class Dbs implements RemoteInterface {
     public static void main(String[] args) throws Exception {
         secureRandom = new SecureRandom();
         secureRandom.nextInt();
+
         setupClientContext();
         setupServerContext();
-        
+
         if (args.length <= 1)
             usage();
 
@@ -123,8 +123,6 @@ public class Dbs implements RemoteInterface {
         serverContext = SSLContext.getInstance("TLS");
         serverContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), secureRandom);
     }
-
-
 
     static void join(String[] args) throws Exception {
         if (args.length != 6)
