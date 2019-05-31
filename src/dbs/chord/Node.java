@@ -54,7 +54,7 @@ public class Node {
     private static Node instance;
     private static Join joinRunner;
 
-    private static HashMap<BigInteger,Integer> replicationMap;
+    private static HashMap<BigInteger, Integer> replicationMap;
 
     public static Node get() {
         return instance;
@@ -92,7 +92,9 @@ public class Node {
         return self;
     }
 
-    public HashMap<BigInteger,Integer> getReplicationMap() { return replicationMap; }
+    public HashMap<BigInteger, Integer> getReplicationMap() {
+        return replicationMap;
+    }
 
     /**
      * @return The NodeInfo data for this node's predecessor.
@@ -128,16 +130,37 @@ public class Node {
      *         could fail, and resolve to null either immediately or after a timeout.
      */
     public CompletableFuture<NodeInfo> lookup(BigInteger chordId) {
-        LookupMessage lookup = new LookupMessage(chordId, self);
         CompletableFuture<NodeInfo> promise = new CompletableFuture<>();
-        ResponsibleObserver observer = new ResponsibleObserver(chordId, promise);
 
+        // Are we responsible for this key?
         if (isResponsible(chordId)) {
+            ChordLogger.logLookup(chordId, "resolved to self");
             promise.complete(self);
-        } else if (lookupClosestPreceding(chordId, lookup) == null) {
+            return promise;
+        }
+
+        // We aren't, so we want to forward the message.
+        LookupMessage message = new LookupMessage(chordId, self);
+        ResponsibleObserver observer = new ResponsibleObserver(chordId, promise);
+        NodeInfo successorNode = finger.get(1);
+
+        ChordDispatcher.get().addObserver(observer);
+
+        // Forward the message to our successor if possible.
+        if (successorNode != null && Chord.afterOrdered(self.getChordId(), chordId, successorNode.getChordId())) {
+            assertSend(successorNode, message);
+            ChordLogger.logLookup(chordId, "resolved to successor");
+            return promise;
+        }
+
+        // Else forward to closest preceding node.
+        NodeInfo forwardNode = lookupClosestPreceding(chordId, message);
+        if (forwardNode == null) {
+            ChordDispatcher.get().removeObserver(observer);
             promise.complete(null);
+            ChordLogger.logLookup(chordId, "failed lookup, no one to forward to");
         } else {
-            ChordDispatcher.get().addObserver(observer);
+            ChordLogger.logLookup(chordId, "forwarded lookup to " + forwardNode.shortStr());
         }
 
         return promise;
@@ -156,13 +179,13 @@ public class Node {
             return;
         }
 
-        // Has this message bene through here before?
+        // Has this message been through here before?
         if (lookup.visited(self)) {
             ChordLogger.dropped(lookup, "already visited");
             return;
         }
 
-        // Are we responsible for this node?
+        // Are we responsible for this key?
         if (isResponsible(chordId)) {
             ResponsibleMessage responsible = new ResponsibleMessage(chordId);
             SocketManager.get().sendMessage(sourceNode, responsible);
@@ -176,15 +199,17 @@ public class Node {
 
         // Forward the message to our successor if possible.
         if (successorNode != null && Chord.afterOrdered(self.getChordId(), chordId, successorNode.getChordId())) {
-            SocketManager.get().sendMessage(successorNode, newLookup);
+            assertSend(successorNode, newLookup);
             ChordLogger.logNode("Forwarded " + lookup + " to successor " + successorNode.shortStr());
             return;
         }
 
         // Otherwise forward to the closest preceding finger.
-        if (lookupClosestPreceding(chordId, newLookup) == null) {
+        NodeInfo forwardNode = lookupClosestPreceding(chordId, newLookup);
+        if (forwardNode == null) {
             ChordLogger.dropped(lookup, "no one to forward to");
-            return;
+        } else {
+            ChordLogger.logNode("forwarded lookup to " + forwardNode.shortStr());
         }
     }
 
@@ -225,7 +250,7 @@ public class Node {
         if (Chord.strictOrdered(selfId, candidateId, successorId)) {
             if (SocketManager.get().tryOpen(candidateNode)) {
                 if (finger.compareAndSet(1, successorNode, candidateNode)) {
-                    ChordLogger.logNodeImportant("New successor: " + senderNode);
+                    ChordLogger.logNodeImportant("New successor: " + candidateId);
                 }
             } else {
                 ChordLogger.progress("Could not connect to chosen, valid candidate successor " + candidateId);
@@ -492,10 +517,10 @@ public class Node {
         if (replicationMap.containsKey(fileKey)) {
             int currentRepDegree = replicationMap.get(fileKey);
             if (replicationDegree > currentRepDegree) {
-                replicationMap.put(fileKey,replicationDegree);
+                replicationMap.put(fileKey, replicationDegree);
             }
         } else {
-            replicationMap.put(fileKey,replicationDegree);
+            replicationMap.put(fileKey, replicationDegree);
         }
     }
 
