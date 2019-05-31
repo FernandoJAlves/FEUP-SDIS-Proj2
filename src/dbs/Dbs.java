@@ -517,7 +517,6 @@ public class Dbs implements RemoteInterface {
         for (Path path : result) {
           File f = path.toFile();
           currSize += f.length();
-          System.out.println(path.toString());
         }
 
         // Sort by largest first
