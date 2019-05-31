@@ -111,10 +111,10 @@ public class Dbs implements RemoteInterface {
     private static void setupServerContext() throws Exception {
         // setup server keystore
         KeyStore sks = KeyStore.getInstance("JKS");
-        sks.load(new FileInputStream("cert/server.private"), "public".toCharArray());
+        sks.load(new FileInputStream("cert/server.private"), serverPass.toCharArray());
         // setup client keystore
         KeyStore cks = KeyStore.getInstance("JKS");
-        cks.load(new FileInputStream("cert/client.public"), serverPass.toCharArray());
+        cks.load(new FileInputStream("cert/client.public"), "public".toCharArray());
         // setup SSL context
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         tmf.init(cks);
@@ -489,6 +489,31 @@ public class Dbs implements RemoteInterface {
         }
 
         Node.get().getReplicationMap().remove(fileId);
+    }
+
+    @Override
+    public void reclaim(int maxSize){
+
+    }
+
+    @Override
+    public String state(){
+        String out = new String();
+        String lineBreak = "================\n";
+        String tab = "\t";
+
+        out += lineBreak;
+        out += "State of Node: \n";
+        out += tab + "ID: " + Node.get().getSelf().getChordId() + '\n';
+        out += tab + "Address: " + Node.get().getSelf().getIp() + '\n';
+        out += tab + "Port: " + Node.get().getSelf().getPort() + '\n';
+        out += "Files Backed Up: \n";
+        for (HashMap.Entry<BigInteger, Integer> entry : Node.get().getReplicationMap().entrySet()) {
+            out += tab + "FileId: " + entry.getKey() + "  =>  RepDegree: " + entry.getValue() + '\n';
+        }
+        out += lineBreak;
+
+        return out;
     }
 
     public void transfer(NodeInfo predecessorNode) {
