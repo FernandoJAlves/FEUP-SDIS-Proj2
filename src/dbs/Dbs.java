@@ -10,6 +10,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
@@ -21,6 +22,7 @@ import dbs.chord.Node;
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.protocol.BackupMessage;
 import dbs.chord.messages.protocol.DeleteMessage;
+import dbs.chord.messages.protocol.TransferMessage;
 import dbs.chord.observers.protocols.BackupResponseObserver;
 import dbs.chord.observers.protocols.DeleteResponseObserver;
 import dbs.filesystem.FileManager;
@@ -29,14 +31,22 @@ import dbs.network.SocketManager;
 
 public class Dbs implements RemoteInterface {
 
+    private static Dbs instance;
+
+    private final ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(Chord.DBS_TASKS_POOL_SIZE);
+
+    public static Dbs get() {
+        return instance;
+    }
+
     public static void main(String[] args) throws IOException {
         if (args.length <= 1)
             usage();
 
         // rmi
         try {
-            Dbs dbs = new Dbs();
-            RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(dbs, 0);
+            instance = new Dbs();
+            RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(instance, 0);
             Registry registry = LocateRegistry.getRegistry();
             registry.rebind(args[2], stub);
         } catch (Exception e) {
@@ -118,6 +128,9 @@ public class Dbs implements RemoteInterface {
         System.exit(0);
     }
 
+    /**
+     * Launch a lookup request for each of the given chord ids.
+     */
     private ArrayList<CompletableFuture<NodeInfo>> lookupAll(BigInteger[] ids) {
         ArrayList<CompletableFuture<NodeInfo>> futures = new ArrayList<>();
 
@@ -128,10 +141,16 @@ public class Dbs implements RemoteInterface {
         return futures;
     }
 
+    /**
+     * Launch a lookup request for each of the offset base ids...
+     */
     private ArrayList<CompletableFuture<NodeInfo>> lookupAll(BigInteger baseId, int R) {
         return lookupAll(Chord.offsets(baseId, R));
     }
 
+    /**
+     * Wait on one lookup future.
+     */
     private NodeInfo waitLookup(CompletableFuture<NodeInfo> lookupFuture) {
         assert lookupFuture != null;
         try {
@@ -144,6 +163,9 @@ public class Dbs implements RemoteInterface {
         }
     }
 
+    /**
+     * Wait on several lookup futures.
+     */
     private NodeInfo[] waitAllLookups(ArrayList<CompletableFuture<NodeInfo>> lookupFutures) {
         assert lookupFutures != null;
         try {
@@ -159,6 +181,9 @@ public class Dbs implements RemoteInterface {
         }
     }
 
+    /**
+     * Wait on file lookup.
+     */
     private byte[] waitFile(CompletableFuture<byte[]> fileFuture) {
         assert fileFuture != null;
         try {
@@ -171,6 +196,9 @@ public class Dbs implements RemoteInterface {
         }
     }
 
+    /**
+     * Wait on several result codes.
+     */
     private ResultCode[] waitAllCodes(ArrayList<CompletableFuture<ResultCode>> codeFutures) {
         try {
             ResultCode[] codes = new ResultCode[codeFutures.size()];
@@ -186,7 +214,7 @@ public class Dbs implements RemoteInterface {
     }
 
     private String iR(int i, int R) {
-        return "" + (i + 1) + "/" + R;
+        return (i + 1) + "/" + R;
     }
 
     @Override
@@ -362,5 +390,33 @@ public class Dbs implements RemoteInterface {
         }
 
         // Maybe: remover entrada do hashmap
+    }
+
+    public void transfer(NodeInfo predecessorNode) {
+        ArrayList<BigInteger> ids = null;
+
+        for (BigInteger id : ids) {
+            pool.submit(new Transferer(id, predecessorNode));
+        }
+    }
+
+    private class Transferer implements Runnable {
+
+        private final BigInteger fileId;
+        private final NodeInfo predecessorNode;
+
+        Transferer(BigInteger fileId, NodeInfo predecessorNode) {
+            assert fileId != null && predecessorNode != null;
+            this.fileId = fileId;
+            this.predecessorNode = predecessorNode;
+        }
+
+        @Override
+        public void run() {
+            byte[] file = waitFile(FileManager.getInstance().launchRestoreReader(fileId));
+            // APAGAR fileId
+            TransferMessage message = new TransferMessage(fileId, file);
+            SocketManager.get().sendMessage(predecessorNode, message);
+        }
     }
 }

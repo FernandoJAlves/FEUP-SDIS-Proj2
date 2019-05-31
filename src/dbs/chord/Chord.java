@@ -17,6 +17,7 @@ public class Chord {
     public static final int MAX_JOIN_ATTEMPTS = 5;
     public static final int NODE_TASKS_POOL_SIZE = 2;
     public static final int DISPATCHER_TASKS_POOL_SIZE = 4;
+    public static final int DBS_TASKS_POOL_SIZE = 6;
 
     // All durations / delays / periods below are in milliseconds.
     public static final int STABILIZE_PERIOD = 1000;
