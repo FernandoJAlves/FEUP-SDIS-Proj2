@@ -1,15 +1,5 @@
 package dbs.filesystem;
 
-<<<<<<< HEAD
-import dbs.chord.Node;
-import dbs.filesystem.messages.DeleteRequest;
-import dbs.filesystem.messages.ReadRequest;
-import dbs.filesystem.messages.Request;
-import dbs.filesystem.messages.WriteRequest;
-import dbs.filesystem.threads.Reader;
-
-=======
->>>>>>> refs/remotes/origin/master
 import java.io.File;
 import java.io.IOException;
 import java.io.PipedOutputStream;
@@ -29,7 +19,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import dbs.chord.Node;
 import dbs.filesystem.Configuration.Operation;
+import dbs.filesystem.messages.DeleteRequest;
+import dbs.filesystem.messages.ReadRequest;
+import dbs.filesystem.messages.Request;
+import dbs.filesystem.messages.WriteRequest;
+import dbs.filesystem.threads.Reader;
 import dbs.filesystem.threads.Writer;
 
 /**
@@ -38,7 +34,8 @@ import dbs.filesystem.threads.Writer;
  */
 public class FileManager implements Runnable {
 
-  private static ThreadPoolExecutor threadpool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Configuration.POOL_SIZE);
+  private static ThreadPoolExecutor threadpool = (ThreadPoolExecutor) Executors
+      .newFixedThreadPool(Configuration.POOL_SIZE);
   public static String BACKUP_FOLDER;
   public static String RESTORE_FOLDER;
 
