@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cebc7a45-e175-4d75-b01e-13b33638ada3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/dbs/chord/observers/protocols/TransferObserver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/chord/ChordLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/chord/ChordLogger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/chord/messages/protocol/TransferMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/chord/messages/protocol/TransferMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/Dbs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/Dbs.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,12 +16,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="34" column="22" selection-start-line="34" selection-start-column="22" selection-end-line="34" selection-end-column="22" />
+            <state relative-caret-position="567">
+              <caret line="234" column="26" lean-forward="true" selection-start-line="234" selection-start-column="26" selection-end-line="234" selection-end-column="26" />
               <folding>
+                <element signature="imports" expanded="true" />
                 <element signature="e#2791#2792#0" expanded="true" />
                 <element signature="e#2818#2819#0" expanded="true" />
                 <element signature="e#5808#5809#0" expanded="true" />
@@ -34,11 +32,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/dbs/Dbs.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="189">
-              <caret line="199" lean-forward="true" selection-start-line="199" selection-end-line="199" />
+            <state relative-caret-position="144">
+              <caret line="195" column="8" selection-start-line="195" selection-start-column="8" selection-end-line="195" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -163,6 +161,7 @@
       <find>BackupMessage</find>
       <find>Configuration.B</find>
       <find>RESTORE_FOLDER</find>
+      <find>&lt;&lt;</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -194,8 +193,8 @@
         <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java" />
         <option value="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" />
-        <option value="$PROJECT_DIR$/src/dbs/Dbs.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" />
+        <option value="$PROJECT_DIR$/src/dbs/Dbs.java" />
       </list>
     </option>
   </component>
@@ -764,25 +763,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/Dbs.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="199" lean-forward="true" selection-start-line="199" selection-end-line="199" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="34" column="22" selection-start-line="34" selection-start-column="22" selection-end-line="34" selection-end-column="22" />
+        <state relative-caret-position="567">
+          <caret line="234" column="26" lean-forward="true" selection-start-line="234" selection-start-column="26" selection-end-line="234" selection-end-column="26" />
           <folding>
+            <element signature="imports" expanded="true" />
             <element signature="e#2791#2792#0" expanded="true" />
             <element signature="e#2818#2819#0" expanded="true" />
             <element signature="e#5808#5809#0" expanded="true" />
             <element signature="e#5841#5842#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/Dbs.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="195" column="8" selection-start-line="195" selection-start-column="8" selection-end-line="195" selection-end-column="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

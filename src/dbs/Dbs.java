@@ -194,8 +194,7 @@ public class Dbs implements RemoteInterface {
     public void backup(String fileName, int R) {
         assert fileName != null && R > 0;
 
-        File file = new File(fileName);
-        BigInteger fileId = Chord.encodeSHA256(file.getName());
+        BigInteger fileId = Chord.encodeSHA256((new File(fileName)).getName());
         ChordLogger.logBackup("Filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
 
         // collect offsets and lookup futures.
