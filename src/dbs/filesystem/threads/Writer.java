@@ -10,15 +10,24 @@ public class Writer extends RequestManager implements Runnable {
 
   private final String key;
   private final byte[] content;
+  private final Configuration.Operation operation;
 
-  public Writer(String key, byte[] content) throws IOException {
+  public Writer(String key, byte[] content, Configuration.Operation operation) throws IOException {
     super();
     this.key = key;
     this.content = content;
+    this.operation = operation;
   }
 
   private WriteRequest createRequest(int chunkNum, byte[] content) {
-    return new WriteRequest(this.key, chunkNum, content, this.outputStream);
+    String filePath = null;
+    if (this.operation == Configuration.Operation.BACKUP) {
+      filePath = Configuration.BACKUP_FOLDER + this.key;
+    } else if (this.operation == Configuration.Operation.RESTORE) {
+      filePath = Configuration.RESTORE_FOLDER + this.key;
+    }
+    assert filePath != null;
+    return new WriteRequest(filePath, chunkNum, content, this.outputStream);
   }
 
   @Override

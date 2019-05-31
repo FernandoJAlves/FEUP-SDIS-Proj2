@@ -9,8 +9,8 @@ public class WriteRequest extends Request {
   private int chunkNum;
   private byte[] content;
 
-  public WriteRequest(String fileKey, int chunkNum, byte[] content, PipedOutputStream pipe) {
-    super(fileKey, Configuration.Ownership.BACKEDUP, pipe);
+  public WriteRequest(String filePath, int chunkNum, byte[] content, PipedOutputStream pipe) {
+    super(filePath,pipe);
     this.chunkNum = chunkNum;
     this.content = content;
   }

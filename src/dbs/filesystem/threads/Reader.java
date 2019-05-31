@@ -12,15 +12,20 @@ public class Reader extends RequestManager implements Runnable {
 
   private final String key;
   private final CompletableFuture<byte[]> future;
+  private final Configuration.Operation operation;
 
-  public Reader(String key, CompletableFuture<byte[]> future) throws IOException {
+  public Reader(String key, CompletableFuture<byte[]> future, Configuration.Operation operation) throws IOException {
     super();
     this.key = key;
     this.future = future;
+    this.operation = operation;
   }
 
   private ReadRequest createRequest(int chunkNum) {
-    return new ReadRequest(this.key, chunkNum, this.outputStream);
+    String filePath = this.key;
+    if (this.operation == Configuration.Operation.BACKUP)
+      filePath = Configuration.BACKUP_FOLDER + this.key;
+    return new ReadRequest(filePath, chunkNum, this.outputStream);
   }
 
   @Override
