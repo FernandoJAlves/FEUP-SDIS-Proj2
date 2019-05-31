@@ -132,6 +132,18 @@ public class Dbs implements RemoteInterface {
         return lookupAll(Chord.offsets(baseId, R));
     }
 
+    private NodeInfo waitLookup(CompletableFuture<NodeInfo> lookupFuture) {
+        assert lookupFuture != null;
+        try {
+            NodeInfo remoteNode = lookupFuture.get();
+            return remoteNode;
+        } catch (InterruptedException | ExecutionException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
     private NodeInfo[] waitAllLookups(ArrayList<CompletableFuture<NodeInfo>> lookupFutures) {
         assert lookupFutures != null;
         try {
@@ -141,20 +153,32 @@ public class Dbs implements RemoteInterface {
             }
             return remoteNodes;
         } catch (InterruptedException | ExecutionException e) {
-            // shouldn't happen, except perhaps with Ctrl+C and such interactions.
             System.err.println(e.getMessage());
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    private byte[] waitFile(CompletableFuture<byte[]> lookupFile) {
-        assert lookupFile != null;
+    private byte[] waitFile(CompletableFuture<byte[]> fileFuture) {
+        assert fileFuture != null;
         try {
-            byte[] file = lookupFile.get();
+            byte[] file = fileFuture.get();
             return file;
         } catch (InterruptedException | ExecutionException e) {
-            // shouldn't happen, except perhaps with Ctrl+C and such interactions.
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ResultCode[] waitAllCodes(ArrayList<CompletableFuture<ResultCode>> codeFutures) {
+        try {
+            ResultCode[] codes = new ResultCode[codeFutures.size()];
+            for (int i = 0; i < codeFutures.size(); i++) {
+                codes[i] = codeFutures.get(i).get();
+            }
+            return codes;
+        } catch (InterruptedException | ExecutionException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -187,10 +211,11 @@ public class Dbs implements RemoteInterface {
         Node.get().addFile(fileId, R);
 
         ArrayList<CompletableFuture<ResultCode>> codeFutures = new ArrayList<>();
-        ResultCode[] resultCodes = new ResultCode[R];
 
         for (int i = 0; i < R; i++) {
             NodeInfo remoteNode = remoteNodes[i];
+            BigInteger offsetFileId = offsetIds[i];
+
             // No backup
             if (remoteNode == null) {
                 ChordLogger.logBackup(fileName, "instance " + iR(i, R) + " is null, skipped");
@@ -200,12 +225,11 @@ public class Dbs implements RemoteInterface {
             else if (remoteNode.equals(Node.get().getSelf())) {
                 ChordLogger.logBackup(fileName, "instance " + iR(i, R) + " stored in this node");
                 codeFutures.add(CompletableFuture.completedFuture(ResultCode.OK));
-                // TODO...
+                FileManager.getInstance().launchBackupWriter(offsetFileId, file);
             }
             // Remote backup
             else {
                 ChordLogger.logBackup(fileName, "instance " + iR(i, R) + " stored in remote node, sending message..");
-                BigInteger offsetFileId = offsetIds[i];
 
                 CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
                 codeFutures.add(codeFuture);
@@ -220,20 +244,10 @@ public class Dbs implements RemoteInterface {
             }
         }
 
-        for (int i = 0; i < R; i++) {
-            try {
-                resultCodes[i] = codeFutures.get(i).get();
-                if (resultCodes[i] != null) {
-                    ChordLogger.logBackup(fileName, "result " + iR(i, R) + ": " + resultCodes[i]);
-                } else {
-                    ChordLogger.logBackup(fileName, "result " + iR(i, R) + ": null");
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                // shouldn't happen, except perhaps with Ctrl+C and such interactions.
-                System.err.println(e.getMessage());
-                e.printStackTrace();
-                return;
-            }
+        ResultCode[] codes = waitAllCodes(codeFutures);
+
+        for (int i = 0; i < codes.length; ++i) {
+            // ...
         }
     }
 
@@ -254,20 +268,10 @@ public class Dbs implements RemoteInterface {
 
         // Iterate through the offsets, trying to restore the node.
         for (int i = 0; i < R; ++i) {
-            ChordLogger.logRestore(fileName, "Restore attempt " + iR(i, R));
             BigInteger offsetFileId = Chord.offset(fileId, i, R);
 
             CompletableFuture<NodeInfo> future = Node.get().lookup(offsetFileId);
-            NodeInfo responsible;
-
-            try {
-                responsible = future.get();
-            } catch (InterruptedException | ExecutionException e) {
-                // shouldn't happen, except perhaps with Ctrl+C and such interactions.
-                System.err.println(e.getMessage());
-                e.printStackTrace();
-                return;
-            }
+            NodeInfo responsible = waitLookup(future);
 
             // No resolve
             if (responsible == null) {
@@ -283,7 +287,7 @@ public class Dbs implements RemoteInterface {
             // Remote resolve
             else {
                 ChordLogger.logRestore(fileName, "run " + iR(i, R) + " resolved to remote " + responsible.shortStr());
-
+                // TODO...
                 break;
             }
         }
@@ -315,7 +319,6 @@ public class Dbs implements RemoteInterface {
                 remoteNodes[i] = lookupFutures.get(i).get();
             }
         } catch (InterruptedException | ExecutionException e) {
-            // shouldn't happen, except perhaps with Ctrl+C and such interactions.
             System.err.println(e.getMessage());
             e.printStackTrace();
             return;
