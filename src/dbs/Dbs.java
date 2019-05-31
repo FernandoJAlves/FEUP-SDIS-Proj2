@@ -219,8 +219,8 @@ public class Dbs implements RemoteInterface {
         }
     }
 
-    private String iR(int i, int R) {
-        return (i + 1) + "/" + R;
+    private String iR(BigInteger id, int i, int R) {
+        return String.format("{%s %d/%d}", Chord.percentStr(id), i + 1, R);
     }
 
     @Override
@@ -249,21 +249,22 @@ public class Dbs implements RemoteInterface {
         for (int i = 0; i < R; i++) {
             NodeInfo remoteNode = remoteNodes[i];
             BigInteger offsetFileId = offsetIds[i];
+            String ir = "instance " + iR(offsetFileId, i, R);
 
             // No backup
             if (remoteNode == null) {
-                ChordLogger.logBackup(fileName, "instance " + iR(i, R) + " is null, skipped");
+                ChordLogger.logBackup(fileName, ir + " is null, skipped");
                 codeFutures.add(CompletableFuture.completedFuture(null));
             }
             // Self backup
             else if (remoteNode.equals(Node.get().getSelf())) {
-                ChordLogger.logBackup(fileName, "instance " + iR(i, R) + " stored in this node");
+                ChordLogger.logBackup(fileName, ir + " stored in this node");
                 codeFutures.add(CompletableFuture.completedFuture(ResultCode.OK));
                 FileManager.getInstance().launchBackupWriter(offsetFileId, file);
             }
             // Remote backup
             else {
-                ChordLogger.logBackup(fileName, "instance " + iR(i, R) + " stored in remote node, sending message..");
+                ChordLogger.logBackup(fileName, ir + " stored in remote node, sending message..");
 
                 CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
                 codeFutures.add(codeFuture);
@@ -293,7 +294,7 @@ public class Dbs implements RemoteInterface {
         ChordLogger.logRestore("Filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
 
         Integer Rp = Node.get().getReplicationMap().get(fileId);
-        
+
         if (Rp == null) {
             ChordLogger.logSevere("File id " + Chord.percentStr(fileId) + " not found in this node");
             return;
@@ -304,25 +305,26 @@ public class Dbs implements RemoteInterface {
         // Iterate through the offsets, trying to restore the node.
         for (int i = 0; i < R; ++i) {
             BigInteger offsetFileId = Chord.offset(fileId, i, R);
+            String ir = "run " + iR(offsetFileId, i, R);
 
             CompletableFuture<NodeInfo> future = Node.get().lookup(offsetFileId);
             NodeInfo responsible = waitLookup(future);
 
             // No resolve
             if (responsible == null) {
-                ChordLogger.logRestore(fileName, "run " + iR(i, R) + " failed to resolve");
+                ChordLogger.logRestore(fileName, ir + " failed to resolve");
                 continue;
             }
             // Self resolve
             else if (responsible.equals(Node.get().getSelf())) {
-                ChordLogger.logRestore(fileName, "run " + iR(i, R) + " resolved to this node");
+                ChordLogger.logRestore(fileName, ir + " resolved to this node");
                 FileManager.getInstance().restoreFromBackup(offsetFileId.toString());
                 // copy backup/filename -> restore/filename
                 break;
             }
             // Remote resolve
             else {
-                ChordLogger.logRestore(fileName, "run " + iR(i, R) + " resolved to remote " + responsible.shortStr());
+                ChordLogger.logRestore(fileName, ir + " resolved to remote " + responsible.shortStr());
                 // TODO...
                 break;
             }
@@ -367,11 +369,13 @@ public class Dbs implements RemoteInterface {
 
         for (int i = 0; i < R; i++) {
             NodeInfo remoteNode = remoteNodes[i];
+            BigInteger offsetFileId = offsetIds[i];
+            String ir = "delete " + iR(offsetFileId, i, R);
+
             if (remoteNode == null) {
-                ChordLogger.progress("Remote node " + iR(i, R) + " is null, skipped");
+                ChordLogger.progress(ir + " is null, skipped");
                 continue;
             }
-            BigInteger offsetFileId = offsetIds[i];
 
             CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
             codeFutures.add(codeFuture);
