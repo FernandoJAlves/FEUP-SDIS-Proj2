@@ -6,6 +6,7 @@ import dbs.filesystem.messages.Request;
 import dbs.filesystem.messages.WriteRequest;
 import dbs.filesystem.threads.Reader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.nio.ByteBuffer;
@@ -32,6 +33,16 @@ public class FileManager implements Runnable {
 
   public FileManager() {
     this.queue = new LinkedBlockingDeque<>();
+    this.createFilesystem();
+  }
+
+  public void createFilesystem() {
+    File backupDir = new File(Configuration.BACKUP_FOLDER);
+    if (!backupDir.exists())
+      backupDir.mkdirs();
+    File restoreDir = new File(Configuration.RESTORE_FOLDER);
+    if (!restoreDir.exists())
+      restoreDir.mkdirs();
   }
 
   public static FileManager getInstance() {
