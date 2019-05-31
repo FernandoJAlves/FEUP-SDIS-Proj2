@@ -52,7 +52,7 @@ public class FileManager implements Runnable {
     Path path = Paths.get(request.getFilePath());
 
     try {
-      AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
+      AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
       ByteBuffer buffer = ByteBuffer.wrap(request.getContent());
 
       // Version chunk-a-chunk
