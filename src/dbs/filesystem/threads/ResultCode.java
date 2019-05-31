@@ -24,7 +24,8 @@ public enum ResultCode {
         case INTERNAL_ERROR:
             return "INTERNAL_ERROR";
         default:
-            return "UNKNOWN";
+            return "SDIS IS LOVE, SDIS IS LIFE";
         }
+
     }
 }

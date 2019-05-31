@@ -232,6 +232,11 @@ public final class ChordLogger {
         }
     }
 
+    // Severe messages
+    public static void logSevere(String msg) {
+        format(SEVERE, msg, true);
+    }
+
     // * Internals
 
     private static final String[] colorMap = new String[20];

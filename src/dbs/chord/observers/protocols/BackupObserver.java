@@ -1,6 +1,7 @@
 package dbs.chord.observers.protocols;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import dbs.chord.NodeInfo;
 import dbs.chord.messages.ChordMessage;
@@ -25,8 +26,10 @@ public class BackupObserver extends PermanentObserver {
         BackupMessage backupMessage = (BackupMessage) message;
 
         NodeInfo remoteNode = message.getSender();
-        
-        String fileKey = new String(backupMessage.getFileId().toByteArray());
+
+        BigInteger aux = backupMessage.getFileId();
+        String fileKey = aux.toString();
+
         Writer writer; 
        
         try {

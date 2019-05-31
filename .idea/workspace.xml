@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cebc7a45-e175-4d75-b01e-13b33638ada3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/dbs/chord/messages/protocol/TransferMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/Dbs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/Dbs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/chord/ChordLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/chord/ChordLogger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dbs/filesystem/threads/ResultCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dbs/filesystem/threads/ResultCode.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,14 +21,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="42" selection-start-line="42" selection-end-line="42" />
+            <state relative-caret-position="208">
+              <caret line="205" column="26" lean-forward="true" selection-start-line="205" selection-start-column="26" selection-end-line="205" selection-end-column="26" />
               <folding>
-                <element signature="e#2058#2059#0" expanded="true" />
-                <element signature="e#5041#5042#0" expanded="true" />
+                <element signature="e#2791#2792#0" expanded="true" />
+                <element signature="e#2818#2819#0" expanded="true" />
+                <element signature="e#5808#5809#0" expanded="true" />
+                <element signature="e#5841#5842#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -76,16 +79,16 @@
         <entry file="file://$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="150">
-              <caret line="29" column="23" lean-forward="true" selection-start-line="29" selection-start-column="23" selection-end-line="29" selection-end-column="23" />
+              <caret line="32" column="23" lean-forward="true" selection-start-line="32" selection-start-column="23" selection-end-line="32" selection-end-column="23" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="72" column="4" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="4" />
+            <state relative-caret-position="264">
+              <caret line="72" selection-start-line="72" selection-end-line="72" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -192,9 +195,9 @@
         <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Reader.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/Configuration.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Writer.java" />
-        <option value="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" />
         <option value="$PROJECT_DIR$/src/dbs/filesystem/threads/Eraser.java" />
         <option value="$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java" />
+        <option value="$PROJECT_DIR$/src/dbs/filesystem/FileManager.java" />
       </list>
     </option>
   </component>
@@ -450,9 +453,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 28m 09s.xml">
-      <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="TestFilesystem_testRead - 2019.05.30 at 18h 28m 34s.xml">
       <configuration name="TestFilesystem.testRead" configurationId="JUnit" />
     </history-entry>
@@ -480,6 +480,9 @@
     <history-entry file="TestFilesystem_testCreateDirs - 2019.05.31 at 16h 14m 56s.xml">
       <configuration name="TestFilesystem.testCreateDirs" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="TestFilesystem_testCreateDirs - 2019.05.31 at 16h 17m 34s.xml">
+      <configuration name="TestFilesystem.testCreateDirs" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1366" height="738" extended-state="6" />
@@ -494,12 +497,12 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.44625407" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.26547232" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.26547232" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39576548" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.2752443" />
+      <window_info anchor="bottom" id="Terminal" order="7" visible="true" weight="0.2752443" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.25407165" />
@@ -742,7 +745,7 @@
     <entry file="file://$PROJECT_DIR$/src/dbs/chord/observers/protocols/BackupObserver.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
-          <caret line="29" column="23" lean-forward="true" selection-start-line="29" selection-start-column="23" selection-end-line="29" selection-end-column="23" />
+          <caret line="32" column="23" lean-forward="true" selection-start-line="32" selection-start-column="23" selection-end-line="32" selection-end-column="23" />
         </state>
       </provider>
     </entry>
@@ -780,17 +783,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="42" selection-start-line="42" selection-end-line="42" />
-          <folding>
-            <element signature="e#2058#2059#0" expanded="true" />
-            <element signature="e#5041#5042#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/dbs/chord/Node.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
@@ -800,10 +792,23 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test/dbs/filesystem/TestFilesystem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="72" column="4" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="4" />
+        <state relative-caret-position="264">
+          <caret line="72" selection-start-line="72" selection-end-line="72" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbs/filesystem/FileManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="205" column="26" lean-forward="true" selection-start-line="205" selection-start-column="26" selection-end-line="205" selection-end-column="26" />
+          <folding>
+            <element signature="e#2791#2792#0" expanded="true" />
+            <element signature="e#2818#2819#0" expanded="true" />
+            <element signature="e#5808#5809#0" expanded="true" />
+            <element signature="e#5841#5842#0" expanded="true" />
           </folding>
         </state>
       </provider>

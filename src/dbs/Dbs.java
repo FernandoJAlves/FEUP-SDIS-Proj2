@@ -8,7 +8,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -24,9 +23,7 @@ import dbs.chord.messages.protocol.BackupMessage;
 import dbs.chord.messages.protocol.DeleteMessage;
 import dbs.chord.observers.protocols.BackupResponseObserver;
 import dbs.chord.observers.protocols.DeleteResponseObserver;
-import dbs.filesystem.Configuration;
 import dbs.filesystem.FileManager;
-import dbs.filesystem.threads.Reader;
 import dbs.filesystem.threads.ResultCode;
 import dbs.network.SocketManager;
 
@@ -121,16 +118,71 @@ public class Dbs implements RemoteInterface {
         System.exit(0);
     }
 
-    private ArrayList<CompletableFuture<NodeInfo>> lookupAll(BigInteger baseId, int R) {
-        BigInteger[] ids = Chord.offsets(baseId, R);
-
+    private ArrayList<CompletableFuture<NodeInfo>> lookupAll(BigInteger[] ids) {
         ArrayList<CompletableFuture<NodeInfo>> futures = new ArrayList<>();
 
-        for (int i = 0; i < R; i++) {
+        for (int i = 0; i < ids.length; i++) {
             futures.add(Node.get().lookup(ids[i]));
         }
 
         return futures;
+    }
+
+    private ArrayList<CompletableFuture<NodeInfo>> lookupAll(BigInteger baseId, int R) {
+        return lookupAll(Chord.offsets(baseId, R));
+    }
+
+    private NodeInfo waitLookup(CompletableFuture<NodeInfo> lookupFuture) {
+        assert lookupFuture != null;
+        try {
+            NodeInfo remoteNode = lookupFuture.get();
+            return remoteNode;
+        } catch (InterruptedException | ExecutionException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private NodeInfo[] waitAllLookups(ArrayList<CompletableFuture<NodeInfo>> lookupFutures) {
+        assert lookupFutures != null;
+        try {
+            NodeInfo[] remoteNodes = new NodeInfo[lookupFutures.size()];
+            for (int i = 0; i < lookupFutures.size(); i++) {
+                remoteNodes[i] = lookupFutures.get(i).get();
+            }
+            return remoteNodes;
+        } catch (InterruptedException | ExecutionException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] waitFile(CompletableFuture<byte[]> fileFuture) {
+        assert fileFuture != null;
+        try {
+            byte[] file = fileFuture.get();
+            return file;
+        } catch (InterruptedException | ExecutionException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ResultCode[] waitAllCodes(ArrayList<CompletableFuture<ResultCode>> codeFutures) {
+        try {
+            ResultCode[] codes = new ResultCode[codeFutures.size()];
+            for (int i = 0; i < codeFutures.size(); i++) {
+                codes[i] = codeFutures.get(i).get();
+            }
+            return codes;
+        } catch (InterruptedException | ExecutionException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     private String iR(int i, int R) {
@@ -138,82 +190,52 @@ public class Dbs implements RemoteInterface {
     }
 
     @Override
-    public void backup(String filepath, int R) {
-        assert filepath != null && R > 0;
+    public void backup(String fileName, int R) {
+        assert fileName != null && R > 0;
 
-        BigInteger fileId = Chord.encodeSHA256(filepath);
-        ChordLogger.logBackup("Filename: " + filepath + " | file id: " + Chord.percentStr(fileId));
+        BigInteger fileId = Chord.encodeSHA256(fileName);
+        ChordLogger.logBackup("Filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
 
         // collect offsets and lookup futures.
         BigInteger[] offsetIds = Chord.offsets(fileId, R);
         ArrayList<CompletableFuture<NodeInfo>> lookupFutures = lookupAll(fileId, R);
 
         // prepare reader and launch it in a different thread.
-        CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
-        Reader reader;
-        try {
-            reader = new Reader(filepath, fileFuture, Configuration.Operation.BACKUP);
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
-            return;
-        }
-        FileManager.getInstance().getThreadpool().submit(reader);
+        CompletableFuture<byte[]> fileFuture = FileManager.getInstance().launchBackupReader(fileName);
 
-        // espera que o ficheiro esteja lido
-        byte[] file; // bloqueia e pode dar throw.
-        try {
-            file = fileFuture.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return;
-        }
-        assert file != null;
+        byte[] file = waitFile(fileFuture);
 
-        // * MULTITHREADING começa aqui
+        NodeInfo[] remoteNodes = waitAllLookups(lookupFutures);
 
-        // espera que todos os lookups retornem
-        NodeInfo[] remoteNodes = new NodeInfo[R];
-        try {
-            for (int i = 0; i < R; i++) {
-                remoteNodes[i] = lookupFutures.get(i).get();
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            // shouldn't happen, except perhaps with Ctrl+C and such interactions.
-            System.err.println(e.getMessage());
-            e.printStackTrace();
-            return;
-        }
-
-        // Add file to our repository.
+        // add file to our repository.
         Node.get().addFile(fileId, R);
 
         ArrayList<CompletableFuture<ResultCode>> codeFutures = new ArrayList<>();
-        ResultCode[] resultCodes = new ResultCode[R];
 
         for (int i = 0; i < R; i++) {
             NodeInfo remoteNode = remoteNodes[i];
+            BigInteger offsetFileId = offsetIds[i];
+
             // No backup
             if (remoteNode == null) {
-                ChordLogger.logBackup(filepath, "instance " + iR(i, R) + " is null, skipped");
+                ChordLogger.logBackup(fileName, "instance " + iR(i, R) + " is null, skipped");
                 codeFutures.add(CompletableFuture.completedFuture(null));
             }
             // Self backup
-            else if (remoteNode == Node.get().getSelf()) {
-                ChordLogger.logBackup(filepath, "instance " + iR(i, R) + " stored in this node");
+            else if (remoteNode.equals(Node.get().getSelf())) {
+                ChordLogger.logBackup(fileName, "instance " + iR(i, R) + " stored in this node");
                 codeFutures.add(CompletableFuture.completedFuture(ResultCode.OK));
-                // TODO...
+                FileManager.getInstance().launchBackupWriter(offsetFileId, file);
             }
             // Remote backup
             else {
-                ChordLogger.logBackup(filepath, "instance " + iR(i, R) + " stored in remote node, sending message..");
-                BigInteger offsetFileId = offsetIds[i];
+                ChordLogger.logBackup(fileName, "instance " + iR(i, R) + " stored in remote node, sending message..");
 
                 CompletableFuture<ResultCode> codeFuture = new CompletableFuture<>();
                 codeFutures.add(codeFuture);
 
                 // create observer and message
-                BackupResponseObserver observer = new BackupResponseObserver(fileId, codeFuture);
+                BackupResponseObserver observer = new BackupResponseObserver(offsetFileId, codeFuture);
                 BackupMessage message = new BackupMessage(offsetFileId, file);
 
                 // add observer, and only then send the message
@@ -222,26 +244,53 @@ public class Dbs implements RemoteInterface {
             }
         }
 
-        for (int i = 0; i < R; i++) {
-            try {
-                resultCodes[i] = codeFutures.get(i).get();
-                if (resultCodes[i] != null) {
-                    ChordLogger.logBackup(filepath, "result " + iR(i, R) + ": " + resultCodes[i]);
-                } else {
-                    ChordLogger.logBackup(filepath, "result " + iR(i, R) + ": null");
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                // shouldn't happen, except perhaps with Ctrl+C and such interactions.
-                System.err.println(e.getMessage());
-                e.printStackTrace();
-                return;
-            }
+        ResultCode[] codes = waitAllCodes(codeFutures);
+
+        for (int i = 0; i < codes.length; ++i) {
+            // ...
         }
     }
 
     @Override
-    public void restore(String filepath) {
-        assert filepath != null;
+    public void restore(String fileName) {
+        assert fileName != null;
+
+        BigInteger fileId = Chord.encodeSHA256(fileName);
+        ChordLogger.logRestore("Filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
+
+        Integer Rp = Node.get().getReplicationMap().get(fileId);
+        int R = Rp;
+
+        if (Rp == null) {
+            ChordLogger.logSevere("File id " + Chord.percentStr(fileId) + " not found in this node");
+            return;
+        }
+
+        // Iterate through the offsets, trying to restore the node.
+        for (int i = 0; i < R; ++i) {
+            BigInteger offsetFileId = Chord.offset(fileId, i, R);
+
+            CompletableFuture<NodeInfo> future = Node.get().lookup(offsetFileId);
+            NodeInfo responsible = waitLookup(future);
+
+            // No resolve
+            if (responsible == null) {
+                ChordLogger.logRestore(fileName, "run " + iR(i, R) + " failed to resolve");
+                continue;
+            }
+            // Self resolve
+            else if (responsible.equals(Node.get().getSelf())) {
+                ChordLogger.logRestore(fileName, "run " + iR(i, R) + " resolved to this node");
+                // TODO...
+                break;
+            }
+            // Remote resolve
+            else {
+                ChordLogger.logRestore(fileName, "run " + iR(i, R) + " resolved to remote " + responsible.shortStr());
+                // TODO...
+                break;
+            }
+        }
     }
 
     @Override
@@ -249,15 +298,18 @@ public class Dbs implements RemoteInterface {
         assert fileName != null;
 
         BigInteger fileId = Chord.encodeSHA256(fileName);
-        ChordLogger.logNodeImportant("Delete filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
+        ChordLogger.logDelete("Filename: " + fileName + " | file id: " + Chord.percentStr(fileId));
 
-        int R = Node.get().getReplicationMap().get(fileId);
+        Integer Rp = Node.get().getReplicationMap().get(fileId);
+        int R = Rp;
+
+        if (Rp == null) {
+            ChordLogger.logSevere("File id " + Chord.percentStr(fileId) + " not found in this node");
+            return;
+        }
 
         // collect offsets and lookup futures.
         BigInteger[] offsetIds = Chord.offsets(fileId, R);
-        for (BigInteger i : offsetIds)
-            System.out.println(Chord.percentStr(i));
-
         ArrayList<CompletableFuture<NodeInfo>> lookupFutures = lookupAll(fileId, R);
 
         // espera que todos os lookups retornem
@@ -267,13 +319,10 @@ public class Dbs implements RemoteInterface {
                 remoteNodes[i] = lookupFutures.get(i).get();
             }
         } catch (InterruptedException | ExecutionException e) {
-            // shouldn't happen, except perhaps with Ctrl+C and such interactions.
             System.err.println(e.getMessage());
             e.printStackTrace();
             return;
         }
-
-
 
         // Enviar mensagens delete
         ArrayList<CompletableFuture<ResultCode>> codeFutures = new ArrayList<>();
@@ -282,7 +331,7 @@ public class Dbs implements RemoteInterface {
         for (int i = 0; i < R; i++) {
             NodeInfo remoteNode = remoteNodes[i];
             if (remoteNode == null) {
-                ChordLogger.progress("Remote node " + i + "/" + R + " is null, skipped");
+                ChordLogger.progress("Remote node " + iR(i, R) + " is null, skipped");
                 continue;
             }
             BigInteger offsetFileId = offsetIds[i];
@@ -312,10 +361,6 @@ public class Dbs implements RemoteInterface {
             }
         }
 
-
-
-
         // Maybe: remover entrada do hashmap
-
     }
 }

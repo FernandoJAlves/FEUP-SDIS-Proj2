@@ -1,5 +1,6 @@
 package dbs.filesystem;
 
+<<<<<<< HEAD
 import dbs.chord.Node;
 import dbs.filesystem.messages.DeleteRequest;
 import dbs.filesystem.messages.ReadRequest;
@@ -7,19 +8,29 @@ import dbs.filesystem.messages.Request;
 import dbs.filesystem.messages.WriteRequest;
 import dbs.filesystem.threads.Reader;
 
+=======
+>>>>>>> refs/remotes/origin/master
 import java.io.File;
 import java.io.IOException;
 import java.io.PipedOutputStream;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import dbs.filesystem.Configuration.Operation;
+import dbs.filesystem.threads.Writer;
 
 /**
  * The FileManager is used to manage access to the filesystem, providing read, write
@@ -71,7 +82,8 @@ public class FileManager implements Runnable {
     Path path = Paths.get(request.getFilePath());
 
     try {
-      AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
+      AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE,
+          StandardOpenOption.CREATE);
       ByteBuffer buffer = ByteBuffer.wrap(request.getContent());
 
       // Version chunk-a-chunk
@@ -89,6 +101,7 @@ public class FileManager implements Runnable {
           }
           Logger.getGlobal().info("Successful chunk writing!");
         }
+
         @Override
         public void failed(Throwable throwable, ByteBuffer byteBuffer) {
           Logger.getGlobal().severe("Could not write chunk!");
@@ -109,7 +122,7 @@ public class FileManager implements Runnable {
     AsynchronousFileChannel fileChannel;
     try {
       fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
-    } catch(IOException e) {
+    } catch (IOException e) {
       Logger.getGlobal().severe("File manager could not open file on path  " + path);
       outputStream.write(0);
       return;
@@ -128,7 +141,7 @@ public class FileManager implements Runnable {
     }
 
     int chunkSize = buffer.position();
-    outputStream.write(buffer.array(),0, chunkSize);
+    outputStream.write(buffer.array(), 0, chunkSize);
   }
 
   public void delete(DeleteRequest request) throws IOException {
@@ -156,6 +169,56 @@ public class FileManager implements Runnable {
     this.queue.add(request);
   }
 
+  public CompletableFuture<byte[]> launchBackupReader(String fileName) {
+    try {
+      CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
+      Reader reader = new Reader(fileName, fileFuture, Operation.BACKUP);
+      threadpool.submit(reader);
+      return fileFuture;
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public CompletableFuture<byte[]> launchRestoreReader(BigInteger fileId) {
+    try {
+      String fileName = fileId.toString();
+      CompletableFuture<byte[]> fileFuture = new CompletableFuture<>();
+      Reader reader = new Reader(fileName, fileFuture, Operation.RESTORE);
+      threadpool.submit(reader);
+      return fileFuture;
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void launchBackupWriter(BigInteger fileId, byte[] file) {
+    try {
+      String fileName = fileId.toString();
+      Writer writer = new Writer(fileName, file, Operation.BACKUP);
+      threadpool.submit(writer);
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void launchRestoreWriter(String fileName, byte[] file) {
+    try {
+      Writer writer = new Writer(fileName, file, Operation.RESTORE);
+      threadpool.submit(writer);
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
   @Override
   public void run() {
     Request request;
@@ -166,7 +229,8 @@ public class FileManager implements Runnable {
       } catch (InterruptedException e) {
         continue;
       }
-      if (request == null) continue;
+      if (request == null)
+        continue;
       try {
         this.processRequest(request);
       } catch (Exception e) {
