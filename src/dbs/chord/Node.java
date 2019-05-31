@@ -42,6 +42,9 @@ import dbs.chord.observers.NotifyObserver;
 import dbs.chord.observers.PredecessorObserver;
 import dbs.chord.observers.ResponsibleObserver;
 import dbs.chord.observers.protocols.BackupObserver;
+import dbs.chord.observers.protocols.DeleteObserver;
+import dbs.chord.observers.protocols.RestoreObserver;
+import dbs.chord.observers.protocols.TransferObserver;
 import dbs.network.SocketManager;
 
 public class Node {
@@ -421,7 +424,10 @@ public class Node {
         ChordDispatcher.get().addObserver(new LookupObserver());
         ChordDispatcher.get().addObserver(new NotifyObserver());
         ChordDispatcher.get().addObserver(new BackupObserver());
-
+        ChordDispatcher.get().addObserver(new RestoreObserver());
+        ChordDispatcher.get().addObserver(new DeleteObserver());
+        ChordDispatcher.get().addObserver(new TransferObserver());
+        
         BigInteger selfId = self.getChordId();
         for (int i = 1; i <= Chord.m; ++i)
             ChordDispatcher.get().addObserver(new FixFingerObserver(Chord.ithFinger(selfId, i), i));

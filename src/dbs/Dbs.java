@@ -323,7 +323,7 @@ public class Dbs implements RemoteInterface {
             // Remote resolve
             else {
                 ChordLogger.logRestore(fileName, "run " + iR(i, R) + " resolved to remote " + responsible.shortStr());
-                // TODO...
+                
                 break;
             }
         }

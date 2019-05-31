@@ -243,7 +243,7 @@ public class Chord {
         BigInteger bigI = BigInteger.valueOf(i);
         BigInteger bigR = BigInteger.valueOf(R);
 
-        if (modulus.compareTo(bigR) >= 0)
+        if (modulus.compareTo(bigR) <= 0)
             throw new IllegalArgumentException("Replication degree too large");
 
         return normalize(baseId.add(modulus.multiply(bigI).divide(bigR)));
