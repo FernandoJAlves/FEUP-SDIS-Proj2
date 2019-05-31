@@ -17,6 +17,8 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -515,19 +517,26 @@ public class Dbs implements RemoteInterface {
         for (Path path : result) {
           File f = path.toFile();
           currSize += f.length();
+          System.out.println(path.toString());
         }
 
+        // Sort by largest first
+        Collections.sort(result, new Comparator<Path>() {
+            public int compare(Path a, Path b){
+                File f1 = a.toFile();
+                File f2 = b.toFile();
+                return (int) (f2.length() - f1.length());
+            }
+        });
+
+        // Remove files until the condition is met
         while(currSize > maxSize){
             for (Path path : result) {
                 File f = path.toFile();
-
                 currSize -= f.length();
-
-                System.out.println("CURRSIZE: " + currSize);
                 f.delete();
             }
         }
-
 
         return currSize;
     }

@@ -101,7 +101,7 @@ public class TestApp {
                         System.out.println("ERROR: Expected a number as <oper_1> of RECLAIM");
                         return;
                     }
-                    System.out.println(stub.reclaim(maxDiskSpace));
+                    System.out.println("Current Usage: " + stub.reclaim(maxDiskSpace));
                     System.out.println("RECLAIM!");
                     break;
                 }
